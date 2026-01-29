@@ -1,4 +1,5 @@
 # Vision Statement
+
 We aim to elevate emerging junior developers and recent grads to help them find work that works for them.
 
 In a time where doubt and uncertainty are common when it comes to finding jobs, we offer support to young talent trying to break into the technology industry. Our service helps junior developers find positions by providing multiple resources to create one source of help in many important aspects of the industry.
@@ -8,6 +9,7 @@ By providing the tools to make job finding easier and applications more likely t
 To us, success would look like wide use of our services with quantifiable improvements in application acceptances, community and employer engagement.
 
 # Project Summary
+
 Our product aims to provide computer science job seekers with an extensive platform that makes the job hunt easy, and even fun. The CS GetEmployed website lets users search for jobs, manage and organize their applications, get notified about new relevant job postings, showcase their prior work experience to potential employers, and leave comments on job postings or reviews for companies. CS GetEmployed also provides various tools for users to improve their writing skills in order to enhance their resumes and cover letters.
 
 Users of CS GetEmployed are able to search for job postings that match filters that they outline, including things like the type of position, the type of employment, any specific required experience, and job location. In addition to searching for and filtering available job postings, users are able to save postings that they are interested in so that they can complete an application at a later time. Users are also able to sort their saved applications into different user-created folders. The job search is made a little more fun by providing users with a gamified interface that lets them swipe left or right to skip or save job postings they are interested in. Busier users that have less time to search for jobs can subscribe to be notified of job postings that match their experience, allowing them to save and apply for relevant jobs without needing to manually search.
@@ -22,24 +24,25 @@ Finally, CS GetEmployed has writing tools like an action sentence designer, gene
 Allows users to save posts, mark which ones they applied for, add notes, and sort them using their own personal folder structure.
 
 **Resume and Cover Letter Improvement**
-Lets users improve their writing skills by showing them how to structure sentences, suggest different words, or showing which words to avoid. 
+Lets users improve their writing skills by showing them how to structure sentences, suggest different words, or showing which words to avoid.
 
 **Search jobs**
-Filters through jobs postings to give users a list of jobs for their exact needs.
+A more traditional job board that is tailored to technology positions. Filters allow users to narrow down available jobs to their desired needs and skills.
 
 **Dating job game**
 Going through job postings can be a boring and tedious task. We improve this by allowing users to participate in a tinder-like environment where choosing jobs is a more enjoyable task rather than a chore.
 
 **Add Job**
-We allow users or companies to add job postings to our website to develop an active and engaging community. 
+We allow users or companies to add job postings to our website to develop an active and engaging community.
 
 **Subscribe to new postings**
 Users can configure what types of jobs they want to be notified for, so that they can be the first to apply when they come in.
 
 **Job Search Community**
-We allow users to comment on job postings to allow people to recommend jobs to friends or to give tips on how to prepare for an interview.
+Users and companies both have their own public facing profiles to share who they are and what they're looking for with the community. We also allow users to comment on job postings, each other's profiles and company profiles to provide opinions or recommendations on postings and interviews.
 
 # Technologies
+
 Front-end: React
 
 Back-end: C#
@@ -51,41 +54,40 @@ Github actions
 Docker
 
 # User Stories
-The team spent time creating user stories for the features that were defined last meeting. Some additional modifications where also done to the feature list. The cover letter and resume improvement features were merged under one category, and a new feature Job search category was created. The following is the feature list with the coorisponding user stories:
+
+The team spent time creating user stories for the features that were defined last meeting. Some additional modifications were also done to the feature list. The cover letter and resume improvement features were merged under one category, and a new job search feature was created. The following is the feature list with the corresponding user stories:
 
 Application management
+
 - As a job seeker, I want to be able to save the jobs I’m considering applying for so that I can prepare my application another time.
-- As a new grad applying to jobs I want to be able to save listings that I like so that I can apply to them later.
-- As a job seeker I would like to see the number of openings I have saved/applied for
+- As a job seeker, I want to see my saved postings so that I can start preparing applications for them.
+- As a job seeker, I want to be able to log in to an account so that I can see the most recent version of my saved and applied jobs.
 
 Resume and Cover Letter Improvement
-- As a person who wants to increase there vocabulary I want to use different words to stand out from other cover letters.
-- As a person who is bad at writing I want to how to structure my sentence better so that I can get more interviews.
+
 - As an applicant who is struggling to get interviews, I want to learn how to send stronger applications so that I can get a job offer.
+- As a person who is not confident in my ability to write job application documents, I want to improve the structure and wording of my sentences so that I can get more interviews.
+- As a person wanting to get a job, I want to understand what good resume statements look like so I can improve my resume for job applications.
 
 Search jobs
-- As a Front-end developer I want to be given a list of jobs that are solely front-end so that I don't have to waste time searching for them.
-- As a student studying for a degree in technology, I want to find internships so that I can get work experience before I graduate from my program.
-- As a developer with lots of experience with React, I want to find jobs that require React experience so that I can speed up my search for jobs with qualifications I can fulfill.
-- As a developer who wants a job but cannot afford to move away from my current city, I want to find suitable jobs within my city or that are remote so that I can be employed while still staying where I currently live.
-- As a programer applying to jobs I want to be able to find jobs that are applicable to my skills.
+
+- As a programmer applying to jobs, I want to be able to easily find postings that are applicable to my skills so that I can apply to positions that suit me.
 
 Dating job game
-- As an unemployed bum I spend a lot of time doomscrolling and I want to use this skill to help me find a job.
+
+- As an unemployed bum who spends a lot of time doomscrolling, I want to use this skill so that I can find a job easily.
 
 Add Job
-- As a potential employer i'd like to be able to submit applications to jobs my company is offering
-- As an employed developer who checks job boards and similar sites for jobs to potentially pivot to, I want to share the jobs I find with job seekers easily so that they are aware of available opportunities.
+
+- As a user aware of a job not yet available in the application, I want to add it so that suitable applicants can find it and apply.
 
 Subscribe to new postings
-- As a busy person who is looking for a job I want to be able to get notified when a job im qualified for appears so that I can apply
+
+- As a busy person who is looking for a job, I want to be able to get notified when a job I'm qualified for appears so that I can apply.
 
 Job Search Community
-- as a job seeker, i'd like to see who has viewed my profile to see who has interest in my skills
-- As a competitive student I would like to see who has applied to postings.
-- As a job seeker, I want to be able to set up a profile for others to view what my job experience is
-- As an employer, I want to be able to view the profiles of potential employees and gauge their skill for my jobs
-- As a co-op student I would like to be recommended jobs that match/don't match my skills from past experience
-- As a person who cares about company culture, I want to learn about other's experiences with a company so I can decide whether to apply to their postings
 
-
+- As a new user to the platform, I want to set up a profile for others to view what my experience and added jobs are so that I can connect with suitable job postings and candidates.
+- As a user, I want to view the profiles of other users so that I can gauge their experience and fit for advertised jobs.
+- As a job seeker, I want to see who viewed my profile so that I know who has interest in my skills, especially if they are an employer.
+- As a person who cares about company culture, I want to learn about others' experiences with a company so I can decide whether to apply to their postings.
