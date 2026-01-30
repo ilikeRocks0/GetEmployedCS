@@ -59,9 +59,8 @@ The team spent time creating user stories for the features that were defined las
 
 Application management
 
-- As a job seeker, I want to be able to save the jobs I’m considering applying for so that I can prepare my application another time.
 - As a job seeker, I want to see my saved postings so that I can start preparing applications for them.
-- As a job seeker, I want to be able to log in to an account so that I can see the most recent version of my saved and applied jobs.
+- As a job seeker, I want to create new folders so I can organize the jobs I saved into different categories.
 
 Resume and Cover Letter Improvement
 
