@@ -43,15 +43,13 @@ Users and companies both have their own public facing profiles to share who they
 
 # Technologies
 
-Front-end: React
+Front-end: React, JS, npm, Ant Design
 
-Back-end: C#
+Back-end: C#, ASP.net, .NET
 
-Database: MySQL
+Database: MySQL, Aiven
 
-Github actions
-
-Docker
+Other: Github actions, Docker, Cypress
 
 # User Stories
 
