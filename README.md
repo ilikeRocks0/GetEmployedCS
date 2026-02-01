@@ -51,7 +51,7 @@ Database: MySQL, Aiven
 
 Other: Github actions, Docker, Cypress
 
-!(architecture.png)
+![](architecture.png)
 
 # User Stories
 
