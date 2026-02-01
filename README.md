@@ -51,6 +51,8 @@ Database: MySQL, Aiven
 
 Other: Github actions, Docker, Cypress
 
+![](architecture.png)
+
 # User Stories
 
 The team spent time creating user stories for the features that were defined last meeting. Some additional modifications were also done to the feature list. The cover letter and resume improvement features were merged under one category, and a new job search feature was created. The following is the feature list with the corresponding user stories:
