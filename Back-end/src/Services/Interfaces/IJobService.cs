@@ -1,6 +1,6 @@
-using Back_end.Persistance;
+using Back_end.Persistence.Objects;
 
-namespace Back_end.Services;
+namespace Back_end.Services.Interfaces;
 
 public interface IJobService
 {
