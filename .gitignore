@@ -1,0 +1,8 @@
+Back-end/bin/
+Back-end/obj/
+
+# OS and IDE at repo root
+.DS_Store
+*.swp
+*.swo
+*~
