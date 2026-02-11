@@ -9,17 +9,17 @@ namespace Back_end.Persistence.Implementations;
 
 public class JobPersistence : IJobPersistence
 {
-  IConfiguration config;
+  private IConfiguration config;
 
   public JobPersistence(IConfiguration config)
   {
     this.config = config;
   }
 
-  private Job jobEntityToObject(JobEntity e)
+  private Job JobEntityToObject(JobEntity e)
   {
     // Convert DateTime from job entity to a DateOnly
-    DateOnly? deadline = (e.application_deadline == null) ? null : DateOnly.FromDateTime((DateTime)e.application_deadline);
+    ApplicationDate deadline = new(e.application_deadline);
 
     // Create Poster object that validates and constructs the poster's name 
     Poster poster = new(e.poster, e.employer_poster);
@@ -30,13 +30,13 @@ public class JobPersistence : IJobPersistence
 
     jobLocationEntities.ForEach(e =>
     {
-      locations.Add((new JobLocation(e.location)).Location);
+      locations.Add(new JobLocation(e.location).Location);
     });
 
     // Create and return new object
     return new Job(
       e.job_title,
-      deadline,
+      deadline.Date,
       poster.Name,
       e.application_link,
       e.has_remote,
@@ -49,7 +49,30 @@ public class JobPersistence : IJobPersistence
     );
   }
 
-  public List<Job> GetJobs(List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  private List<JobEntity> FilterQuery(IQueryable<JobEntity> query, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  {
+    // Add filters to query if present
+    if(!searchTerm.Equals(String.Empty))
+    {
+      query = query.Where(e => e.job_title.Contains(searchTerm));
+    }
+    if(languages.Count > 0)
+    {
+      query = query.Where(e => languages.Contains(e.programming_language));
+    }
+    if(positionTypes.Count > 0)
+    {
+      query = query.Where(e => positionTypes.Contains(e.position_type));
+    }
+    if(employmentTypes.Count > 0)
+    {
+      query = query.Where(e => employmentTypes.Contains(e.employment_type));
+    }
+
+    return query.ToList();
+  }
+
+  public List<Job> GetJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
   {
     List<Job> filteredList = new();
 
@@ -58,36 +81,24 @@ public class JobPersistence : IJobPersistence
     {
       // Build initial query
       // Will get all jobs if no filters are passed
-      var query = context.Jobs.AsQueryable();
-
-      // Add filters to query if present
-      if(languages.Count > 0)
-      {
-        query = query.Where(e => languages.Contains(e.programming_language));
-      }
-      if(positionTypes.Count > 0)
-      {
-        query = query.Where(e => positionTypes.Contains(e.position_type));
-      }
-      if(employmentTypes.Count > 0)
-      {
-        query = query.Where(e => employmentTypes.Contains(e.employment_type));
-      }
+      var query = context.Jobs
+        .Include(e => e.locations)
+        .AsQueryable();
 
       // Execute query and get results
-      List<JobEntity> jobEntities = query.Include(e => e.locations).ToList();
+      List<JobEntity> jobEntities = FilterQuery(query, searchTerm, languages, positionTypes, employmentTypes);
 
       // Convert entities to business objects and add to the return list
       jobEntities.ForEach(e =>
       {
-        filteredList.Add(jobEntityToObject(e));
+        filteredList.Add(JobEntityToObject(e));
       });
     }
 
     return filteredList;
   }
 
-  public List<Job> GetSavedJobs(int seekerId, string language, string positionType, string employmentType)
+  public List<Job> GetSavedJobs(int seekerId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
   {
     List<Job> savedJobs = new();
 
@@ -100,12 +111,19 @@ public class JobPersistence : IJobPersistence
         .ThenInclude(e => e.locations)
         .Single();
 
-      List<LikeEntity> likeEntities = jobSeekerEntity.likes.ToList();
-
-      likeEntities.ForEach(e =>
+      // Gather liked jobs into a list
+      List<JobEntity> jobEntities = new();
+      jobSeekerEntity.likes.ToList().ForEach(e =>
       {
-        savedJobs.Add(jobEntityToObject(e.savedJob));
+        jobEntities.Add(e.savedJob);
       });
+
+      // Run filter on query and convert each entity to business object
+      FilterQuery(jobEntities.AsQueryable(), searchTerm, languages, positionTypes, employmentTypes)
+        .ForEach(e =>
+        {
+          savedJobs.Add(JobEntityToObject(e));
+        });
     }
 
     return savedJobs;
