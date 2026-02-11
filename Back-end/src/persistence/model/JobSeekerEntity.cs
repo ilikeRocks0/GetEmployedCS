@@ -9,5 +9,6 @@ public class JobSeekerEntity
     public int user_id { get; set; }
     public required string first_name { get; set; }
     public required string last_name { get; set; }
-    public required ICollection<LikeEntity> likes { get; set; }
+    public ICollection<LikeEntity>? likes { get; set; }
+    public ICollection<ExperienceEntity>? experiences { get; set; }
 }

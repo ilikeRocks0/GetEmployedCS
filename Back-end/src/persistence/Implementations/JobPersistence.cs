@@ -98,22 +98,22 @@ public class JobPersistence : IJobPersistence
     return filteredList;
   }
 
-  public List<Job> GetSavedJobs(int seekerId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  public List<Job> GetSavedJobs(int userId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
   {
     List<Job> savedJobs = new();
 
     using (AppDbContext context = new(this.config))
     {
       JobSeekerEntity jobSeekerEntity = context.JobSeekers
-        .Where(e => e.seeker_id == seekerId)
-        .Include(e => e.likes)
-        .ThenInclude(e => e.savedJob)
-        .ThenInclude(e => e.locations)
+        .Where(e => e.user_id == userId)
+        .Include(e => e.likes!)
+          .ThenInclude(e => e.savedJob)
+            .ThenInclude(e => e.locations)
         .Single();
 
       // Gather liked jobs into a list
       List<JobEntity> jobEntities = new();
-      jobSeekerEntity.likes.ToList().ForEach(e =>
+      jobSeekerEntity.likes?.ToList().ForEach(e =>
       {
         jobEntities.Add(e.savedJob);
       });
