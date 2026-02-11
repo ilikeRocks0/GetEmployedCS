@@ -10,11 +10,11 @@ public class Job
   public bool? HasHybrid { get; }
   public string PositionType { get; }
   public string EmploymentType { get; }
-  public List<string> Locations { get; }
-  public string ProgrammingLanguage { get; }
+  public List<string>? Locations { get; }
+  public List<string>? ProgrammingLanguages { get; }
   public string JobDescription { get; }
 
-  public Job(string jobTitle, DateOnly? applicationDeadline, string? posterName, string applicationLink, bool? hasRemote, bool? hasHybrid, string positionType, string employmentType, List<string> locations, string programmingLanguage, string jobDescription)
+  public Job(string jobTitle, DateOnly? applicationDeadline, string? posterName, string applicationLink, bool? hasRemote, bool? hasHybrid, string positionType, string employmentType, List<string>? locations, List<string>? programmingLanguages, string jobDescription)
   {
     this.JobTitle = jobTitle;
     this.ApplicationDeadline = applicationDeadline;
@@ -25,7 +25,7 @@ public class Job
     this.PositionType = positionType;
     this.EmploymentType = employmentType;
     this.Locations = locations;
-    this.ProgrammingLanguage = programmingLanguage;
+    this.ProgrammingLanguages = programmingLanguages;
     this.JobDescription = jobDescription;
   }
 }

@@ -16,6 +16,15 @@ public class JobPersistence : IJobPersistence
     this.config = config;
   }
 
+  private List<string> LanguageEntitiesToStrings(ICollection<JobLanguageEntity>? entities)
+  {
+    List<string> strings = new List<string>();
+
+    entities?.ToList().ForEach(e => strings.Add(e.language_name));
+
+    return strings;
+  }
+
   private Job JobEntityToObject(JobEntity e)
   {
     // Convert DateTime from job entity to a DateOnly
@@ -44,7 +53,7 @@ public class JobPersistence : IJobPersistence
       e.position_type,
       e.employment_type,
       locations,
-      e.programming_language,
+      LanguageEntitiesToStrings(e.programmingLanguages),
       e.job_description
     );
   }
@@ -58,7 +67,7 @@ public class JobPersistence : IJobPersistence
     }
     if(languages.Count > 0)
     {
-      query = query.Where(e => languages.Contains(e.programming_language));
+      query = query.Where(e => languages.Intersect(LanguageEntitiesToStrings(e.programmingLanguages)).Any());
     }
     if(positionTypes.Count > 0)
     {

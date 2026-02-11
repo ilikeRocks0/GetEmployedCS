@@ -22,7 +22,7 @@ public class JobEntity
   public required string position_type { get; set; }
   public required string employment_type { get; set; }
   public required string job_description { get; set; }
-  public required string programming_language { get; set; }
+  public ICollection<JobLanguageEntity>? programmingLanguages { get; set; }
   public required ICollection<JobLocationEntity> locations { get; set; }
   public required ICollection<LikeEntity> likes { get; set; }
 }

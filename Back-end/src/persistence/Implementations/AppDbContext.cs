@@ -15,11 +15,13 @@ public class AppDbContext : DbContext
   public DbSet<FolderContentEntity> FolderContents { get; set; }
   public DbSet<GenericWordEntity> GenericWords { get; set; }
   public DbSet<JobEntity> Jobs { get; set; }
+  public DbSet<JobLanguageEntity> JobLanguages { get; set; }
   public DbSet<JobLocationEntity> JobLocations { get; set; }
   public DbSet<JobSeekerEntity> JobSeekers { get; set; }
   public DbSet<JobSeekerCommentEntity> JobSeekerComments { get; set; }
   public DbSet<LikeEntity> Likes { get; set; }
   public DbSet<LocationEntity> Locations { get; set; }
+  public DbSet<ProgrammingLanguageEntity> ProgrammingLanguages { get; set; }
   public DbSet<QuizItemEntity> QuizItems { get; set; }
   public DbSet<UserEntity> Users { get; set; }
 
@@ -74,5 +76,19 @@ public class AppDbContext : DbContext
       .HasOne(e => e.savedJob)
       .WithMany(e => e.likes)
       .HasForeignKey(e => e.job_id);
+
+    // Define relationship between Jobs, JobProgrammingLanguages, and ProgrammingLanguages
+    modelBuilder.Entity<JobLanguageEntity>()
+      .HasKey(e => new {e.job_id, e.language_name});
+
+    modelBuilder.Entity<JobLanguageEntity>()
+      .HasOne(e => e.job)
+      .WithMany(e => e.programmingLanguages)
+      .HasForeignKey(e => e.job_id);
+
+    modelBuilder.Entity<JobLanguageEntity>()
+      .HasOne(e => e.language)
+      .WithMany(e => e.jobs)
+      .HasForeignKey(e => e.language_name);
   }
 }
