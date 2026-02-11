@@ -1,0 +1,15 @@
+# Ignore build output
+bin/
+obj/
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+
+# Secrets & Configs
+appsettings.Development.json
