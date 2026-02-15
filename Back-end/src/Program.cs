@@ -1,5 +1,8 @@
 using DotNetEnv;
 using Back_end.Endpoints;
+using Back_end.Persistence.Implementations;
+using Back_end.Services.Interfaces;
+using Back_end.Persistence.Interfaces;
 // Load environment variables from .env file
 Env.Load();
 
@@ -9,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// builder.Services.AddScoped<Back_end.Services.Interfaces.IJobService, Back_end.Services.Implementations.JobService>();
+builder.Services.AddScoped<IJobPersistence, JobPersistence>();
+builder.Services.AddScoped<IJobService, JobService>();
 
 var app = builder.Build();
 
