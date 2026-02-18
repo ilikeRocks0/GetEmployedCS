@@ -1,7 +1,14 @@
+import NavigationBar from "@/components/navigationBar"
+
 export default function SearchPage()
 {
     return(
     <div className="h-screen">
+
+        <body>
+            <NavigationBar>
+            </NavigationBar>
+        </body>
         {/* Search Bar */}
         <div className="grid gap-0">
             <input className="h-10 w-xl mt-10 justify-self-center text-center border" placeholder="Search"/>
