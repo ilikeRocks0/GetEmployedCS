@@ -8,7 +8,7 @@ public class UserEntity
   public required string username { get; set; }
   public required string password { get; set; }
   public string? about_string { get; set; }
-  public required ICollection<JobEntity> postedJobs { get; set; }
+  public ICollection<JobEntity>? postedJobs { get; set; }
   public EmployerEntity? employer { get; set; }
   public JobSeekerEntity? jobSeeker {get; set; }
 }
