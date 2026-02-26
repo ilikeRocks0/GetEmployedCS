@@ -1,0 +1,103 @@
+import type { Job } from "@/components/JobCard";
+
+// Stub data for jobs, remove once we have the real endpoint
+const ALL_JOBS: Job[] = [
+  {
+    id: 1,
+    company: "Canada Hydro",
+    position: "Front-End Developer",
+    language: "React",
+    type: "Internship",
+    description: "Build and maintain user-facing features for our internal energy management dashboard using React and TypeScript.",
+  },
+  {
+    id: 2,
+    company: "TechCorp",
+    position: "Backend Developer",
+    language: "Node.js",
+    type: "Full-Time",
+    description: "Design and implement RESTful APIs and microservices to support our growing suite of enterprise SaaS products.",
+  },
+  {
+    id: 3,
+    company: "InnovateX",
+    position: "UX Designer",
+    language: "Figma",
+    type: "Contract",
+    description: "Create wireframes, prototypes, and high-fidelity designs for mobile and web products in close collaboration with engineering.",
+  },
+  {
+    id: 4,
+    company: "Maple Analytics",
+    position: "Data Engineer",
+    language: "Python",
+    type: "Full-Time",
+    description: "Build and maintain scalable data pipelines that process millions of events daily using Python, Spark, and Airflow.",
+  },
+  {
+    id: 5,
+    company: "Orbit Systems",
+    position: "DevOps Engineer",
+    language: "Go",
+    type: "Full-Time",
+    description: "Manage CI/CD pipelines, Kubernetes clusters, and cloud infrastructure across AWS and GCP environments.",
+  },
+  {
+    id: 6,
+    company: "Luminary Labs",
+    position: "Machine Learning Engineer",
+    language: "Python",
+    type: "Contract",
+    description: "Develop and productionize ML models for recommendation and personalization features used by 2M+ active users.",
+  },
+  {
+    id: 7,
+    company: "NorthStack",
+    position: "Full-Stack Developer",
+    language: "TypeScript",
+    type: "Full-Time",
+    description: "Own features end-to-end across a Next.js front end and a Node.js/PostgreSQL back end for our fintech platform.",
+  },
+  {
+    id: 8,
+    company: "Greenfield Software",
+    position: "Mobile Developer",
+    language: "React",
+    type: "Internship",
+    description: "Build cross-platform mobile features in React Native for our flagship consumer app with 500K+ downloads.",
+  },
+  {
+    id: 9,
+    company: "ClearPath AI",
+    position: "Backend Developer",
+    language: "Python",
+    type: "Full-Time",
+    description: "Architect and maintain the core API layer powering our AI document processing platform, handling 10K+ requests per minute.",
+  },
+  {
+    id: 10,
+    company: "Vantage Cloud",
+    position: "Cloud Infrastructure Engineer",
+    language: "Go",
+    type: "Contract",
+    description: "Design resilient, multi-region cloud infrastructure and drive cost optimisation initiatives across our platform.",
+  },
+  {
+    id: 11,
+    company: "PixelForge",
+    position: "UI Engineer",
+    language: "TypeScript",
+    type: "Full-Time",
+    description: "Build and document a shared component library in React and TypeScript used across six product teams.",
+  },
+  {
+    id: 12,
+    company: "DataBridge",
+    position: "Data Analyst",
+    language: "Python",
+    type: "Internship",
+    description: "Analyse product and growth metrics, build dashboards in Metabase, and surface insights to support strategic decisions.",
+  },
+];
+
+export default ALL_JOBS;
