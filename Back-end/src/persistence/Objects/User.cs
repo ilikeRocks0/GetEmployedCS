@@ -11,16 +11,18 @@ public class User
   public string? EmployerName { get; set; } = null;
   public bool IsEmployer { get; set; }
   public string? About { get; set; }
+  public string Email { get; set; }
 
-  private User(int userId, string username, string password, string? about)
+  private User(int userId, string email, string username, string password, string? about)
   {
     this.UserId = userId;
+    this.Email = email;
     this.Username = username;
     this.Password = password;
     this.About = about;
   }
 
-  public User(int userId, string username, string password, string? about, string firstName, string lastName, List<Experience> experiences) : this(userId, username, password, about)
+  public User(int userId, string email, string username, string password, string? about, string firstName, string lastName, List<Experience> experiences) : this(userId, email, username, password, about)
   {
     this.FirstName = firstName;
     this.LastName = lastName;
@@ -28,7 +30,7 @@ public class User
     this.IsEmployer = false;
   }
 
-  public User(int userId, string username, string password, string? about, string employerName) : this(userId, username, password, about)
+  public User(int userId, string email, string username, string password, string? about, string employerName) : this(userId, email, username, password, about)
   {
     this.EmployerName = employerName;
     this.IsEmployer = true;

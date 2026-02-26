@@ -71,6 +71,7 @@ public class UserPersistence : IUserPersistence
         // Create new job seeker user object
         user = new User(
           userId,
+          userEntity.email,
           userEntity.username,
           userEntity.password,
           userEntity.about_string,
@@ -84,6 +85,7 @@ public class UserPersistence : IUserPersistence
         // Create new employer user object
         user = new User(
           userId,
+          userEntity.email,
           userEntity.username,
           userEntity.password,
           userEntity.about_string,
@@ -104,6 +106,7 @@ public class UserPersistence : IUserPersistence
       // Initially, add the user entity to the users table
       UserEntity newUserEntity = new()
       {
+        email = newUser.Email,
         username = newUser.Username,
         password = newUser.Password,
         about_string = newUser.About
