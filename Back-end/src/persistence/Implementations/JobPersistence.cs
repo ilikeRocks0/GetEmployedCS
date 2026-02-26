@@ -58,7 +58,7 @@ public class JobPersistence : IJobPersistence
     );
   }
 
-  private List<JobEntity> FilterQuery(IQueryable<JobEntity> query, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  private List<JobEntity> FilterQuery(IQueryable<JobEntity> query, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize)
   {
     // Add filters to query if present
     if(!searchTerm.Equals(String.Empty))
@@ -78,10 +78,14 @@ public class JobPersistence : IJobPersistence
       query = query.Where(e => employmentTypes.Contains(e.employment_type));
     }
 
+    query.OrderBy(e => e.job_id)
+      .Skip(startIndex)
+      .Take(pageSize);
+
     return query.ToList();
   }
 
-  public List<Job> GetJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  public List<Job> GetJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize)
   {
     List<Job> filteredList = new();
 
@@ -95,7 +99,7 @@ public class JobPersistence : IJobPersistence
         .AsQueryable();
 
       // Execute query and get results
-      List<JobEntity> jobEntities = FilterQuery(query, searchTerm, languages, positionTypes, employmentTypes);
+      List<JobEntity> jobEntities = FilterQuery(query, searchTerm, languages, positionTypes, employmentTypes, startIndex, pageSize);
 
       // Convert entities to business objects and add to the return list
       jobEntities.ForEach(e =>
@@ -107,7 +111,7 @@ public class JobPersistence : IJobPersistence
     return filteredList;
   }
 
-  public List<Job> GetSavedJobs(int userId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  public List<Job> GetSavedJobs(int userId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize)
   {
     List<Job> savedJobs = new();
 
@@ -128,7 +132,7 @@ public class JobPersistence : IJobPersistence
       });
 
       // Run filter on query and convert each entity to business object
-      FilterQuery(jobEntities.AsQueryable(), searchTerm, languages, positionTypes, employmentTypes)
+      FilterQuery(jobEntities.AsQueryable(), searchTerm, languages, positionTypes, employmentTypes, startIndex, pageSize)
         .ForEach(e =>
         {
           savedJobs.Add(JobEntityToObject(e));
