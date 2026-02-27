@@ -2,21 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { Layout, Input, Select, Space, Spin, Pagination } from "antd";
-import JobCard, { Job } from "@/components/JobCard";
+import JobCard from "@/components/JobCard";
+import type { Job } from "@/types/Job";
 import SiteHeader from "@/components/SiteHeader";
-import ALL_JOBS from "@/data/jobs";
+import ALL_JOBS, { JOB_TYPES, LANGUAGES } from "@/data/JobsStub";
+import { JobFilters, DEFAULT_FILTERS } from "@/types/JobFilters";
 
 const { Content } = Layout;
 
 // 20 Jobs per page
 const PAGE_SIZE = 20;
 
-const JOB_TYPES = [...new Set(ALL_JOBS.map((j) => j.type))];
-const LANGUAGES = [...new Set(ALL_JOBS.map((j) => j.language))];
-
 // Stub API: swap the body for a real fetch call when the backend is ready
 async function fetchJobs(
-  params: { search: string; type: string | null; language: string | null; page: number; pageSize: number },
+  filters: JobFilters,
+  page: number,
+  pageSize: number,
   signal: AbortSignal
 
   // Simulate network delay
@@ -30,7 +31,7 @@ async function fetchJobs(
     });
   });
 
-  const query = params.search.toLowerCase();
+  const query = filters.searchText.toLowerCase();
 
   // Run filter on all the jobs. (Stub data for now)
   const filtered = ALL_JOBS.filter((job) => {
@@ -38,23 +39,21 @@ async function fetchJobs(
       !query ||
       job.company.toLowerCase().includes(query) ||
       job.position.toLowerCase().includes(query);
-    const matchesType = !params.type || job.type === params.type;
-    const matchesLanguage = !params.language || job.language === params.language;
+    const matchesType = !filters.selectedType || job.employment_type === filters.selectedType;
+    const matchesLanguage = filters.selectedLanguages.length === 0 || filters.selectedLanguages.includes(job.language);
     return matchesSearch && matchesType && matchesLanguage;
   });
 
   // Slice filtered data for the current page (used for pagination)
-  const start = (params.page - 1) * params.pageSize;
+  const start = (page - 1) * pageSize;
   return {
-    data: filtered.slice(start, start + params.pageSize),
+    data: filtered.slice(start, start + pageSize),
     total: filtered.length,
   };
 }
 
 export default function JobsPage() {
-  const [searchText, setSearchText] = useState("");
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+  const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
   const [jobs, setJobs] = useState<Job[]>(ALL_JOBS.slice(0, PAGE_SIZE));
   const [total, setTotal] = useState(ALL_JOBS.length);
@@ -66,10 +65,7 @@ export default function JobsPage() {
 
     const timer = setTimeout(async () => {
       try {
-        const result = await fetchJobs(
-          { search: searchText, type: selectedType, language: selectedLanguage, page, pageSize: PAGE_SIZE },
-          controller.signal
-        );
+        const result = await fetchJobs(filters, page, PAGE_SIZE, controller.signal);
         setJobs(result.data);
         setTotal(result.total);
       } catch (err) {
@@ -83,7 +79,7 @@ export default function JobsPage() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [searchText, selectedType, selectedLanguage, page]);
+  }, [filters, page]);
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
@@ -94,22 +90,23 @@ export default function JobsPage() {
             placeholder="Search by company or position"
             allowClear
             style={{ width: 280 }}
-            onChange={(e) => { setSearchText(e.target.value); setPage(1); }}
-            onSearch={(value) => { setSearchText(value); setPage(1); }}
+            onChange={(e) => { setFilters({ ...filters, searchText: e.target.value }); setPage(1); }}
+            onSearch={(value) => { setFilters({ ...filters, searchText: value }); setPage(1); }}
           />
           <Select
             placeholder="Job type"
             allowClear
             style={{ width: 160 }}
             options={JOB_TYPES.map((t) => ({ label: t, value: t }))}
-            onChange={(value) => { setSelectedType(value ?? null); setPage(1); }}
+            onChange={(value) => { setFilters({ ...filters, selectedType: value ?? null }); setPage(1); }}
           />
           <Select
+            mode="multiple"
             placeholder="Language / tool"
             allowClear
-            style={{ width: 180 }}
+            style={{ minWidth: 180 }}
             options={LANGUAGES.map((l) => ({ label: l, value: l }))}
-            onChange={(value) => { setSelectedLanguage(value ?? null); setPage(1); }}
+            onChange={(value: string[]) => { setFilters({ ...filters, selectedLanguages: value }); setPage(1); }}
           />
         </Space>
 

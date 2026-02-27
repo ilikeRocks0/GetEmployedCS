@@ -14,11 +14,11 @@ import ProfileMenu from "./ProfileMenu";
 
 const { Header } = Layout;
 
-interface SiteHeaderProps {
+interface Props {
   selectedKey?: string;
 }
 
-const SiteHeader: React.FC<SiteHeaderProps> = ({
+const SiteHeader: React.FC<Props> = ({
   selectedKey = "home",
 }) => {
   const router = useRouter();
@@ -73,7 +73,7 @@ const SiteHeader: React.FC<SiteHeaderProps> = ({
             WebkitTextFillColor: "transparent",
           }}
         >
-          MySite
+          GetEmployed.cs
         </div>
 
         {/* Navigation */}

@@ -1,4 +1,4 @@
-import type { Job } from "@/components/JobCard";
+import type { Job } from "@/types/Job";
 
 // Stub data for jobs, remove once we have the real endpoint
 const ALL_JOBS: Job[] = [
@@ -7,7 +7,7 @@ const ALL_JOBS: Job[] = [
     company: "Canada Hydro",
     position: "Front-End Developer",
     language: "React",
-    type: "Internship",
+    employment_type: "Internship",
     description: "Build and maintain user-facing features for our internal energy management dashboard using React and TypeScript.",
   },
   {
@@ -15,7 +15,7 @@ const ALL_JOBS: Job[] = [
     company: "TechCorp",
     position: "Backend Developer",
     language: "Node.js",
-    type: "Full-Time",
+    employment_type: "Full-Time",
     description: "Design and implement RESTful APIs and microservices to support our growing suite of enterprise SaaS products.",
   },
   {
@@ -23,7 +23,7 @@ const ALL_JOBS: Job[] = [
     company: "InnovateX",
     position: "UX Designer",
     language: "Figma",
-    type: "Contract",
+    employment_type: "Contract",
     description: "Create wireframes, prototypes, and high-fidelity designs for mobile and web products in close collaboration with engineering.",
   },
   {
@@ -31,7 +31,7 @@ const ALL_JOBS: Job[] = [
     company: "Maple Analytics",
     position: "Data Engineer",
     language: "Python",
-    type: "Full-Time",
+    employment_type: "Full-Time",
     description: "Build and maintain scalable data pipelines that process millions of events daily using Python, Spark, and Airflow.",
   },
   {
@@ -39,7 +39,7 @@ const ALL_JOBS: Job[] = [
     company: "Orbit Systems",
     position: "DevOps Engineer",
     language: "Go",
-    type: "Full-Time",
+    employment_type: "Full-Time",
     description: "Manage CI/CD pipelines, Kubernetes clusters, and cloud infrastructure across AWS and GCP environments.",
   },
   {
@@ -47,7 +47,7 @@ const ALL_JOBS: Job[] = [
     company: "Luminary Labs",
     position: "Machine Learning Engineer",
     language: "Python",
-    type: "Contract",
+    employment_type: "Contract",
     description: "Develop and productionize ML models for recommendation and personalization features used by 2M+ active users.",
   },
   {
@@ -55,7 +55,7 @@ const ALL_JOBS: Job[] = [
     company: "NorthStack",
     position: "Full-Stack Developer",
     language: "TypeScript",
-    type: "Full-Time",
+    employment_type: "Full-Time",
     description: "Own features end-to-end across a Next.js front end and a Node.js/PostgreSQL back end for our fintech platform.",
   },
   {
@@ -63,7 +63,7 @@ const ALL_JOBS: Job[] = [
     company: "Greenfield Software",
     position: "Mobile Developer",
     language: "React",
-    type: "Internship",
+    employment_type: "Internship",
     description: "Build cross-platform mobile features in React Native for our flagship consumer app with 500K+ downloads.",
   },
   {
@@ -71,7 +71,7 @@ const ALL_JOBS: Job[] = [
     company: "ClearPath AI",
     position: "Backend Developer",
     language: "Python",
-    type: "Full-Time",
+    employment_type: "Full-Time",
     description: "Architect and maintain the core API layer powering our AI document processing platform, handling 10K+ requests per minute.",
   },
   {
@@ -79,7 +79,7 @@ const ALL_JOBS: Job[] = [
     company: "Vantage Cloud",
     position: "Cloud Infrastructure Engineer",
     language: "Go",
-    type: "Contract",
+    employment_type: "Contract",
     description: "Design resilient, multi-region cloud infrastructure and drive cost optimisation initiatives across our platform.",
   },
   {
@@ -87,7 +87,7 @@ const ALL_JOBS: Job[] = [
     company: "PixelForge",
     position: "UI Engineer",
     language: "TypeScript",
-    type: "Full-Time",
+    employment_type: "Full-Time",
     description: "Build and document a shared component library in React and TypeScript used across six product teams.",
   },
   {
@@ -95,9 +95,12 @@ const ALL_JOBS: Job[] = [
     company: "DataBridge",
     position: "Data Analyst",
     language: "Python",
-    type: "Internship",
+    employment_type: "Internship",
     description: "Analyse product and growth metrics, build dashboards in Metabase, and surface insights to support strategic decisions.",
   },
 ];
 
 export default ALL_JOBS;
+
+export const JOB_TYPES = [...new Set(ALL_JOBS.map((j) => j.employment_type))];
+export const LANGUAGES = [...new Set(ALL_JOBS.map((j) => j.language))];

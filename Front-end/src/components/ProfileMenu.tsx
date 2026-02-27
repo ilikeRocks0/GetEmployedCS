@@ -39,20 +39,16 @@ const ProfileMenu: React.FC = () => {
       label: "Logout",
     },
   ];
-
+  
   const handleClick: MenuProps["onClick"] = (e) => {
     switch (e.key) {
       case "profile":
-        //router.push("/profile");
         break;
       case "applications":
-        //router.push("/applications");
         break;
       case "settings":
-        //router.push("/settings");
         break;
       case "logout":
-        //console.log("Handle logout logic here");
         break;
     }
   };

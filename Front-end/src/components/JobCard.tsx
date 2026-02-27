@@ -3,19 +3,11 @@
 import { useState } from "react";
 import { Card, Tag, Avatar, Typography } from "antd";
 import JobDetailModal from "./JobDetailModal";
+import type { Job } from "@/types/Job";
+
+export type { Job };
 
 const { Text, Title } = Typography;
-
-//the fields of the Job object need some more definition, added what I felt was needed for now.
-export interface Job {
-  id: number;
-  company: string;
-  position: string;
-  language: string;
-  type: string;
-  logo?: string;
-  description: string;
-}
 
 interface Props {
   job: Job;
@@ -73,7 +65,8 @@ export default function JobCard({ job }: Props) {
 
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <Tag>{job.language}</Tag>
-          <Tag color={TYPE_COLORS[job.type] ?? "default"}>{job.type}</Tag>
+          <Tag color={TYPE_COLORS[job.employment_type] ?? "default"}>{job.employment_type}</Tag>
+          <Tag>{job.employment_type}</Tag>
         </div>
       </Card>
 

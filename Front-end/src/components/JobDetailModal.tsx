@@ -1,7 +1,7 @@
 "use client";
 
 import { Modal, Button, Avatar, Tag, Typography, Divider } from "antd";
-import type { Job } from "./JobCard";
+import type { Job } from "@/types/Job";
 
 const { Text, Title } = Typography;
 
@@ -47,7 +47,7 @@ export default function JobDetailModal({ job, open, onClose }: Props) {
           <Text type="secondary" style={{ fontSize: 15 }}>{job.position}</Text>
           <div style={{ marginTop: 6, display: "flex", gap: 6 }}>
             <Tag>{job.language}</Tag>
-            <Tag color={TYPE_COLORS[job.type] ?? "default"}>{job.type}</Tag>
+            <Tag color={TYPE_COLORS[job.employment_type] ?? "default"}>{job.employment_type}</Tag>
           </div>
         </div>
       </div>
