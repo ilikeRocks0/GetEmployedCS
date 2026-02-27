@@ -18,6 +18,8 @@ builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IUserPersistence, UserPersistence>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
@@ -52,6 +54,7 @@ app.MapGet("/weatherforecast", () =>
 
 app.MapJobEndpoints();
 app.MapJobGameEndpoints();
+app.MapUserEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
