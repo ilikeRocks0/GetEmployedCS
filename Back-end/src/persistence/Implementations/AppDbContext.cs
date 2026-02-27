@@ -1,7 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-
-using Back_end.Persistence.Model;
 using System.Data.Entity.Core;
+using Back_end.Persistence.Model;
+using Back_end.Util;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Back_end.Persistence.Implementations;
 
@@ -25,14 +26,10 @@ public class AppDbContext : DbContext
   public DbSet<QuizItemEntity> QuizItems { get; set; }
   public DbSet<UserEntity> Users { get; set; }
 
-  public AppDbContext(IConfiguration config)
+  public AppDbContext(IOptions<AppOptions> config)
   {
-    // Bind the values of the AppConfig section in appsettings.json to an AppConfig instance 
-    AppConfig appConfig = new();
-    config.GetSection(nameof(AppConfig)).Bind(appConfig);
-
     // Save connection string from environment variables, or throw exception if it returns null
-    connectionString = Environment.GetEnvironmentVariable(appConfig.DBEnvConnectionString) ?? throw new ObjectNotFoundException();
+    this.connectionString = Environment.GetEnvironmentVariable(config.Value.DBEnvConnectionString!) ?? throw new ObjectNotFoundException();
   }
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -1,15 +1,17 @@
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Objects;
+using Back_end.Util;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Back_end.Persistence.Implementations;
 
 public class UserPersistence : IUserPersistence
 {
-  private IConfiguration config;
+  private IOptions<AppOptions> config;
 
-  public UserPersistence(IConfiguration config)
+  public UserPersistence(IOptions<AppOptions> config)
   {
     this.config = config;
   }

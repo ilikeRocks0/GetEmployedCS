@@ -4,14 +4,16 @@ using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Objects;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Implementations.Types;
+using Microsoft.Extensions.Options;
+using Back_end.Util;
 
 namespace Back_end.Persistence.Implementations;
 
 public class JobPersistence : IJobPersistence
 {
-  private IConfiguration config;
+  private IOptions<AppOptions> config;
 
-  public JobPersistence(IConfiguration config)
+  public JobPersistence(IOptions<AppOptions> config)
   {
     this.config = config;
   }
