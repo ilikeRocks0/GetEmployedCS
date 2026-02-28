@@ -14,11 +14,11 @@ import ProfileMenu from "./ProfileMenu";
 
 const { Header } = Layout;
 
-interface Props {
+interface SiteHeaderState {
   selectedKey?: string;
 }
 
-const SiteHeader: React.FC<Props> = ({
+const SiteHeader: React.FC<SiteHeaderState> = ({
   selectedKey = "home",
 }) => {
   const router = useRouter();

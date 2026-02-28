@@ -5,58 +5,18 @@ import { Layout, Input, Select, Space, Spin, Pagination } from "antd";
 import JobCard from "@/components/JobCard";
 import type { Job } from "@/types/Job";
 import SiteHeader from "@/components/SiteHeader";
-import ALL_JOBS, { JOB_TYPES, LANGUAGES } from "@/data/JobsStub";
+import { JOB_TYPES, LANGUAGES } from "@/data/JobsStub";
 import { JobFilters, DEFAULT_FILTERS } from "@/types/JobFilters";
+import { fetchJobs } from "@/stub/fetchJobsStub";
+import { PAGE_SIZE } from "@/config/config";
 
 const { Content } = Layout;
-
-// 20 Jobs per page
-const PAGE_SIZE = 20;
-
-// Stub API: swap the body for a real fetch call when the backend is ready
-async function fetchJobs(
-  filters: JobFilters,
-  page: number,
-  pageSize: number,
-  signal: AbortSignal
-
-  // Simulate network delay
-): Promise<{ data: Job[]; total: number }> {
-  await new Promise<void>((resolve, reject) => {
-    const t = setTimeout(resolve, 300);
-    // If the filters change before the 300ms delay finishes, the promise gets rejected.
-    signal.addEventListener("abort", () => {
-      clearTimeout(t);
-      reject(new DOMException("Aborted", "AbortError"));
-    });
-  });
-
-  const query = filters.searchText.toLowerCase();
-
-  // Run filter on all the jobs. (Stub data for now)
-  const filtered = ALL_JOBS.filter((job) => {
-    const matchesSearch =
-      !query ||
-      job.company.toLowerCase().includes(query) ||
-      job.position.toLowerCase().includes(query);
-    const matchesType = !filters.selectedType || job.employment_type === filters.selectedType;
-    const matchesLanguage = filters.selectedLanguages.length === 0 || filters.selectedLanguages.includes(job.language);
-    return matchesSearch && matchesType && matchesLanguage;
-  });
-
-  // Slice filtered data for the current page (used for pagination)
-  const start = (page - 1) * pageSize;
-  return {
-    data: filtered.slice(start, start + pageSize),
-    total: filtered.length,
-  };
-}
 
 export default function JobsPage() {
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
-  const [jobs, setJobs] = useState<Job[]>(ALL_JOBS.slice(0, PAGE_SIZE));
-  const [total, setTotal] = useState(ALL_JOBS.length);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

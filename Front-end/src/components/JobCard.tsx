@@ -9,7 +9,7 @@ export type { Job };
 
 const { Text, Title } = Typography;
 
-interface Props {
+interface JobCardState {
   job: Job;
 }
 
@@ -25,7 +25,7 @@ function avatarColor(name: string) {
   return AVATAR_COLORS[code % AVATAR_COLORS.length];
 }
 
-export default function JobCard({ job }: Props) {
+export default function JobCard({ job }: JobCardState) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (

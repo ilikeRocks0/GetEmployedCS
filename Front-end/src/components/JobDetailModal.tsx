@@ -17,13 +17,13 @@ function avatarColor(name: string) {
   return AVATAR_COLORS[code % AVATAR_COLORS.length];
 }
 
-interface Props {
+interface JobDetailModalState {
   job: Job | null;
   open: boolean;
   onClose: () => void;
 }
 
-export default function JobDetailModal({ job, open, onClose }: Props) {
+export default function JobDetailModal({ job, open, onClose }: JobDetailModalState) {
   if (!job) return null;
 
   return (
