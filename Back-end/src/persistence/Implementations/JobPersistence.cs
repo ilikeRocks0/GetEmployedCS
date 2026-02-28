@@ -148,6 +148,19 @@ public class JobPersistence : IJobPersistence
     return savedJobs;
   }
 
+  public List<string> GetProgrammingLanguages()
+  {
+    List<string> languages = new();
+
+    using (AppDbContext context = new(this.config))
+    {
+      context.ProgrammingLanguages.ToList()
+        .ForEach(e => languages.Add(e.language_name));
+    }
+
+    return languages;
+  }
+
   public int GetNumberOfJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
   {
     return GetJobs(searchTerm, languages, positionTypes, employmentTypes, 0, int.MaxValue).Count();
