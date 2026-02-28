@@ -7,12 +7,14 @@ import type { Job } from "@/types/Job";
 import SiteHeader from "@/components/SiteHeader";
 import { JOB_TYPES, LANGUAGES } from "@/data/JobsStub";
 import { JobFilters, DEFAULT_FILTERS } from "@/types/JobFilters";
-import { fetchJobs } from "@/stub/fetchJobsStub";
+import { JobsProvider, useJobs } from "@/context/JobsContext";
 import { PAGE_SIZE } from "@/config/config";
 
 const { Content } = Layout;
 
-export default function JobsPage() {
+function JobsPageContent() {
+  const fetchJobs = useJobs();
+
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -39,7 +41,7 @@ export default function JobsPage() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [filters, page]);
+  }, [filters, page, fetchJobs]);
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
@@ -91,5 +93,13 @@ export default function JobsPage() {
         </div>
       </Content>
     </Layout>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <JobsProvider>
+      <JobsPageContent />
+    </JobsProvider>
   );
 }
