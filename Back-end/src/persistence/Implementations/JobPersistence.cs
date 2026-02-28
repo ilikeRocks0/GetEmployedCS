@@ -141,4 +141,14 @@ public class JobPersistence : IJobPersistence
 
     return savedJobs;
   }
+
+  public int GetNumberOfJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  {
+    return GetJobs(searchTerm, languages, positionTypes, employmentTypes, 0, int.MaxValue).Count();
+  }
+
+  public int GetNumberOfSavedJobs(int userId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
+  {
+    return GetSavedJobs(userId, searchTerm, languages, positionTypes, employmentTypes, 0, int.MaxValue).Count();
+  }
 }

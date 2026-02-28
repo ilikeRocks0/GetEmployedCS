@@ -1,8 +1,8 @@
 using DotNetEnv;
 using Back_end.Endpoints;
 using Back_end.Persistence.Implementations;
-using Back_end.Services.Interfaces;
 using Back_end.Persistence.Interfaces;
+using Back_end.Services.Interfaces;
 // Load environment variables from .env file
 Env.Load();
 
@@ -14,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IGameService, GameService>();
 
 var app = builder.Build();
 
@@ -47,6 +48,7 @@ app.MapGet("/weatherforecast", () =>
 .WithOpenApi();
 
 app.MapJobEndpoints();
+app.MapJobGameEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
