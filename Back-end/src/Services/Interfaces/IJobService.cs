@@ -36,5 +36,8 @@ public interface IJobService
     /// - "EmploymentTypes": A comma-separated list of types of contract to filter by (e.g., "full-time", "part-time").
     /// If null or missing "UserId", the count will be zero. Other filters are optional and will be applied if provided.
     int GetNumberOfSavedJobs(IReadOnlyDictionary<string, string>? filters = null);
+    
+    
+    List<string> GetProgrammingLanguages();
 }
 
