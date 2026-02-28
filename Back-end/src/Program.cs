@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJobPersistence, JobPersistence>();
+builder.Services.AddScoped<IJobIndexManager, JobIndexManager>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IGameService, GameService>();
 
