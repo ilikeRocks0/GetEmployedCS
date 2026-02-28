@@ -1,6 +1,7 @@
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Objects;
 using Back_end.Services.Interfaces;
+using Back_end.Util;
 
 public class JobService(IJobPersistence jobPersistence) : IJobService
 {

@@ -1,7 +1,7 @@
-using Microsoft.EntityFrameworkCore;
-
-using Back_end.Persistence.Model;
 using System.Data.Entity.Core;
+using Back_end.Persistence.Model;
+using Back_end.Util;
+using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Persistence.Implementations;
 
@@ -27,12 +27,11 @@ public class AppDbContext : DbContext
 
   public AppDbContext(IConfiguration config)
   {
-    // Bind the values of the AppConfig section in appsettings.json to an AppConfig instance 
-    AppConfig appConfig = new();
-    config.GetSection(nameof(AppConfig)).Bind(appConfig);
+    AppOptions options = new();
+    config.GetSection(nameof(AppOptions)).Bind(options);
 
     // Save connection string from environment variables, or throw exception if it returns null
-    connectionString = Environment.GetEnvironmentVariable(appConfig.DBEnvConnectionString) ?? throw new ObjectNotFoundException();
+    this.connectionString = Environment.GetEnvironmentVariable(options.DBEnvConnectionString) ?? throw new ObjectNotFoundException();
   }
 
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
