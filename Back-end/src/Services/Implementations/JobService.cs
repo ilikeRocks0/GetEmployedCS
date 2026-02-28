@@ -54,4 +54,9 @@ public class JobService(IJobPersistence jobPersistence) : IJobService
             int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.PAGE_NUMBER), out var pageNumber) ? (pageNumber-1 * AppConfig.ITEMS_PER_PAGE) : 0
         );
     }
+
+    public List<string> GetProgrammingLanguages()
+    {
+        return jobPersistence.GetProgrammingLanguages();
+    }
 }

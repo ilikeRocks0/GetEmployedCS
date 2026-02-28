@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using Back_end.Services.Interfaces;
 
 namespace Back_end.Endpoints;
@@ -50,6 +51,14 @@ public static class JobEndpoints
             return jobService.GetNumberOfSavedJobs(filters.Count > 0 ? filters : null);
         })
             .WithName("GetNumberOfSavedJobs")
+            .WithTags("Jobs")
+            .WithOpenApi();
+
+        routes.MapGet("/api/jobs/languages", (IJobService jobService) =>
+        {
+            return jobService.GetProgrammingLanguages();
+        })
+            .WithName("GetProgrammingLanguages")
             .WithTags("Jobs")
             .WithOpenApi();
     }
