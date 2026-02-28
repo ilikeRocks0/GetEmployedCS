@@ -1,58 +1,105 @@
-import NavigationBar from "@/components/navigationBar"
+"use client";
 
-export default function SearchPage()
-{
-    return(
-    <div className="h-screen">
+import { useState, useEffect } from "react";
+import { Layout, Input, Select, Space, Spin, Pagination } from "antd";
+import JobCard from "@/components/JobCard";
+import type { Job } from "@/types/Job";
+import SiteHeader from "@/components/SiteHeader";
+import { JOB_TYPES, LANGUAGES } from "@/data/JobsStub";
+import { JobFilters, DEFAULT_FILTERS } from "@/types/JobFilters";
+import { JobsProvider, useJobs } from "@/context/JobsContext";
+import { PAGE_SIZE } from "@/config/config";
 
-        <body>
-            <NavigationBar>
-            </NavigationBar>
-        </body>
-        {/* Search Bar */}
-        <div className="grid gap-0">
-            <input className="h-10 w-xl mt-10 justify-self-center text-center border" placeholder="Search"/>
+const { Content } = Layout;
+
+function JobsPageContent() {
+  const fetchJobs = useJobs();
+
+  const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS);
+  const [page, setPage] = useState(1);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const result = await fetchJobs(filters, page, PAGE_SIZE, controller.signal);
+        setJobs(result.data);
+        setTotal(result.total);
+      } catch (err) {
+        if ((err as DOMException).name !== "AbortError") throw err;
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [filters, page, fetchJobs]);
+
+  return (
+    <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
+      <SiteHeader selectedKey="search-jobs" />
+      <Content style={{ padding: "40px 80px" }}>
+        <Space style={{ marginBottom: 24, flexWrap: "wrap" }} size="middle">
+          <Input.Search
+            placeholder="Search by company or position"
+            allowClear
+            style={{ width: 280 }}
+            onChange={(e) => { setFilters({ ...filters, searchText: e.target.value }); setPage(1); }}
+            onSearch={(value) => { setFilters({ ...filters, searchText: value }); setPage(1); }}
+          />
+          <Select
+            placeholder="Job type"
+            allowClear
+            style={{ width: 160 }}
+            options={JOB_TYPES.map((t) => ({ label: t, value: t }))}
+            onChange={(value) => { setFilters({ ...filters, selectedType: value ?? null }); setPage(1); }}
+          />
+          <Select
+            mode="multiple"
+            placeholder="Language / tool"
+            allowClear
+            style={{ minWidth: 180 }}
+            options={LANGUAGES.map((l) => ({ label: l, value: l }))}
+            onChange={(value: string[]) => { setFilters({ ...filters, selectedLanguages: value }); setPage(1); }}
+          />
+        </Space>
+
+        <Spin spinning={loading}>
+          {jobs.length === 0 ? (
+            <p style={{ color: "#888" }}>No jobs match your filters.</p>
+          ) : (
+            jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))
+          )}
+        </Spin>
+
+        <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end" }}>
+          <Pagination
+            current={page}
+            pageSize={PAGE_SIZE}
+            total={total}
+            onChange={setPage}
+            showTotal={(t) => `${t} jobs`}
+          />
         </div>
+      </Content>
+    </Layout>
+  );
+}
 
-        {/* Filters */}
-        <div className="flex w-full p-5">
-            <div className="grow"/>
-            <button className="border m-5 w-50 p-2">Job Type \/</button>
-            <button className="border m-5 w-50 p-2">Job Position \/</button>
-            <button className="border m-5 w-50 p-2">Language \/</button>
-            <div className="grow"/>
-        </div>
-        
-        {/* Job List */}
-        <div className="mt-15 justify-items-center h-full">
-            <div className="grid grid-cols-4 m-1 mx-30 h-30 w-400 border">
-                <p className="text-5xl justify-self-center m-auto font-bold">Canada Hydro</p>
-                <p className="m-auto">Language: React</p>
-                <p className="m-auto">Job Position: Front-End</p>
-                <p className="m-auto">Job Type: Internship</p>
-            </div>
-            <div className="grid grid-cols-4 m-1 mx-30 h-30 w-400 border">
-                <p className="text-5xl justify-self-center m-auto font-bold">Canada Hydro</p>
-                <p className="m-auto">Language: React</p>
-                <p className="m-auto">Job Position: Front-End</p>
-                <p className="m-auto">Job Type: Internship</p>
-            </div>
-            <div className="grid grid-cols-4 m-1 mx-30 h-30 w-400 border">
-                <p className="text-5xl justify-self-center m-auto font-bold">Canada Hydro</p>
-                <p className="m-auto">Language: React</p>
-                <p className="m-auto">Job Position: Front-End</p>
-                <p className="m-auto">Job Type: Internship</p>
-            </div>
-            <div className="grid grid-cols-4 m-1 mx-30 h-30 w-400 border">
-                <p className="text-5xl justify-self-center m-auto font-bold">Canada Hydro</p>
-                <p className="m-auto">Language: React</p>
-                <p className="m-auto">Job Position: Front-End</p>
-                <p className="m-auto">Job Type: Internship</p>
-            </div>
-
-        </div>
-
-
-    </div>
-    )
+export default function JobsPage() {
+  return (
+    <JobsProvider>
+      <JobsPageContent />
+    </JobsProvider>
+  );
 }
