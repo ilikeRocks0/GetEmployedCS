@@ -1,4 +1,3 @@
-using Back_end.Persistence.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Persistence.Model;

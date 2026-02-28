@@ -96,6 +96,8 @@ public class JobPersistence : IJobPersistence
       // Will get all jobs if no filters are passed
       var query = context.Jobs
         .Include(e => e.locations)
+          .ThenInclude(e => e.location)
+        .Include(e => e.programmingLanguages)
         .AsQueryable();
 
       // Execute query and get results
@@ -117,16 +119,20 @@ public class JobPersistence : IJobPersistence
 
     using (AppDbContext context = new(this.config))
     {
-      JobSeekerEntity jobSeekerEntity = context.JobSeekers
+      JobSeekerEntity? jobSeekerEntity = context.JobSeekers
         .Where(e => e.user_id == userId)
         .Include(e => e.likes!)
           .ThenInclude(e => e.savedJob)
+            .ThenInclude(e => e.programmingLanguages)
+        .Include(e => e.likes!)
+          .ThenInclude(e => e.savedJob)
             .ThenInclude(e => e.locations)
-        .Single();
+              .ThenInclude(e => e.location)
+        .SingleOrDefault();
 
       // Gather liked jobs into a list
       List<JobEntity> jobEntities = new();
-      jobSeekerEntity.likes?.ToList().ForEach(e =>
+      jobSeekerEntity?.likes?.ToList().ForEach(e =>
       {
         jobEntities.Add(e.savedJob);
       });

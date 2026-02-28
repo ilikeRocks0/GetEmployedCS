@@ -56,14 +56,14 @@ public class UserPersistence : IUserPersistence
     using (AppDbContext context = new(this.config))
     {
       // Build the query for the user in question
-      UserEntity userEntity = context.Users
+      UserEntity? userEntity = context.Users
         .Where(e => e.user_id == userId)
         .Include(e => e.employer)
         .Include(e => e.jobSeeker)
           .ThenInclude(e => e!.experiences)
-        .Single();
+        .SingleOrDefault();
 
-      if(userEntity.jobSeeker != null)
+      if(userEntity?.jobSeeker != null)
       {
         // Convert the experience entities to logic objects
         List<Experience> experiences = ExperienceEntitiesToObjects(userEntity.jobSeeker.experiences!.ToList());
@@ -80,7 +80,7 @@ public class UserPersistence : IUserPersistence
           experiences
         );
       }
-      else if(userEntity.employer != null)
+      else if(userEntity?.employer != null)
       {
         // Create new employer user object
         user = new User(
