@@ -1,0 +1,14 @@
+# Ignore dependencies & build output
+node_modules/
+out/
+.next/
+build/
+.cache/
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Secrets & Config
+.env*
