@@ -103,7 +103,7 @@ public class UserPersistence : IUserPersistence
 
     using (AppDbContext context = new(this.config))
     {
-      // Initially, add the user entity to the users table
+      // Add the user entity to the users table
       UserEntity newUserEntity = new()
       {
         email = newUser.Email,
@@ -114,48 +114,69 @@ public class UserPersistence : IUserPersistence
 
       context.Users.Add(newUserEntity);
       context.SaveChanges();
-
-      // Determine if we need to add a corresponding employer or job seeker to the employer or job seeker tables respectively
-      if(newUser.IsEmployer)
-      {
-        EmployerEntity newEmployerEntity = new()
-        {
-          employer_name = newUser.EmployerName!,
-        };
-
-        newUserEntity.employer = newEmployerEntity;
-        context.Employers.Add(newEmployerEntity);
-        context.SaveChanges();
-      }
-      else
-      {
-        // Need to convert the experience objects to experience entities
-        List<ExperienceEntity> experienceEntities = ExperienceObjectsToEntities(newUser.Experiences!);
-
-        JobSeekerEntity newJobSeekerEntity = new()
-        {
-          first_name = newUser.FirstName!,
-          last_name = newUser.LastName!
-        };
-
-        // Add job seeker entities before its experiences to ensure FK constraints aren't violated
-        newUserEntity.jobSeeker = newJobSeekerEntity;
-        context.JobSeekers.Add(newJobSeekerEntity);
-        context.SaveChanges();
-
-        // Add experience entities
-        context.Experiences.AddRange(experienceEntities);
-        context.SaveChanges();
-      }
-
-      // Get the user ID of the newly added entity and return it
-      userId = context.Users
-        .Where(e => e.username.Equals(newUser.Username))
-        .Where(e => e.password.Equals(newUser.Password))
-        .Single()
-        .user_id;
     }
 
     return userId;
+  }
+
+  public int CreateJobSeeker(User newUser)
+  {
+    int jobSeekerId = -1;
+
+    using (AppDbContext context = new(this.config))
+    {
+      // Get the matching user entity
+      UserEntity newUserEntity = context.Users
+        .Where(e => e.user_id == newUser.UserId)
+        .Single();
+
+      // Need to convert the experience objects to experience entities
+      List<ExperienceEntity> experienceEntities = ExperienceObjectsToEntities(newUser.Experiences!);
+
+      JobSeekerEntity newJobSeekerEntity = new()
+      {
+        first_name = newUser.FirstName!,
+        last_name = newUser.LastName!
+      };
+
+      // Add job seeker entities before its experiences to ensure FK constraints aren't violated
+      newUserEntity.jobSeeker = newJobSeekerEntity;
+      context.JobSeekers.Add(newJobSeekerEntity);
+      context.SaveChanges();
+
+      // Add experience entities
+      context.Experiences.AddRange(experienceEntities);
+      context.SaveChanges();
+
+      jobSeekerId = newUserEntity.jobSeeker.seeker_id;
+    }
+
+    return jobSeekerId;
+  }
+
+  public int CreateEmployer(User newUser)
+  {
+    int employerId = -1;
+    
+    using (AppDbContext context = new(this.config))
+    {
+      // Get the matching user entity
+      UserEntity newUserEntity = context.Users
+        .Where(e => e.user_id == newUser.UserId)
+        .Single();
+
+      EmployerEntity newEmployerEntity = new()
+      {
+        employer_name = newUser.EmployerName!,
+      };
+
+      newUserEntity.employer = newEmployerEntity;
+      context.Employers.Add(newEmployerEntity);
+      context.SaveChanges();
+
+      employerId = newUserEntity.employer.employer_id;
+    }
+
+    return employerId;
   }
 }

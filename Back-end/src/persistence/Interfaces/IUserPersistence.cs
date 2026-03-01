@@ -6,4 +6,6 @@ public interface IUserPersistence
 {
   public User? GetUser(int userId);
   public int CreateUser(User newUser);
+  public int CreateJobSeeker(User newUser);
+  public int CreateEmployer(User newUser);
 }
