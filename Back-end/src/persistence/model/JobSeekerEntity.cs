@@ -11,4 +11,5 @@ public class JobSeekerEntity
     public required string last_name { get; set; }
     public ICollection<LikeEntity>? likes { get; set; }
     public ICollection<ExperienceEntity>? experiences { get; set; }
+    public required UserEntity user { get; set; }
 }

@@ -89,5 +89,16 @@ public class AppDbContext : DbContext
       .HasOne(e => e.language)
       .WithMany(e => e.jobs)
       .HasForeignKey(e => e.language_name);
+
+    // Define relationship between Users and Employers/JobSeekers
+    modelBuilder.Entity<UserEntity>()
+      .HasOne(e => e.employer)
+      .WithOne(e => e.user)
+      .HasForeignKey<EmployerEntity>(e => e.user_id);
+
+    modelBuilder.Entity<UserEntity>()
+      .HasOne(e => e.jobSeeker)
+      .WithOne(e => e.user)
+      .HasForeignKey<JobSeekerEntity>(e => e.user_id);
   }
 }

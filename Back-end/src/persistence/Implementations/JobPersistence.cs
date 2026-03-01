@@ -67,7 +67,7 @@ public class JobPersistence : IJobPersistence
     }
     if(languages.Count > 0)
     {
-      query = query.Where(e => languages.Intersect(LanguageEntitiesToStrings(e.programmingLanguages)).Any());
+      query = query.Where(e => e.programmingLanguages!.Any(l => languages.Contains(l.language_name)));
     }
     if(positionTypes.Count > 0)
     {
@@ -78,6 +78,7 @@ public class JobPersistence : IJobPersistence
       query = query.Where(e => employmentTypes.Contains(e.employment_type));
     }
 
+    // Filter number of jobs
     query.OrderBy(e => e.job_id)
       .Skip(startIndex)
       .Take(pageSize);
@@ -98,6 +99,10 @@ public class JobPersistence : IJobPersistence
         .Include(e => e.locations)
           .ThenInclude(e => e.location)
         .Include(e => e.programmingLanguages)
+        .Include(e => e.poster)
+          .ThenInclude(e => e!.employer)
+        .Include(e => e.poster)
+          .ThenInclude(e => e!.jobSeeker)
         .AsQueryable();
 
       // Execute query and get results
