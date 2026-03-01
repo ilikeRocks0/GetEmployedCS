@@ -121,6 +121,7 @@ public class UserPersistence : IUserPersistence
         EmployerEntity newEmployerEntity = new()
         {
           employer_name = newUser.EmployerName!,
+          user = newUserEntity
         };
 
         newUserEntity.employer = newEmployerEntity;
@@ -135,7 +136,8 @@ public class UserPersistence : IUserPersistence
         JobSeekerEntity newJobSeekerEntity = new()
         {
           first_name = newUser.FirstName!,
-          last_name = newUser.LastName!
+          last_name = newUser.LastName!,
+          user = newUserEntity
         };
 
         // Add job seeker entities before its experiences to ensure FK constraints aren't violated
