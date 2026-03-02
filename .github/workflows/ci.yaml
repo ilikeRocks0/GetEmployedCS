@@ -74,11 +74,11 @@ jobs:
         with:
           context: ./Back-end
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-backend/latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-backend:latest
 
       - name: Build and push frontend
         uses: docker/build-push-action@v5
         with:
           context: ./Front-end
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-frontend/latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-frontend:latest
