@@ -63,7 +63,17 @@ public class JobPersistence : IJobPersistence
     // Add filters to query if present
     if(!searchTerm.Equals(String.Empty))
     {
-      query = query.Where(e => e.job_title.Contains(searchTerm));
+      query = query.Where(e => 
+        e.job_title.Contains(searchTerm) ||
+        e.poster!.employer!.employer_name.Contains(searchTerm) ||
+        e.poster!.jobSeeker!.first_name.Contains(searchTerm) ||
+        e.poster!.jobSeeker!.last_name.Contains(searchTerm) ||
+        e.locations.Any(l => 
+          l.location.city.Contains(searchTerm) ||
+          l.location.state.Contains(searchTerm) ||
+          l.location.country.Contains(searchTerm)
+        )
+      );
     }
     if(languages.Count > 0)
     {
