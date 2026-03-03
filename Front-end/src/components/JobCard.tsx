@@ -14,8 +14,9 @@ interface JobCardState {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  "Full-Time": "green",
-  Internship: "blue",
+  "Full-time": "green",
+  "Co-op": "blue",
+  "Internship": "blue",
   Contract: "orange",
 };
 
@@ -61,12 +62,25 @@ export default function JobCard({ job }: JobCardState) {
             {job.company}
           </Title>
           <Text type="secondary">{job.position}</Text>
+          <div style={{ marginTop: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
+            {job.locations.length > 0 && (
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {job.locations[0]}{job.locations.length > 1 ? ` +${job.locations.length - 1}` : ""}
+              </Text>
+            )}
+            {job.deadline && (
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                {new Date(job.deadline).toLocaleDateString()}
+              </Text>
+            )}
+          </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <Tag>{job.language}</Tag>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+          {job.languages.map((lang) => <Tag key={lang}>{lang}</Tag>)}
           <Tag color={TYPE_COLORS[job.employment_type] ?? "default"}>{job.employment_type}</Tag>
-          <Tag>{job.employment_type}</Tag>
+          {job.isRemote && <Tag color="cyan">Remote</Tag>}
+          {job.isHybrid && <Tag color="geekblue">Hybrid</Tag>}
         </div>
       </Card>
 

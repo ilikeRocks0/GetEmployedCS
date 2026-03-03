@@ -1,25 +1,35 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Layout, Input, Select, Space, Spin, Pagination } from "antd";
+import { App, Layout, Input, Select, Space, Spin, Pagination } from "antd";
 import JobCard from "@/components/JobCard";
 import type { Job } from "@/types/Job";
 import SiteHeader from "@/components/SiteHeader";
-import { JOB_TYPES, LANGUAGES } from "@/data/JobsStub";
+import { JOB_TYPES } from "@/data/JobsStub";
 import { JobFilters, DEFAULT_FILTERS } from "@/types/JobFilters";
 import { JobsProvider, useJobs } from "@/context/JobsContext";
 import { PAGE_SIZE } from "@/config/config";
+import { FiltersProvider, useFilters } from "@/context/FiltersContext";
 
 const { Content } = Layout;
 
 function JobsPageContent() {
+  const { notification } = App.useApp();
   const fetchJobs = useJobs();
+  const fetchFilters = useFilters();
 
   const [filters, setFilters] = useState<JobFilters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [languages, setLanguages] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchFilters().then(setLanguages).catch(() =>
+      notification.error({ message: "Failed to load language filters. Please refresh the page." })
+    );
+  }, [fetchFilters]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -67,7 +77,7 @@ function JobsPageContent() {
             placeholder="Language / tool"
             allowClear
             style={{ minWidth: 180 }}
-            options={LANGUAGES.map((l) => ({ label: l, value: l }))}
+            options={languages.map((l) => ({ label: l, value: l }))}
             onChange={(value: string[]) => { setFilters({ ...filters, selectedLanguages: value }); setPage(1); }}
           />
         </Space>
@@ -98,8 +108,13 @@ function JobsPageContent() {
 
 export default function JobsPage() {
   return (
-    <JobsProvider>
-      <JobsPageContent />
-    </JobsProvider>
+
+    <App>
+      <FiltersProvider>
+        <JobsProvider>
+          <JobsPageContent />
+        </JobsProvider>
+      </FiltersProvider>
+    </App>
   );
 }

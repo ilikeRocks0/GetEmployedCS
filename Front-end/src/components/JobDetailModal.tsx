@@ -46,7 +46,7 @@ export default function JobDetailModal({ job, open, onClose }: JobDetailModalSta
           <Title level={4} style={{ margin: 0, lineHeight: 1.3 }}>{job.company}</Title>
           <Text type="secondary" style={{ fontSize: 15 }}>{job.position}</Text>
           <div style={{ marginTop: 6, display: "flex", gap: 6 }}>
-            <Tag>{job.language}</Tag>
+            {job.languages.map((lang) => <Tag key={lang}>{lang}</Tag>)}
             <Tag color={TYPE_COLORS[job.employment_type] ?? "default"}>{job.employment_type}</Tag>
           </div>
         </div>
@@ -54,11 +54,38 @@ export default function JobDetailModal({ job, open, onClose }: JobDetailModalSta
 
       <Divider />
 
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px", marginBottom: 20 }}>
+        {job.locations.length > 0 && (
+          <div>
+            <Text type="secondary" style={{ fontSize: 12, display: "block" }}>Locations</Text>
+            <Text>{job.locations.join(", ")}</Text>
+          </div>
+        )}
+        <div>
+          <Text type="secondary" style={{ fontSize: 12, display: "block" }}>Work Mode</Text>
+          <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+            {job.isRemote && <Tag color="cyan">Remote</Tag>}
+            {job.isHybrid && <Tag color="geekblue">Hybrid</Tag>}
+            {!job.isRemote && !job.isHybrid && <Tag>On-site</Tag>}
+          </div>
+        </div>
+        <div>
+          <Text type="secondary" style={{ fontSize: 12, display: "block" }}>Position Type</Text>
+          <Text>{job.position_type}</Text>
+        </div>
+        {job.deadline && (
+          <div>
+            <Text type="secondary" style={{ fontSize: 12, display: "block" }}>Deadline</Text>
+            <Text>{new Date(job.deadline).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</Text>
+          </div>
+        )}
+      </div>
+
       <Title level={5}>Job Description</Title>
       <Text type="secondary">{job.description}</Text>
 
       <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end" }}>
-        <Button type="primary" size="large">Apply Now</Button>
+        <Button type="primary" size="large" href={job.applicationLink} target="_blank" rel="noopener noreferrer">Apply Now</Button>
       </div>
     </Modal>
   );
