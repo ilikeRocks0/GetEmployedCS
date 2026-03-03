@@ -10,4 +10,5 @@ public class ExperienceEntity
     public required string company_name { get; set; }
     public required string position_title { get; set; }
     public string? job_description { get; set; }
+    public JobSeekerEntity? jobSeeker { get; set; }
 }

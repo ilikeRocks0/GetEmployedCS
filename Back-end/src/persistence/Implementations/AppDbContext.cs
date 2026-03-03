@@ -100,5 +100,11 @@ public class AppDbContext : DbContext
       .HasOne(e => e.jobSeeker)
       .WithOne(e => e.user)
       .HasForeignKey<JobSeekerEntity>(e => e.user_id);
+
+    // Define relationship between JobSeekers and Experiences
+    modelBuilder.Entity<JobSeekerEntity>()
+      .HasMany(e => e.experiences)
+      .WithOne(e => e.jobSeeker)
+      .HasForeignKey(e => e.seeker_id);
   }
 }
