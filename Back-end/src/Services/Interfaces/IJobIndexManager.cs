@@ -1,8 +1,8 @@
 using Back_end.Persistence.Objects;
 
-interface IJobIndexManager
+public interface IJobIndexManager
 {
     public List<Job> GetJobs();
 
-    public void UpdateJobsList(IReadOnlyDictionary<string, string>? filters);
+    public void UpdateFilters(IReadOnlyDictionary<string, string>? filters);
 }
