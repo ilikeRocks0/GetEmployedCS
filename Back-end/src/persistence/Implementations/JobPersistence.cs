@@ -139,7 +139,7 @@ public class JobPersistence : IJobPersistence
       List<JobEntity> jobEntities = new();
       jobSeekerEntity?.likes?.ToList().ForEach(e =>
       {
-        jobEntities.Add(e.savedJob);
+        jobEntities.Add(e.savedJob!);
       });
 
       // Run filter on query and convert each entity to business object

@@ -4,6 +4,7 @@ using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Objects;
 using Microsoft.EntityFrameworkCore;
+using Back_end.Persistence.Implementations.Queries;
 
 namespace Back_end.Persistence.Implementations;
 
@@ -102,5 +103,33 @@ public class UserPersistence : IUserPersistence
     }
 
     return userId;
+  }
+
+  public int SaveJob(int userId, int jobId)
+  {
+    int success = -1;
+
+    using (AppDbContext context = new(this.config))
+    {
+      //Get the JobSeekerEntity matching the given user ID 
+      JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers).GetJobSeekerByUserId(userId);
+
+      // Make the entity and save it in the Likes table
+      LikeEntity? newLikeEntity;
+      if (jobSeekerEntity is not null)
+      {
+        newLikeEntity = new()
+        {
+          seeker_id = jobSeekerEntity.seeker_id,
+          job_id = jobId,
+        };
+
+        context.Likes.Add(newLikeEntity);
+        context.SaveChanges();
+        success = 0;
+      }
+
+      return success;
+    }
   }
 }
