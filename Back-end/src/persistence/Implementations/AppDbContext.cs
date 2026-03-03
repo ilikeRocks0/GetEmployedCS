@@ -9,7 +9,6 @@ public class AppDbContext : DbContext
 {
   private readonly string connectionString;
   public DbSet<EmployerEntity> Employers { get; set; }
-  public DbSet<EmployerCommentEntity> EmployerComments { get; set; }
   public DbSet<ExperienceEntity> Experiences { get; set; }
   public DbSet<FolderEntity> Folders { get; set; }
   public DbSet<FolderContentEntity> FolderContents { get; set; }
@@ -18,12 +17,13 @@ public class AppDbContext : DbContext
   public DbSet<JobLanguageEntity> JobLanguages { get; set; }
   public DbSet<JobLocationEntity> JobLocations { get; set; }
   public DbSet<JobSeekerEntity> JobSeekers { get; set; }
-  public DbSet<JobSeekerCommentEntity> JobSeekerComments { get; set; }
+  public DbSet<JobCommentEntity> JobComments { get; set; }
   public DbSet<LikeEntity> Likes { get; set; }
   public DbSet<LocationEntity> Locations { get; set; }
   public DbSet<ProgrammingLanguageEntity> ProgrammingLanguages { get; set; }
   public DbSet<QuizItemEntity> QuizItems { get; set; }
   public DbSet<UserEntity> Users { get; set; }
+  public DbSet<UserCommentEntity> UserComments { get; set; }
 
   public AppDbContext(IConfiguration config)
   {
@@ -106,5 +106,16 @@ public class AppDbContext : DbContext
       .HasMany(e => e.experiences)
       .WithOne(e => e.jobSeeker)
       .HasForeignKey(e => e.seeker_id);
+      
+    // Define relationship between Users, JobComments, and Jobs
+    modelBuilder.Entity<JobCommentEntity>()
+      .HasOne(e => e.poster)
+      .WithMany(e => e.jobComments)
+      .HasForeignKey(e => e.poster_id);
+
+    modelBuilder.Entity<JobCommentEntity>()
+      .HasOne(e => e.job)
+      .WithMany(e => e.comments)
+      .HasForeignKey(e => e.job_id);
   }
 }

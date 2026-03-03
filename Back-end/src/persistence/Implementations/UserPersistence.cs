@@ -1,3 +1,5 @@
+using Back_end.Persistence.Implementations.Adapters.EntityAdapters;
+using Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Objects;
@@ -14,41 +16,6 @@ public class UserPersistence : IUserPersistence
     this.config = config;
   }
 
-  private List<Experience> ExperienceEntitiesToObjects(List<ExperienceEntity> experienceEntities)
-  {
-    List<Experience> experiences = new List<Experience>();
-
-    experienceEntities.ForEach(e =>
-    {
-      experiences.Add(new Experience(
-        e.company_name,
-        e.position_title,
-        e.job_description
-      ));
-    });
-
-    return experiences;
-  }
-
-  private List<ExperienceEntity> ExperienceObjectsToEntities(List<Experience> experiences)
-  {
-    List<ExperienceEntity> experienceEntities = new List<ExperienceEntity>();
-
-    experiences.ForEach(e =>
-    {
-      ExperienceEntity entity = new()
-      {
-        company_name = e.CompanyName,
-        position_title = e.PositionTitle,
-        job_description = e.JobDescription
-      };
-
-      experienceEntities.Add(entity);
-    });
-
-    return experienceEntities;
-  }
-
   public User? GetUser(int userId)
   {
     User? user = null;
@@ -63,34 +30,9 @@ public class UserPersistence : IUserPersistence
           .ThenInclude(e => e!.experiences)
         .SingleOrDefault();
 
-      if(userEntity?.jobSeeker != null)
+      if(userEntity != null)
       {
-        // Convert the experience entities to logic objects
-        List<Experience> experiences = ExperienceEntitiesToObjects(userEntity.jobSeeker.experiences!.ToList());
-
-        // Create new job seeker user object
-        user = new User(
-          userId,
-          userEntity.email,
-          userEntity.username,
-          userEntity.password,
-          userEntity.about_string,
-          userEntity.jobSeeker.first_name,
-          userEntity.jobSeeker.last_name,
-          experiences
-        );
-      }
-      else if(userEntity?.employer != null)
-      {
-        // Create new employer user object
-        user = new User(
-          userId,
-          userEntity.email,
-          userEntity.username,
-          userEntity.password,
-          userEntity.about_string,
-          userEntity.employer.employer_name
-        );
+        user =  new UserEntityAdapter(userEntity);
       }
     }
 
@@ -131,7 +73,8 @@ public class UserPersistence : IUserPersistence
       else
       {
         // Need to convert the experience objects to experience entities
-        List<ExperienceEntity> experienceEntities = ExperienceObjectsToEntities(newUser.Experiences!);
+        List<ExperienceEntity> experienceEntities = new();
+        newUser.Experiences!.ForEach(e => experienceEntities.Add(new ExperienceObjectAdapter(e)));
 
         JobSeekerEntity newJobSeekerEntity = new()
         {

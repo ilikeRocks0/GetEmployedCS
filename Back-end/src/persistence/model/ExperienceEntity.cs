@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Persistence.Model;
@@ -5,6 +6,14 @@ namespace Back_end.Persistence.Model;
 [PrimaryKey(nameof(experience_id))]
 public class ExperienceEntity
 {
+    [SetsRequiredMembers]
+    public ExperienceEntity(string company_name, string position_title, string? job_description)
+    {
+        this.company_name = company_name;
+        this.position_title = position_title;
+        this.job_description = job_description;    
+    }
+
     public int experience_id { get; set; }
     public int seeker_id { get; set; }
     public required string company_name { get; set; }

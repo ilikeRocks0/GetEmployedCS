@@ -2,6 +2,7 @@ namespace Back_end.Persistence.Objects;
 
 public class Job
 {
+  public int JobId { get; }
   public string JobTitle { get; }
   public DateOnly? ApplicationDeadline { get; }
   public string? PosterName { get; }
