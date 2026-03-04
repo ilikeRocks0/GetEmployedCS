@@ -3,7 +3,7 @@
 import { createContext, useContext } from "react";
 import type { Job } from "@/types/Job";
 import type { JobFilters } from "@/types/JobFilters";
-import { fetchJobs as stubFetchJobs } from "@/stub/fetchJobsStub";
+import { fetchJobs } from "@/api/fetchJobs";
 
 export type FetchJobs = (
   filters: JobFilters,
@@ -12,11 +12,11 @@ export type FetchJobs = (
   signal: AbortSignal
 ) => Promise<{ data: Job[]; total: number }>;
 
-const JobsContext = createContext<FetchJobs>(stubFetchJobs);
+const JobsContext = createContext<FetchJobs>(fetchJobs);
 
 export function JobsProvider({ children }: { children: React.ReactNode }) {
   return (
-    <JobsContext.Provider value={stubFetchJobs}>
+    <JobsContext.Provider value={fetchJobs}>
       {children}
     </JobsContext.Provider>
   );

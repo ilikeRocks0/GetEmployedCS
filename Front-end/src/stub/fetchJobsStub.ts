@@ -29,7 +29,8 @@ export async function fetchJobs(
       job.position.toLowerCase().includes(query);
     const matchesType = !filters.selectedType || job.employment_type === filters.selectedType;
     const matchesLanguage =
-      filters.selectedLanguages.length === 0 || filters.selectedLanguages.includes(job.language);
+      filters.selectedLanguages.length === 0 ||
+      filters.selectedLanguages.some((lang) => job.languages.includes(lang));
     return matchesSearch && matchesType && matchesLanguage;
   });
 
