@@ -3,7 +3,7 @@ import type { Job } from "@/types/Job";
 import type { JobFilters } from "@/types/JobFilters";
 
 // Shape of a job object returned by the backend
-interface ApiJob {
+export interface ApiJob {
   jobTitle: string;
   applicationDeadline: string | null;
   posterName: string | null;
@@ -17,7 +17,7 @@ interface ApiJob {
   jobDescription: string;
 }
 
-function buildParams(filters: JobFilters): URLSearchParams {
+export function buildParams(filters: JobFilters): URLSearchParams {
   const params = new URLSearchParams();
   if (filters.searchText) params.set("searchTerm", filters.searchText);
   if (filters.selectedType) params.set("employmentTypes", filters.selectedType);
@@ -25,7 +25,7 @@ function buildParams(filters: JobFilters): URLSearchParams {
   return params;
 }
 
-function mapJob(apiJob: ApiJob, index: number): Job {
+export function mapJob(apiJob: ApiJob, index: number): Job {
   return {
     id: index,
     company: apiJob.posterName ?? "",
