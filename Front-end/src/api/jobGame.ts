@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "@/config/config";
 import type { Job } from "@/types/Job";
-import { type ApiJob, mapJob } from "@/api/fetchJobs";
+import { ApiJob, mapJob } from "@/utils/ApiJobMapper";
 
 export async function initJobGame(): Promise<Job | null> {
   const res = await fetch(`${API_BASE_URL}/api/job/game`);
