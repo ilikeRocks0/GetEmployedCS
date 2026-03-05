@@ -4,6 +4,7 @@ using Back_end.Persistence.Implementations;
 using Back_end.Persistence.Interfaces;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
+using Back_end.Services.Implementations;
 // Load environment variables from .env file
 Env.Load();
 
@@ -17,7 +18,7 @@ builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(A
 builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
 builder.Services.AddScoped<IJobService, JobService>();
-builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddSingleton<IGameService, GameServiceSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
 
