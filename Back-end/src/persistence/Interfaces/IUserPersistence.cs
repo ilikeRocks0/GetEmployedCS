@@ -6,4 +6,5 @@ public interface IUserPersistence
 {
   public User? GetUser(int userId);
   public int CreateUser(User newUser);
+  public int SaveJob(int userId, int jobId);
 }

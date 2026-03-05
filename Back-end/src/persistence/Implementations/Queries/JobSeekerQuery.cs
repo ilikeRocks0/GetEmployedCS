@@ -16,10 +16,10 @@ public class JobSeekerQuery
   {
     this.Query = this.Query.Include(e => e.likes!)
                 .ThenInclude(e => e.savedJob)
-                  .ThenInclude(e => e.programmingLanguages)
+                  .ThenInclude(e => e!.programmingLanguages)
               .Include(e => e.likes!)
                 .ThenInclude(e => e.savedJob)
-                  .ThenInclude(e => e.locations)
+                  .ThenInclude(e => e!.locations)
                     .ThenInclude(e => e.location);
 
     return this;
