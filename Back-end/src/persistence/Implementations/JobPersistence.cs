@@ -4,6 +4,8 @@ using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Objects;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Implementations.Types;
+using Back_end.Persistence.Implementations.Queries;
+using Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 namespace Back_end.Persistence.Implementations;
 
@@ -105,18 +107,13 @@ public class JobPersistence : IJobPersistence
     {
       // Build initial query
       // Will get all jobs if no filters are passed
-      var query = context.Jobs
-        .Include(e => e.locations)
-          .ThenInclude(e => e.location)
-        .Include(e => e.programmingLanguages)
-        .Include(e => e.poster)
-          .ThenInclude(e => e!.employer)
-        .Include(e => e.poster)
-          .ThenInclude(e => e!.jobSeeker)
-        .AsQueryable();
+      JobQuery query = new JobQuery(context.Jobs)
+        .IncludeLocations()
+        .IncludePoster()
+        .IncludeProgrammingLanguages();
 
       // Execute query and get results
-      List<JobEntity> jobEntities = FilterQuery(query, searchTerm, languages, positionTypes, employmentTypes, startIndex, pageSize);
+      List<JobEntity> jobEntities = FilterQuery(query.Query, searchTerm, languages, positionTypes, employmentTypes, startIndex, pageSize);
 
       // Convert entities to business objects and add to the return list
       jobEntities.ForEach(e =>
@@ -134,16 +131,9 @@ public class JobPersistence : IJobPersistence
 
     using (AppDbContext context = new(this.config))
     {
-      JobSeekerEntity? jobSeekerEntity = context.JobSeekers
-        .Where(e => e.user_id == userId)
-        .Include(e => e.likes!)
-          .ThenInclude(e => e.savedJob)
-            .ThenInclude(e => e.programmingLanguages)
-        .Include(e => e.likes!)
-          .ThenInclude(e => e.savedJob)
-            .ThenInclude(e => e.locations)
-              .ThenInclude(e => e.location)
-        .SingleOrDefault();
+      JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers)
+                                          .IncludeLikes()
+                                          .GetJobSeekerByUserId(userId);
 
       // Gather liked jobs into a list
       List<JobEntity> jobEntities = new();
@@ -184,5 +174,48 @@ public class JobPersistence : IJobPersistence
   public int GetNumberOfSavedJobs(int userId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes)
   {
     return GetSavedJobs(userId, searchTerm, languages, positionTypes, employmentTypes, 0, int.MaxValue).Count();
+  }
+
+  public List<JobComment> GetJobComments(int jobId)
+  {
+    List<JobComment> comments = new();
+
+    using (AppDbContext context = new(this.config))
+    {
+      JobEntity? job = context.Jobs.Where(e => e.job_id == jobId)
+        .Include(e => e.comments!)
+          .ThenInclude(e => e.poster)
+            .ThenInclude(e => e!.employer)
+        .SingleOrDefault();
+
+      // Add the retrieved jobs comments to the list that will be returned
+      job?.comments?.ToList().ForEach(e => {
+        comments.Add(new JobComment(e.comment, new UserEntityAdapter(e.poster!), e.job!.job_id));
+      });
+    }
+
+    return comments;
+  }
+
+  public int CreateJobComment(JobComment comment)
+  {
+    int jobCommentId = -1;
+
+    using (AppDbContext context = new(this.config))
+    {
+      JobCommentEntity newComment = new()
+      {
+        job_id = comment.JobId,
+        poster_id = comment.Poster.UserId,
+        comment = comment.Comment
+      };
+
+      context.JobComments.Add(newComment);
+      context.SaveChanges();
+
+      jobCommentId = newComment.job_comment_id;
+    }
+
+    return jobCommentId;
   }
 }

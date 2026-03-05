@@ -25,4 +25,5 @@ public class JobEntity
   public ICollection<JobLanguageEntity>? programmingLanguages { get; set; }
   public required ICollection<JobLocationEntity> locations { get; set; }
   public required ICollection<LikeEntity> likes { get; set; }
+  public ICollection<JobCommentEntity>? comments { get; set; }
 }

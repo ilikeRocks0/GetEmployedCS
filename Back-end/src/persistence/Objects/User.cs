@@ -2,7 +2,7 @@ namespace Back_end.Persistence.Objects;
 
 public class User
 {
-  public int UserId { get; }
+  public int UserId { get; set; }
   public string Username { get; set; }
   public string Password { get; set; }
   public string? FirstName { get; set; } = null;
@@ -13,7 +13,7 @@ public class User
   public string? About { get; set; }
   public string Email { get; set; }
 
-  private User(int userId, string email, string username, string password, string? about)
+  protected User(int userId, string email, string username, string password, string? about)
   {
     this.UserId = userId;
     this.Email = email;
