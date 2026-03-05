@@ -29,7 +29,7 @@ function JobsPageContent() {
     fetchFilters().then(setLanguages).catch(() =>
       notification.error({ message: "Failed to load language filters. Please refresh the page." })
     );
-  }, [fetchFilters]);
+  }, [fetchFilters, notification]);
 
   useEffect(() => {
     const controller = new AbortController();

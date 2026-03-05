@@ -8,11 +8,8 @@ import {
   FileTextOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
 
 const ProfileMenu: React.FC = () => {
-  const router = useRouter();
-
   const items: MenuProps["items"] = [
     {
       key: "profile",
