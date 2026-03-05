@@ -1,4 +1,5 @@
 using System.Security.Cryptography.X509Certificates;
+using Back_end.Endpoints.Models;
 using Back_end.Services.Interfaces;
 
 namespace Back_end.Endpoints;
@@ -67,37 +68,39 @@ public static class JobEndpoints
     {
         // This endpoint initializes the job list for the game based on the provided filters and returns a random job to start the game. 
         // The filters are the same as those used in GetJobs.
-        routes.MapGet("/api/job/game", (HttpContext context, IGameService gameService) =>
+        routes.MapPost("/api/job/game", (CurrentUser currentUser, HttpContext context, IJobGameConnector jobGameConnector) =>
         {
+            // var userId = int.Parse(context.User.FindFirst("sub")?.Value);
+            // var currentUser = new CurrentUser(userId);
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
-            return gameService.InitializeJobGame(filters.Count > 0 ? filters : null);
+            return jobGameConnector.InitializeJobGame(currentUser, filters.Count > 0 ? filters : null);
         })
             .WithName("InitializeJobGame")
             .WithTags("Job Game")
             .WithOpenApi();
 
         // this endpoint allows the user to reject the current job in the game and receive the next job.
-        routes.MapPost("/api/job/game/reject", (IGameService gameService) =>
+        routes.MapPost("/api/job/game/reject", (GameJob gameJob, IJobGameConnector jobGameConnector) =>
         {
-            return gameService.RejectJob();
+            return jobGameConnector.RejectJob(gameJob);
         })
             .WithName("RejectJob")
             .WithTags("Job Game")
             .WithOpenApi();
         
         // this endpoint allows the user to accept the current job in the game and receive the next job.
-        routes.MapPost("/api/job/game/accept", (IGameService gameService) =>
+        routes.MapPost("/api/job/game/accept", (GameJob gameJob, IJobGameConnector jobGameConnector) =>
         {            
-            return gameService.AcceptJob();
+            return jobGameConnector.AcceptJob(gameJob);
         })
             .WithName("AcceptJob")
             .WithTags("Job Game")
             .WithOpenApi();
 
         // this endpoint allows the user to retrieve the current game statistics, including the number of accepted and rejected jobs.
-        routes.MapGet("/api/job/game/stats", (IGameService gameService) =>
+        routes.MapPost("/api/job/game/stats", (CurrentUser currentUser, IJobGameConnector jobGameConnector) =>
         {            
-            return gameService.GetGameStats();
+            return jobGameConnector.GetGameStats(currentUser);
         })
             .WithName("GetGameStats")
             .WithTags("Job Game")

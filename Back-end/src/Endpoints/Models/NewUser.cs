@@ -1,4 +1,4 @@
-namespace Back_end.Endpoints.Models.NewUser;
+namespace Back_end.Endpoints.Models;
 public class NewUser
 {
     public string Username { get; set; }

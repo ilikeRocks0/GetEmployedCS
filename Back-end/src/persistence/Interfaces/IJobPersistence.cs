@@ -47,9 +47,16 @@ public interface IJobPersistence
     public List<JobComment> GetJobComments(int jobId);
 
     //<summary>
-    //Saves a comment to the a job.
+    //Saves a comment to a job.
     //</summary>
     //<param name="comment">The comment metadata.</param>
     //<returns>Returns the id of a job.</returns>
     public string? CreateJobComment(JobComment comment);
+
+    //<summary>
+    //Gets a job based on the jobId. 
+    //</summary>
+    //<param name="jobId">The target job's jobId.</param>
+    //<returns>Returns the matching Job object if found, else returns null.</returns>
+    public Job? GetJobFromJobId(int jobId);
 }

@@ -1,8 +1,9 @@
-using Back_end.Endpoints.Models.NewUser;
+using Back_end.Endpoints.Models;
 
 namespace Back_end.Services.Interfaces;
 
 public interface IUserService
 {
     int CreateUser(NewUser newUser);
+    int SaveJob(IReadOnlyDictionary<string, string>? filters = null);
 }

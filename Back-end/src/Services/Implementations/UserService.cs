@@ -1,7 +1,8 @@
-using Back_end.Endpoints.Models.NewUser;
+using Back_end.Endpoints.Models;
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Objects;
 using Back_end.Services.Interfaces;
+using Back_end.Util;
 
 public class UserService(IUserPersistence userPersistence) : IUserService
 {
@@ -9,6 +10,17 @@ public class UserService(IUserPersistence userPersistence) : IUserService
     {
         User savedUser = ExtractUserFromInput(newUser);
         return userPersistence.CreateUser(savedUser);
+    }
+
+    public int SaveJob(IReadOnlyDictionary<string, string>? filters = null)
+    {
+        if (filters == null)
+        {
+            throw new InvalidOperationException("Invalid filter parameters");
+        }
+        var userId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var uId) ? uId : 0;
+        var jobId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var jId) ? jId : 0;
+        return userPersistence.SaveJob(userId, jobId);
     }
 
     private static User ExtractUserFromInput(NewUser newUser)
