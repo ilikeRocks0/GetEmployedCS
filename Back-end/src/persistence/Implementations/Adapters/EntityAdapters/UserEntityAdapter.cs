@@ -9,27 +9,27 @@ public class UserEntityAdapter : User
     {
         Regex emailRegex = new Regex("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
-        if(userEntity.user_id < 0)
+        if (userEntity.user_id < 0)
         {
             throw new ObjectConversionException("User entity cannot have negative user ID.");
         }
 
-        if(userEntity.username.Trim().Equals(String.Empty))
+        if (userEntity.username.Trim().Equals(String.Empty))
         {
             throw new ObjectConversionException("User entity cannot have empty username.");
         }
 
-        if(!emailRegex.IsMatch(userEntity.email))
+        if (!emailRegex.IsMatch(userEntity.email))
         {
             throw new ObjectConversionException("User entity must have a valid email.");
         }
 
-        if(userEntity.password.Trim().Equals(String.Empty))
+        if (userEntity.password.Trim().Equals(String.Empty))
         {
             throw new ObjectConversionException("User entity cannot have empty password.");
         }
 
-        if(userEntity.jobSeeker is null && userEntity.employer is null)
+        if (userEntity.jobSeeker is null && userEntity.employer is null)
         {
             throw new ObjectConversionException("User entity is not related to any job seeker or employer entity.");
         }

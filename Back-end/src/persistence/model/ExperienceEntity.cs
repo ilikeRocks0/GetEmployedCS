@@ -11,7 +11,7 @@ public class ExperienceEntity
     {
         this.company_name = company_name;
         this.position_title = position_title;
-        this.job_description = job_description;    
+        this.job_description = job_description;
     }
 
     public int experience_id { get; set; }

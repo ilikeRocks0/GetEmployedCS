@@ -6,7 +6,7 @@ namespace Back_end.Persistence.Model;
 public class EmployerEntity
 {
     public int employer_id { get; set; }
-    public int user_id{ get; set; }
+    public int user_id { get; set; }
     public required string employer_name { get; set; }
     public required UserEntity user { get; set; }
 }
