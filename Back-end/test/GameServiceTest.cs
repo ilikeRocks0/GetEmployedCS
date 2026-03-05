@@ -4,7 +4,6 @@ using Back_end.Persistence.Objects;
 using Back_end.Services.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Legacy;
 
 public class GameServiceTest
 {

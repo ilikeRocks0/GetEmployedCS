@@ -18,48 +18,6 @@ public class JobPersistence : IJobPersistence
     this.config = config;
   }
 
-  private List<string> LanguageEntitiesToStrings(ICollection<JobLanguageEntity>? entities)
-  {
-    List<string> strings = new List<string>();
-
-    entities?.ToList().ForEach(e => strings.Add(e.language_name));
-
-    return strings;
-  }
-
-  private Job JobEntityToObject(JobEntity e)
-  {
-    // Convert DateTime from job entity to a DateOnly
-    ApplicationDate deadline = new(e.application_deadline);
-
-    // Create Poster object that validates and constructs the poster's name 
-    Poster poster = new(e.poster, e.employer_poster);
-
-    // Get job locations
-    List<string> locations = new();
-    List<JobLocationEntity> jobLocationEntities = e.locations.ToList();
-
-    jobLocationEntities.ForEach(e =>
-    {
-      locations.Add(new JobLocation(e.location).Location);
-    });
-
-    // Create and return new object
-    return new Job(
-      e.job_title,
-      deadline.Date,
-      poster.Name,
-      e.application_link,
-      e.has_remote,
-      e.has_hybrid,
-      e.position_type,
-      e.employment_type,
-      locations,
-      LanguageEntitiesToStrings(e.programmingLanguages),
-      e.job_description
-    );
-  }
-
   private List<JobEntity> FilterQuery(IQueryable<JobEntity> query, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize)
   {
     // Add filters to query if present
@@ -118,7 +76,7 @@ public class JobPersistence : IJobPersistence
       // Convert entities to business objects and add to the return list
       jobEntities.ForEach(e =>
       {
-        filteredList.Add(JobEntityToObject(e));
+        filteredList.Add(new JobEntityAdapter(e));
       });
     }
 
@@ -146,7 +104,7 @@ public class JobPersistence : IJobPersistence
       FilterQuery(jobEntities.AsQueryable(), searchTerm, languages, positionTypes, employmentTypes, startIndex, pageSize)
         .ForEach(e =>
         {
-          savedJobs.Add(JobEntityToObject(e));
+          savedJobs.Add(new JobEntityAdapter(e));
         });
     }
 
