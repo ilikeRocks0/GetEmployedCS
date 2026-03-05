@@ -3,12 +3,6 @@
 import React from "react";
 import { Layout, Menu } from "antd";
 import type { MenuProps } from "antd";
-import {
-  HomeOutlined,
-  InfoCircleOutlined,
-  AppstoreOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import ProfileMenu from "./ProfileMenu";
 

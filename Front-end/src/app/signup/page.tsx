@@ -1,10 +1,10 @@
 "use client";
 
-import { Layout, Card, Form, Input, Button, Checkbox, Typography, Divider } from "antd";
+import { Layout, Card, Form, Input, Button, Typography, Divider } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
-const { Title, Text, Link } = Typography;
+const { Title } = Typography;
 
 interface SignUpFormValues {
   firstname: string;

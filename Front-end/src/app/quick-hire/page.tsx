@@ -25,7 +25,7 @@ function QuickHirePageContent() {
         setInitialLoading(false);
       })
       .catch(() => setInitialLoading(false));
-  }, []);
+  }, [initJobGame]);
 
   function onSwiped(direction: "left" | "right") {
     setSwiping(false);
