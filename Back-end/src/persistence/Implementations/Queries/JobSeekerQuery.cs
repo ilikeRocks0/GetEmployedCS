@@ -5,7 +5,7 @@ namespace Back_end.Persistence.Implementations.Queries;
 
 public class JobSeekerQuery
 { 
-  public IQueryable<JobSeekerEntity> Query { get; }
+  public IQueryable<JobSeekerEntity> Query { get; set; }
 
   public JobSeekerQuery(DbSet<JobSeekerEntity> jobSeekerEntities)
   {
@@ -14,7 +14,7 @@ public class JobSeekerQuery
 
   public JobSeekerQuery IncludeLikes()
   {
-    this.Query.Include(e => e.likes!)
+    this.Query = this.Query.Include(e => e.likes!)
                 .ThenInclude(e => e.savedJob)
                   .ThenInclude(e => e.programmingLanguages)
               .Include(e => e.likes!)
