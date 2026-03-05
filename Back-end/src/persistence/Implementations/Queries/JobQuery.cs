@@ -5,7 +5,7 @@ namespace Back_end.Persistence.Implementations.Queries;
 
 public class JobQuery
 {
-  public IQueryable<JobEntity> Query { get; }
+  public IQueryable<JobEntity> Query { get; set; }
 
   public JobQuery(DbSet<JobEntity> jobs)
   {
@@ -14,7 +14,7 @@ public class JobQuery
 
   public JobQuery IncludeLocations()
   {
-    this.Query.Include(e => e.locations)
+    this.Query = this.Query.Include(e => e.locations)
                 .ThenInclude(e => e.location);
 
     return this;
@@ -22,14 +22,14 @@ public class JobQuery
 
   public JobQuery IncludeProgrammingLanguages()
   {
-    this.Query.Include(e => e.programmingLanguages);
+    this.Query = this.Query.Include(e => e.programmingLanguages);
 
     return this;
   }
 
   public JobQuery IncludePoster()
   {
-    this.Query.Include(e => e.poster)
+    this.Query = this.Query.Include(e => e.poster)
                 .ThenInclude(e => e!.employer)
               .Include(e => e.poster)
                 .ThenInclude(e => e!.jobSeeker);
