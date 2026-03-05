@@ -1,6 +1,5 @@
 using Back_end.Persistence.Objects;
 using Back_end.Services.Interfaces;
-using NUnit.Framework;
 
 class GameService (IJobIndexManager jobIndexManager) : IGameService
 {
@@ -78,6 +77,10 @@ class GameService (IJobIndexManager jobIndexManager) : IGameService
 
     public (int accepted, int rejected) GetGameStats()
     {
+        if (!isGameInitialized)
+        {
+            throw new InvalidOperationException("Game not initialized. Please call InitializeJobGame() before getting game stats.");
+        }
         return (jobAccepted, jobRejected);
     }
 
