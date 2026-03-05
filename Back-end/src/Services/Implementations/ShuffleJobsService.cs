@@ -18,9 +18,9 @@ public class ShuffleJobsService: IJobIndexManager
 
     }
 
-    public void UpdateJobsList(IReadOnlyDictionary<string, string>? filters)
+    public void UpdateFilters(IReadOnlyDictionary<string, string>? filters)
     {
-        jobIndexManager.UpdateJobsList(filters);
+        jobIndexManager.UpdateFilters(filters);
     }
     
     // Shuffles the list of all jobs for the game. 

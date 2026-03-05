@@ -1,7 +1,8 @@
 using Back_end.Persistence.Objects;
 using Back_end.Services.Interfaces;
+using Back_end.Util;
 
-public class JobIndexManager (IJobService jobService): IJobIndexManager
+public class JobIndexManager(IJobService jobService) : IJobIndexManager
 {
 
     private int currentPage = 1;
@@ -12,16 +13,15 @@ public class JobIndexManager (IJobService jobService): IJobIndexManager
 
     public List<Job> GetJobs()
     {
-        currentPage += 1;
         allJobs.Clear();
+        filtersDictionary[AppConfig.FilterKeys.PAGE_NUMBER] = currentPage.ToString();
         allJobs.AddRange(jobService.GetJobs(filtersDictionary).ToList());
+        currentPage += 1;
         return allJobs;
     }
 
-    public void UpdateJobsList(IReadOnlyDictionary<string, string>? filters)
+    public void UpdateFilters(IReadOnlyDictionary<string, string>? filters)
     {
-        allJobs.Clear();
-        Dictionary<string, string> filtersDictionary = filters?.ToDictionary(k => k.Key, v => v.Value) ?? [];
-        allJobs.AddRange(jobService.GetJobs(filtersDictionary).ToList());
+        filtersDictionary = filters?.ToDictionary(k => k.Key, v => v.Value) ?? [];
     }
 }
