@@ -4,15 +4,15 @@ public class Job
 {
   public int JobId { get; }
   public string JobTitle { get; }
-  public DateOnly? ApplicationDeadline { get; }
-  public string? PosterName { get; }
+  public DateOnly? ApplicationDeadline { get; set;}
+  public string? PosterName { get; set;}
   public string ApplicationLink { get; }
-  public bool? HasRemote { get; }
-  public bool? HasHybrid { get; }
+  public bool? HasRemote { get; set;}
+  public bool? HasHybrid { get; set;}
   public string PositionType { get; }
   public string EmploymentType { get; }
-  public List<string>? Locations { get; }
-  public List<string>? ProgrammingLanguages { get; }
+  public List<string>? Locations { get; set;}
+  public List<string>? ProgrammingLanguages { get; set;}
   public string JobDescription { get; }
 
   public Job(string jobTitle, DateOnly? applicationDeadline, string? posterName, string applicationLink, bool? hasRemote, bool? hasHybrid, string positionType, string employmentType, List<string>? locations, List<string>? programmingLanguages, string jobDescription)
@@ -27,6 +27,16 @@ public class Job
     this.EmploymentType = employmentType;
     this.Locations = locations;
     this.ProgrammingLanguages = programmingLanguages;
+    this.JobDescription = jobDescription;
+  }
+
+  //Construct all non-nullable types.
+  public Job(string jobTitle, string applicationLink, string positionType, string employmentType, string jobDescription)
+  {
+    this.JobTitle = jobTitle;
+    this.ApplicationLink = applicationLink;
+    this.PositionType = positionType;
+    this.EmploymentType = employmentType;
     this.JobDescription = jobDescription;
   }
 }

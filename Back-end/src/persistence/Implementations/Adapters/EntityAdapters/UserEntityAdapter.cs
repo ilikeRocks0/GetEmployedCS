@@ -1,26 +1,61 @@
+using System.Text.RegularExpressions;
 using Back_end.Persistence.Objects;
 
 namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 public class UserEntityAdapter : User
 {
-  public UserEntityAdapter(UserEntity userEntity) : base(userEntity.user_id, userEntity.email, userEntity.username, userEntity.password, userEntity.about_string)
-  {
-    if(userEntity.jobSeeker != null)
+    private void ValidateEntity(UserEntity userEntity)
     {
-      this.Experiences = new();
-      
-      // Convert the experience entities to logic objects
-      userEntity.jobSeeker.experiences!.ToList().ForEach(e => this.Experiences.Add(new ExperienceEntityAdapter(e)));
+        Regex emailRegex = new Regex("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
-      // Create new job seeker user object
-      this.FirstName = userEntity.jobSeeker.first_name;
-      this.LastName = userEntity.jobSeeker.last_name;
+        if(userEntity.user_id < 0)
+        {
+            throw new ObjectConversionException("User entity cannot have negative user ID.");
+        }
+
+        if(userEntity.username.Trim().Equals(String.Empty))
+        {
+            throw new ObjectConversionException("User entity cannot have empty username.");
+        }
+
+        if(!emailRegex.IsMatch(userEntity.email))
+        {
+            throw new ObjectConversionException("User entity must have a valid email.");
+        }
+
+        if(userEntity.password.Trim().Equals(String.Empty))
+        {
+            throw new ObjectConversionException("User entity cannot have empty password.");
+        }
+
+        if(userEntity.jobSeeker is null && userEntity.employer is null)
+        {
+            throw new ObjectConversionException("User entity is not related to any job seeker or employer entity.");
+        }
     }
-    else
+
+    public UserEntityAdapter(UserEntity userEntity) : base(userEntity.user_id, userEntity.email, userEntity.username, userEntity.password, userEntity.about_string)
     {
-      // Create new employer user object
-      this.EmployerName = userEntity.employer!.employer_name;
-    } 
-  }  
+        ValidateEntity(userEntity);
+
+        if (userEntity.jobSeeker != null)
+        {
+            this.Experiences = new();
+
+            // Convert the experience entities to logic objects
+            userEntity.jobSeeker.experiences?.ToList().ForEach(e => this.Experiences.Add(new ExperienceEntityAdapter(e)));
+
+            // Create new job seeker user object
+            this.FirstName = userEntity.jobSeeker.first_name;
+            this.LastName = userEntity.jobSeeker.last_name;
+            this.IsEmployer = false;
+        }
+        else if (userEntity.employer != null)
+        {
+            // Create new employer user object
+            this.EmployerName = userEntity.employer.employer_name;
+            this.IsEmployer = true;
+        }
+    }
 }
