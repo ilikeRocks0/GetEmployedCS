@@ -1,6 +1,7 @@
 using Back_end.Endpoints.Models;
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Objects;
+using Back_end.Services.Implementations.Finders;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
 
@@ -56,5 +57,17 @@ public class UserService(IUserPersistence userPersistence) : IUserService
         
         return savedUser;
 
+    }
+
+    public Profile? GetProfile(int userId)
+    {
+        UserFinder userFinder = new UserFinder(userPersistence);
+        User? user = userFinder.GetUser(userId);
+        Profile? profile = null; 
+        if (user != null)
+        {
+            profile = new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName);
+        }
+        return profile;
     }
 }

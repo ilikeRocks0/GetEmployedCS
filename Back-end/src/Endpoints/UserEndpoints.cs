@@ -23,5 +23,14 @@ public static class UserEndpoints
             .WithName("SaveJob")
             .WithTags("Users")
             .WithOpenApi();
+
+        routes.MapPost("/api/users/{userId}", (int userId, IUserService userService) =>
+        {          
+
+            return userService.GetProfile(userId); 
+        })
+            .WithName("GetProfile")
+            .WithTags("Users")
+            .WithOpenApi();
     }
 }
