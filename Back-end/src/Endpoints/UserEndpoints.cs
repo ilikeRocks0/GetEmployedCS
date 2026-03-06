@@ -15,8 +15,6 @@ public static class UserEndpoints
             .WithTags("Users")
             .WithOpenApi();
 
-        //TODO: change this to match what it gets from frontend in request
-        //TOOD: return 400 error when SaveJob returns -1 (failure)? 
         routes.MapPost("/api/users/save", (HttpContext context, IUserService userService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());

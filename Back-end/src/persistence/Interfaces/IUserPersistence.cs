@@ -7,4 +7,5 @@ public interface IUserPersistence
     public User? GetUser(int userId);
     public int CreateUser(User newUser);
     public int SaveJob(int userId, int jobId);
+    public bool IsJobInLikes(int userId, int jobId);
 }

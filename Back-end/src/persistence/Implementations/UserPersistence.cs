@@ -132,4 +132,22 @@ public class UserPersistence : IUserPersistence
             return success;
         }
     }
+
+    public bool IsJobInLikes(int userId, int jobId)
+    {
+        bool isInLikes = false;
+
+            using (AppDbContext context = new(this.config))
+        {
+            //Get the JobSeekerEntity matching the given user ID 
+            JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers).GetJobSeekerByUserId(userId);
+
+            if (jobSeekerEntity is not null)
+            {
+                //find if the job seeker has liked the specified job - isInLikes = true if so
+                isInLikes = jobSeekerEntity.likes?.Any(like => like.job_id == jobId) ?? false;
+            }
+            return isInLikes;
+        }
+    }
 }
