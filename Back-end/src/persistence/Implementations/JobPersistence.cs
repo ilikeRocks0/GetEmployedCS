@@ -20,42 +20,49 @@ public class JobPersistence : IJobPersistence
     }
 
     private List<JobEntity> FilterQuery(IQueryable<JobEntity> query, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize)
+{
+     // Add filters to query if present
+    if (!string.IsNullOrWhiteSpace(searchTerm))
     {
-        // Add filters to query if present
-        if (!searchTerm.Equals(String.Empty))
-        {
-            query = query.Where(e =>
-                e.job_title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                (e.poster!.employer != null && e.poster!.employer.employer_name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.first_name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.last_name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                e.locations.Any(l =>
-                    l.location.city.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    l.location.state.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    l.location.country.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
-                )
-            );
-        }
-        if (languages.Count > 0)
-        {
-            query = query.Where(e => e.programmingLanguages!.Any(l => languages.Contains(l.language_name, StringComparer.OrdinalIgnoreCase)));
-        }
-        if (positionTypes.Count > 0)
-        {
-            query = query.Where(e => positionTypes.Contains(e.position_type, StringComparer.OrdinalIgnoreCase));
-        }
-        if (employmentTypes.Count > 0)
-        {
-            query = query.Where(e => employmentTypes.Contains(e.employment_type, StringComparer.OrdinalIgnoreCase));
-        }
-
-        // Filter number of jobs
-        query.OrderBy(e => e.job_id)
-          .Skip(startIndex)
-          .Take(pageSize);
-
-        return query.ToList();
+        var term = searchTerm.ToLower();
+        query = query.Where(e =>
+            e.job_title.ToLower().Contains(term) ||
+            (e.poster!.employer != null && e.poster!.employer.employer_name.ToLower().Contains(term)) ||
+            (e.poster!.jobSeeker != null && e.poster!.jobSeeker.first_name.ToLower().Contains(term)) ||
+            (e.poster!.jobSeeker != null && e.poster!.jobSeeker.last_name.ToLower().Contains(term)) ||
+            e.locations.Any(l =>
+                l.location.city.ToLower().Contains(term) ||
+                l.location.state.ToLower().Contains(term) ||
+                l.location.country.ToLower().Contains(term)
+            )
+        );
     }
+
+    if (languages.Any())
+    {
+        var lowerLangs = languages.Select(l => l.ToLower()).ToList();
+        query = query.Where(e => e.programmingLanguages!.Any(l => lowerLangs.Contains(l.language_name.ToLower())));
+    }
+    
+    if (positionTypes.Any())
+    {
+        var lowerPos = positionTypes.Select(p => p.ToLower()).ToList();
+        query = query.Where(e => lowerPos.Contains(e.position_type.ToLower()));
+    }
+    
+    if (employmentTypes.Any())
+    {
+        var lowerEmp = employmentTypes.Select(e => e.ToLower()).ToList();
+        query = query.Where(e => lowerEmp.Contains(e.employment_type.ToLower()));
+    }
+
+    // Filter number of jobs
+    query = query.OrderBy(e => e.job_id)
+                 .Skip(startIndex)
+                 .Take(pageSize);
+
+    return query.ToList();
+}
 
     public List<Job> GetJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize)
     {
