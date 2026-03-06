@@ -28,8 +28,8 @@ export interface SwipeCardHandle {
 
 interface SwipeCardState {
   initialJob: Job;
-  onAccept: () => Promise<Job>;
-  onReject: () => Promise<Job>;
+  onAccept: (jobId: number) => Promise<Job | null>;
+  onReject: (jobId: number) => Promise<Job | null>;
   onSwipeStart?: () => void;
   onSwiped: (direction: "left" | "right") => void;
 }
@@ -52,11 +52,11 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardState>(
 
       try {
         const [nextJob] = await Promise.all([
-          direction === "right" ? onAccept() : onReject(),
+          direction === "right" ? onAccept(currentJob.id) : onReject(currentJob.id),
           new Promise((resolve) => setTimeout(resolve, FLY_DURATION)),
         ]);
 
-        setCurrentJob(nextJob);
+        if (nextJob) setCurrentJob(nextJob);
         setFlying(null);
         setDragX(0);
         setEntering(true);

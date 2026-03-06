@@ -9,9 +9,11 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { useLogin } from "@/context/LoginContext";
 
 const ProfileMenu: React.FC = () => {
   const router = useRouter();
+  const { logout } = useLogin();
   const items: MenuProps["items"] = [
     {
       key: "profile",
@@ -38,17 +40,19 @@ const ProfileMenu: React.FC = () => {
       label: "Logout",
     },
   ];
-  
-  const handleClick: MenuProps["onClick"] = (e) => {
+
+  const handleClick: MenuProps["onClick"] = async (e) => {
     switch (e.key) {
       case "profile":
         break;
       case "applications":
-        router.push("/applications")
+        router.push("/applications");
         break;
       case "settings":
         break;
       case "logout":
+        await logout();
+        router.push("/login");
         break;
     }
   };

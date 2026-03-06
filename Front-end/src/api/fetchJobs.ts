@@ -1,14 +1,21 @@
 import { API_BASE_URL } from "@/config/config";
 import type { Job } from "@/types/Job";
 import type { JobFilters } from "@/types/JobFilters";
-import { mapJob, ApiJob } from "@/utils/ApiJobMapper"
-
+import { mapJob, ApiJob } from "@/utils/ApiJobMapper";
+import { getUserIdFromSession } from "@/utils/getIdsFromStubSession";
 
 function buildParams(filters: JobFilters): URLSearchParams {
   const params = new URLSearchParams();
   if (filters.searchText) params.set("searchTerm", filters.searchText);
   if (filters.selectedType) params.set("employmentTypes", filters.selectedType);
   filters.selectedLanguages.forEach((lang) => params.append("languages", lang));
+  return params;
+}
+
+function buildSavedJobsParams(filters: JobFilters): URLSearchParams {
+  const params = buildParams(filters);
+  const seekerId = getUserIdFromSession();
+  if (seekerId != null) params.set("UserId", String(seekerId));
   return params;
 }
 
@@ -44,7 +51,7 @@ export async function fetchSavedJobs(
   pageSize: number,
   signal: AbortSignal
 ): Promise<{ data: Job[]; total: number }> {
-  const params = buildParams(filters);
+  const params = buildSavedJobsParams(filters);
 
   const res = await fetch(`${API_BASE_URL}/api/jobs/saved?${params}`, { signal });
 
