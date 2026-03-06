@@ -176,5 +176,21 @@ public class JobPersistence : IJobPersistence
         }
 
         return text;
+    }  
+
+    public Job? GetJobFromJobId(int jobId)
+    {
+      using (AppDbContext context = new(this.config))
+      {
+        Job? job = null;
+        JobEntity? e = new JobQuery(context.Jobs)
+            .IncludeLocations()
+            .GetJobByJobId(jobId);
+        if (e != null)
+            {
+                job = new JobEntityAdapter(e);
+            }
+        return job;   
+      }
     }
 }
