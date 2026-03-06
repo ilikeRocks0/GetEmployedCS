@@ -51,7 +51,7 @@ public class JobService(IJobPersistence jobPersistence) : IJobService
             filters.GetValueOrDefault(AppConfig.FilterKeys.LANGUAGES)?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? [],
             filters.GetValueOrDefault(AppConfig.FilterKeys.POSITION_TYPES)?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? [],
             filters.GetValueOrDefault(AppConfig.FilterKeys.EMPLOYMENT_TYPES)?.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList() ?? [],
-            int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.PAGE_NUMBER), out var pageNumber) ? (pageNumber-1 * AppConfig.ITEMS_PER_PAGE) : 0
+            int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.PAGE_NUMBER), out var pageNumber) ? ((pageNumber-1) * AppConfig.ITEMS_PER_PAGE) : 0
         );
     }
 
