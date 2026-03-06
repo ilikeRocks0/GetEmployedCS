@@ -1,9 +1,37 @@
+using DotNetEnv;
+using Back_end.Endpoints;
+using Back_end.Persistence.Implementations;
+using Back_end.Persistence.Interfaces;
+using Back_end.Services.Interfaces;
+using Back_end.Util;
+using Back_end.Services.Implementations;
+// Load environment variables from .env file
+Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(AppOptions)));
+builder.Services.AddScoped<IJobPersistence, JobPersistence>();
+builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddSingleton<IJobGameConnector, GameServiceSingleton>();
+builder.Services.AddScoped<IUserPersistence, UserPersistence>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICommentsService, CommentsService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -14,6 +42,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 
 var summaries = new[]
@@ -36,6 +65,10 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+app.MapJobEndpoints();
+app.MapJobGameEndpoints();
+app.MapUserEndpoints();
+app.MapCommentsEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
