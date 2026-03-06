@@ -51,5 +51,5 @@ public interface IJobPersistence
     //</summary>
     //<param name="comment">The comment metadata.</param>
     //<returns>Returns the id of a job.</returns>
-    public int CreateJobComment(JobComment comment);
+    public string? CreateJobComment(JobComment comment);
 }
