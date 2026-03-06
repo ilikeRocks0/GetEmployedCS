@@ -21,6 +21,7 @@ builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddSingleton<IJobGameConnector, GameServiceSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICommentsService, CommentsService>();
 
 builder.Services.AddCors(options =>
 {
@@ -67,6 +68,7 @@ app.MapGet("/weatherforecast", () =>
 app.MapJobEndpoints();
 app.MapJobGameEndpoints();
 app.MapUserEndpoints();
+app.MapCommentsEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)

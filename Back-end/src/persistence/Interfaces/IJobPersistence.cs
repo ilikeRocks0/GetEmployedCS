@@ -50,8 +50,8 @@ public interface IJobPersistence
     //Saves a comment to a job.
     //</summary>
     //<param name="comment">The comment metadata.</param>
-    //<returns>Returns the id of a job.</returns>
-    public string? CreateJobComment(JobComment comment);
+    //<returns>Returns the comment.</returns>
+    public JobComment CreateJobComment(JobComment comment);
 
     //<summary>
     //Gets a job based on the jobId. 
