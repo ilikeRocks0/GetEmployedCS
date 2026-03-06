@@ -83,6 +83,13 @@ public class JobEntityAdapterTest
         jobEntity.application_link = "google.";
         Assert.Throws<ObjectConversionException>(delegate{new JobEntityAdapter(jobEntity);});
     }
+    
+    [Test]
+    public void SlashBeforePeriodTest()
+    {
+        jobEntity.application_link = "linkdon/2025.com";
+        Assert.Throws<ObjectConversionException>(delegate{new JobEntityAdapter(jobEntity);});
+    }
 
     [Test]
     public void EmptyPositionTypeTest()
