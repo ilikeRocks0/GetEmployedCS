@@ -12,7 +12,7 @@ interface LoginFormValues {
   password: string;
 }
 
-export default function HomePage() {
+export default function LoginPage() {
   const onFinish = (values: LoginFormValues) => {
     console.log("Login values:", values);
   };
