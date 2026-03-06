@@ -12,6 +12,10 @@ public interface IJobPersistence
     //<param name="pageSize">The max amount of objects to return.</param>
     public List<Job> GetJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize);
 
+    //<param name="jobList">A list of jobs to extract a user's saved jobs from.</param>
+    //<param name="userId">The unique identifier of the user.</param>
+    public List<Job> GetJobsSavedSublist(List<Job> jobs, int userId);
+   
     //<param name="userId">The unique identifier of the user.</param>
     //<param name="searchTerm">A keyword string to filter jobs by title.</param>
     //<param name="languages">A list of required programming languages or technologies.</param>
