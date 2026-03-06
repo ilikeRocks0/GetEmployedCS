@@ -1,15 +1,13 @@
-using Back_end.Persistence.Objects;
-
-public class JobComment
+class NewJobComment
 {
     public string Comment { get; set; }
     public int PosterUserId { get; set; }
     public int JobId { get; set; }
 
-    public JobComment(string comment, int posterId, int jobId)
+    public NewJobComment(string comment, int posterUserId, int jobId)
     {
         this.Comment = comment;
-        this.PosterUserId = posterId;
+        this.PosterUserId = posterUserId;
         this.JobId = jobId;
     }
 }

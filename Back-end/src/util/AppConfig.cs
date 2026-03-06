@@ -8,7 +8,6 @@ public sealed class AppConfig
         public const string LANGUAGES = "languages";
         public const string POSITION_TYPES = "positionTypes";
         public const string EMPLOYMENT_TYPES = "employmentTypes";
-        public const string JOBID = "JobId";
         public const string PAGE_NUMBER = "pageNumber";
     }
 

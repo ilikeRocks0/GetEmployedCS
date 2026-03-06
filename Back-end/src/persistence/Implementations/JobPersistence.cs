@@ -156,9 +156,8 @@ public class JobPersistence : IJobPersistence
         return comments;
     }
 
-    public string? CreateJobComment(JobComment comment)
+    public JobComment CreateJobComment(JobComment comment)
     {
-        string? text = null;
 
         using (AppDbContext context = new(this.config))
         {
@@ -172,10 +171,9 @@ public class JobPersistence : IJobPersistence
             context.JobComments.Add(newComment);
             context.SaveChanges();
 
-            text = newComment.comment;
         }
 
-        return text;
+        return comment;
     }  
 
     public Job? GetJobFromJobId(int jobId)
