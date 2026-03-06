@@ -2,6 +2,7 @@ import type { Job } from "@/types/Job";
 
 // Shape of a job object returned by the backend
 export interface ApiJob {
+  jobId: number;
   jobTitle: string;
   applicationDeadline: string | null;
   posterName: string | null;
@@ -15,9 +16,9 @@ export interface ApiJob {
   jobDescription: string;
 }
 
-export function mapJob(apiJob: ApiJob, index: number): Job {
+export function mapJob(apiJob: ApiJob): Job {
   return {
-    id: index,
+    id: apiJob.jobId,
     company: apiJob.posterName ?? "",
     position: apiJob.jobTitle,
     languages: apiJob.programmingLanguages ?? [],

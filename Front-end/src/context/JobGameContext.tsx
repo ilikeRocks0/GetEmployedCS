@@ -10,8 +10,8 @@ import {
 
 const JobGameContext = createContext({
   initJobGame: initJobGame as () => Promise<Job | null>,
-  acceptJob,
-  rejectJob,
+  acceptJob: acceptJob as (jobId: number) => Promise<Job | null>,
+  rejectJob: rejectJob as (jobId: number) => Promise<Job | null>,
 });
 
 export function JobGameProvider({ children }: { children: React.ReactNode }) {

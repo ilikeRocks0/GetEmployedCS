@@ -1,20 +1,33 @@
 "use client";
 
-import { Layout, Card, Form, Input, Button, Typography, Divider } from "antd";
+import { App, Layout, Card, Form, Input, Button, Typography, Divider } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
- 
+import { useRouter } from "next/navigation";
+import { useLogin } from "@/context/LoginContext";
+
 const { Content } = Layout;
 const { Title, Text, Link } = Typography;
-
 
 interface LoginFormValues {
   email: string;
   password: string;
 }
 
-export default function LoginPage() {
-  const onFinish = (values: LoginFormValues) => {
-    console.log("Login values:", values);
+function LoginPageContent() {
+  const { notification } = App.useApp();
+  const { login } = useLogin();
+  const router = useRouter();
+
+  const onFinish = async (values: LoginFormValues) => {
+    try {
+      await login(values.email, values.password);
+      router.push("/");
+    } catch (err) {
+      notification.error({
+        message: "Login Failed",
+        description: err instanceof Error ? err.message : "Something went wrong. Please try again.",
+      });
+    }
   };
 
   return (
@@ -87,11 +100,19 @@ export default function LoginPage() {
             <Divider />
 
             <Text>
-              Don’t have an account? <Link href="/signup">Register now!</Link>
+              Don&apos;t have an account? <Link href="/signup">Register now!</Link>
             </Text>
           </Form>
         </Card>
       </Content>
     </Layout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <App>
+      <LoginPageContent />
+    </App>
   );
 }
