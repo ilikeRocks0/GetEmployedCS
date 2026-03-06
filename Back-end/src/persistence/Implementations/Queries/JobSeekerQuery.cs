@@ -15,12 +15,20 @@ public class JobSeekerQuery
     public JobSeekerQuery IncludeLikes()
     {
         this.Query = this.Query.Include(e => e.likes!)
-                    .ThenInclude(e => e.savedJob)
-                      .ThenInclude(e => e!.programmingLanguages)
-                  .Include(e => e.likes!)
-                    .ThenInclude(e => e.savedJob)
-                      .ThenInclude(e => e!.locations)
-                        .ThenInclude(e => e.location);
+                                    .ThenInclude(e => e.savedJob)
+                                        .ThenInclude(e => e!.programmingLanguages)
+                                .Include(e => e.likes!)
+                                    .ThenInclude(e => e.savedJob)
+                                        .ThenInclude(e => e!.poster)
+                                            .ThenInclude(e => e!.employer)
+                                .Include(e => e.likes!)
+                                    .ThenInclude(e => e.savedJob)
+                                        .ThenInclude(e => e!.poster)
+                                            .ThenInclude(e => e!.jobSeeker)
+                                .Include(e => e.likes!)
+                                    .ThenInclude(e => e.savedJob)
+                                    .ThenInclude(e => e!.locations)
+                                        .ThenInclude(e => e.location);
 
         return this;
     }
