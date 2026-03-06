@@ -149,32 +149,32 @@ public class JobPersistence : IJobPersistence
             // Add the retrieved jobs comments to the list that will be returned
             job?.comments?.ToList().ForEach(e =>
             {
-                comments.Add(new JobComment(e.comment, new UserEntityAdapter(e.poster!), e.job!.job_id));
+                comments.Add(new JobComment(e.comment, e.poster_id, e.job!.job_id));
             });
         }
 
         return comments;
     }
 
-    public int CreateJobComment(JobComment comment)
+    public string? CreateJobComment(JobComment comment)
     {
-        int jobCommentId = -1;
+        string? text = null;
 
         using (AppDbContext context = new(this.config))
         {
             JobCommentEntity newComment = new()
             {
                 job_id = comment.JobId,
-                poster_id = comment.Poster.UserId,
+                poster_id = comment.PosterUserId,
                 comment = comment.Comment
             };
 
             context.JobComments.Add(newComment);
             context.SaveChanges();
 
-            jobCommentId = newComment.job_comment_id;
+            text = newComment.comment;
         }
 
-        return jobCommentId;
+        return text;
     }
 }
