@@ -37,3 +37,23 @@ export async function fetchJobs(
 
   return { data, total };
 }
+
+export async function fetchSavedJobs(
+  filters: JobFilters,
+  page: number,
+  pageSize: number,
+  signal: AbortSignal
+): Promise<{ data: Job[]; total: number }> {
+  const params = buildParams(filters);
+
+  const res = await fetch(`${API_BASE_URL}/api/jobs/saved?${params}`, { signal });
+
+  if (!res.ok) throw new Error(`Failed to fetch jobs: ${res.status}`);
+
+  const apiJobs: ApiJob[] = await res.json();
+  const total = apiJobs.length;
+  const start = (page - 1) * pageSize;
+  const data = apiJobs.slice(start, start + pageSize).map(mapJob);
+
+  return { data, total };
+}

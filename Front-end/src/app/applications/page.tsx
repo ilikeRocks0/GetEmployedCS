@@ -1,22 +1,23 @@
 "use client";
 
-import { App, Layout, Typography } from "antd";
-import SiteHeader from "@/components/SiteHeader";
+import { App, Layout } from "antd";
 import { FiltersProvider } from "@/context/FiltersContext";
-import { JobsProvider } from "@/context/JobsContext";
+import { SavedJobsProvider } from "@/context/SavedJobsContext";
+import { Typography } from "antd";
+import SiteHeader from "@/components/SiteHeader";
 import { FilterOptions } from "@/components/FilterOptions";
-import { LanguageProvider } from "@/context/LanguageContext";
 import { JobContainer } from "@/components/JobContainer";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 const { Title } = Typography;
 const { Content } = Layout
 
-function JobsPageContent() {
+function SaveJobsPageContent() {
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
       <SiteHeader selectedKey="search-jobs" />
       <Content style={{ padding: "40px 80px" }}>
-        <Title level={1}>Search Jobs</Title>
+        <Title level={1}>Saved Jobs</Title>
         <FilterOptions/>
         <JobContainer/>
       </Content>
@@ -24,16 +25,15 @@ function JobsPageContent() {
   );
 }
 
-export default function JobsPage() {
+export default function SaveJobPage() {
   return (
-
     <App>
       <FiltersProvider>
-        <JobsProvider>
+        <SavedJobsProvider>
           <LanguageProvider>
-            <JobsPageContent/>
+            <SaveJobsPageContent />
           </LanguageProvider>
-        </JobsProvider>
+        </SavedJobsProvider>
       </FiltersProvider>
     </App>
   );
