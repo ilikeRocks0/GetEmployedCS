@@ -5,11 +5,18 @@ using Back_end.Util;
 
 public class JobService(IJobPersistence jobPersistence) : IJobService
 {
-    public IReadOnlyList<Job> GetJobs(IReadOnlyDictionary<string, string>? filters = null)
+    public (IReadOnlyList<Job> jobList, IReadOnlyList<int> savedJobIds) GetJobs(IReadOnlyDictionary<string, string>? filters = null)
     {
-        var (_, searchTerm, languages, positions, employments, startIndex) = ParseFilters(filters);
-    
-        return jobPersistence.GetJobs(searchTerm, languages, positions, employments, startIndex, AppConfig.ITEMS_PER_PAGE);
+        var (UserId, searchTerm, languages, positions, employments, startIndex) = ParseFilters(filters);
+        IReadOnlyList<Job> jobList = jobPersistence.GetJobs(searchTerm, languages, positions, employments, startIndex, AppConfig.ITEMS_PER_PAGE);
+        IReadOnlyList<Job> savedJobList = jobPersistence.GetSavedJobs(UserId, searchTerm, languages, positions, employments, startIndex, AppConfig.ITEMS_PER_PAGE);
+        
+        List<int> savedJobIds = new List<int>();
+        foreach (Job savedJob in savedJobList)
+        {
+            savedJobIds.Add(savedJob.JobId);
+        }
+        return (jobList, savedJobIds);
     }
 
     public IReadOnlyList<Job> GetSavedJobs(IReadOnlyDictionary<string, string>? filters = null)
