@@ -63,11 +63,10 @@ public class UserService(IUserPersistence userPersistence) : IUserService
     {
         UserFinder userFinder = new UserFinder(userPersistence);
         User? user = userFinder.GetUser(userId);
-        Profile? profile = null; 
-        if (user != null)
+        if (user == null)
         {
-            profile = new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName);
+            throw new NullReferenceException("User not found.");   
         }
-        return profile;
+        return new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName);
     }
 }

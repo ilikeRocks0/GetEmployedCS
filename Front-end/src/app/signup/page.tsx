@@ -20,7 +20,7 @@ interface SignUpFormValues {
 
 function SignUpPageContent() {
   const { notification } = App.useApp();
-  const registerUser = useUser();
+  const { registerUser } = useUser();
   const [isEmployer, setIsEmployer] = useState<boolean | null>(null);
   const [dir, setDir] = useState<"forward" | "back">("forward");
   const [registered, setRegistered] = useState(false);
