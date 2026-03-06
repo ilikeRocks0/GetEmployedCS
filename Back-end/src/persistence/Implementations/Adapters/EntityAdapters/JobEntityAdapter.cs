@@ -39,27 +39,24 @@ public class JobEntityAdapter : Job
     {
         ValidateEntity(jobEntity);
 
+        JobId = jobEntity.job_id;
+
         // Convert DateTime from job entity to a DateOnly
-        ApplicationDate deadline = new(jobEntity.application_deadline);
+        ApplicationDeadline = new ApplicationDate(jobEntity.application_deadline).Date;
 
         // Create Poster object that validates and constructs the poster's name 
-        Poster poster = new(jobEntity.poster, jobEntity.employer_poster);
+        PosterName = new Poster(jobEntity.poster, jobEntity.employer_poster).Name;
 
         // Get job locations
-        List<string> locations = new();
+        Locations = new();
         List<JobLocationEntity> jobLocationEntities = jobEntity.locations.ToList();
 
         jobLocationEntities.ForEach(e =>
         {
-            locations.Add(new JobLocation(e.location).Location);
+            Locations.Add(new JobLocation(e.location).Location);
         });
 
-        List<string> languages = new List<string>();
-        jobEntity.programmingLanguages?.ToList().ForEach(e => languages.Add(e.language_name));
-
-        ApplicationDeadline = deadline.Date;
-        PosterName = poster.Name;
-        Locations = locations;
-        ProgrammingLanguages = languages;
+        ProgrammingLanguages = new List<string>();
+        jobEntity.programmingLanguages?.ToList().ForEach(e => ProgrammingLanguages.Add(e.language_name));
     }
 }
