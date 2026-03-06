@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, SetStateAction, useCallback, useState } from "react";
+import { createContext, useState } from "react";
 import { DEFAULT_FILTERS, JobFilters } from "@/types/JobFilters";
 
 

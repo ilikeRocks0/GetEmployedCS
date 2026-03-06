@@ -21,7 +21,7 @@ const SiteHeader: React.FC<SiteHeaderState> = ({
     { key: "/", label: "Home" },
     { key: "/quick-hire", label: "Quick Hire"},
     { key: "/search-jobs", label: "Find Jobs" },
-    { key: "/resume stuff", label: "Resume Helper Tools" }, // does not currently exist yet
+    { key: "/resume-help", label: "Resume Helper Tools" }, // does not currently exist yet
   ];
 
     const handleClick: MenuProps["onClick"] = (e) => {
