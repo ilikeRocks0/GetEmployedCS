@@ -54,9 +54,14 @@ public class JobGameConnector (IUserPersistence userPersistence, IJobPersistence
         {
             throw new InvalidOperationException("UserId doesn't match an existing user");
         }
-        //some check for if user already has the job saved, only do the below work if they do NOT have it saved
+        
+        if (userPersistence.IsJobInLikes(user.UserId, job.JobId))
+        {
+            throw new InvalidOperationException("This job has already been liked by this user");
+        }
+
         userPersistence.SaveJob(user.UserId, job.JobId);
-        return GameServiceList[user.UserId].AcceptJob();         
+        return GameServiceList[user.UserId].AcceptJob();
     }
 
     public (int accepted, int rejected) GetGameStats(CurrentUser currentUser)

@@ -20,6 +20,11 @@ public class UserService(IUserPersistence userPersistence) : IUserService
         }
         var userId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var uId) ? uId : 0;
         var jobId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var jId) ? jId : 0;
+        
+        if (userPersistence.IsJobInLikes(userId, jobId))
+        {
+            throw new InvalidOperationException("This job has already been liked by this user");
+        }
         return userPersistence.SaveJob(userId, jobId);
     }
 

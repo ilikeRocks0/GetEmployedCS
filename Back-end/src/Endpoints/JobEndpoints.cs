@@ -69,8 +69,6 @@ public static class JobEndpoints
         // The filters are the same as those used in GetJobs.
         routes.MapPost("/api/job/game", (CurrentUser currentUser, HttpContext context, IJobGameConnector jobGameConnector) =>
         {
-            // var userId = int.Parse(context.User.FindFirst("sub")?.Value);
-            // var currentUser = new CurrentUser(userId);
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
             return jobGameConnector.InitializeJobGame(currentUser, filters.Count > 0 ? filters : null);
         })
