@@ -1,13 +1,13 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { registerUser } from "@/api/users";
+import { fetchUser, registerUser } from "@/api/users";
 
-const UsersContext = createContext(registerUser);
+const UsersContext = createContext({registerUser, fetchUser});
 
 export function UsersProvider({ children }: { children: React.ReactNode }) {
   return (
-    <UsersContext.Provider value={registerUser}>
+    <UsersContext.Provider value={{registerUser, fetchUser}}>
       {children}
     </UsersContext.Provider>
   );

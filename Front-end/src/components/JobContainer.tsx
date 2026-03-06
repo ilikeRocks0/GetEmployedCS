@@ -8,7 +8,7 @@ import {  Pagination, Spin } from "antd";
 
 
 export function JobContainer(){
-    const fetchJobs = useContext(JobsContext)
+    const fetchJobs = useContext(JobsContext);
     const {filters:filters} = useContext(FiltersContext);
     const [page, setPage] = useState(1);
     const [jobs, setJobs] = useState<Job[]>([]);

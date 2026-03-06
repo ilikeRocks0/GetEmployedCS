@@ -24,7 +24,7 @@ public static class UserEndpoints
             .WithTags("Users")
             .WithOpenApi();
 
-        routes.MapPost("/api/users/{userId}", (int userId, IUserService userService) =>
+        routes.MapGet("/api/users/{userId}", (int userId, IUserService userService) =>
         {          
 
             return userService.GetProfile(userId); 
