@@ -15,7 +15,7 @@ public class JobIndexManager(IJobService jobService) : IJobIndexManager
     {
         allJobs.Clear();
         filtersDictionary[AppConfig.FilterKeys.PAGE_NUMBER] = currentPage.ToString();
-        allJobs.AddRange(jobService.GetJobs(filtersDictionary).ToList());
+        allJobs.AddRange(jobService.GetJobs(filtersDictionary).jobList.ToList());
         currentPage += 1;
         return allJobs;
     }
