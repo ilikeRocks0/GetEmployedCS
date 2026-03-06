@@ -25,28 +25,28 @@ public class JobPersistence : IJobPersistence
         if (!searchTerm.Equals(String.Empty))
         {
             query = query.Where(e =>
-                e.job_title.Contains(searchTerm) ||
-                (e.poster!.employer != null && e.poster!.employer.employer_name.Contains(searchTerm)) ||
-                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.first_name.Contains(searchTerm)) ||
-                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.last_name.Contains(searchTerm)) ||
+                e.job_title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                (e.poster!.employer != null && e.poster!.employer.employer_name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.first_name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.last_name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
                 e.locations.Any(l =>
-                    l.location.city.Contains(searchTerm) ||
-                    l.location.state.Contains(searchTerm) ||
-                    l.location.country.Contains(searchTerm)
+                    l.location.city.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    l.location.state.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    l.location.country.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
                 )
             );
         }
         if (languages.Count > 0)
         {
-            query = query.Where(e => e.programmingLanguages!.Any(l => languages.Contains(l.language_name)));
+            query = query.Where(e => e.programmingLanguages!.Any(l => languages.Contains(l.language_name, StringComparer.OrdinalIgnoreCase)));
         }
         if (positionTypes.Count > 0)
         {
-            query = query.Where(e => positionTypes.Contains(e.position_type));
+            query = query.Where(e => positionTypes.Contains(e.position_type, StringComparer.OrdinalIgnoreCase));
         }
         if (employmentTypes.Count > 0)
         {
-            query = query.Where(e => employmentTypes.Contains(e.employment_type));
+            query = query.Where(e => employmentTypes.Contains(e.employment_type, StringComparer.OrdinalIgnoreCase));
         }
 
         // Filter number of jobs
