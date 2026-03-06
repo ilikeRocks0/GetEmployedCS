@@ -1,15 +1,15 @@
 "use client";
 
-import { Layout, Card, Form, Input, Button, Checkbox, Typography, Divider } from "antd";
+import { Layout, Card, Form, Input, Button, Typography, Divider } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
  
 const { Content } = Layout;
 const { Title, Text, Link } = Typography;
 
+
 interface LoginFormValues {
   email: string;
   password: string;
-  remember?: boolean;
 }
 
 export default function HomePage() {
@@ -35,13 +35,24 @@ export default function HomePage() {
             borderRadius: "8px",
           }}
         >
+          <div style={{ textAlign: "center", marginBottom: 8 }}>
+            <span style={{
+              fontSize: "28px",
+              fontWeight: 700,
+              letterSpacing: "-0.5px",
+              background: "linear-gradient(90deg, #111, #555)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}>
+              GetEmployed.cs
+            </span>
+          </div>
           <Title level={2} style={{ textAlign: "center" }}>
             Login
           </Title>
 
           <Form<LoginFormValues>
             name="login"
-            initialValues={{ remember: true }}
             onFinish={onFinish}
             layout="vertical"
           >
@@ -65,19 +76,6 @@ export default function HomePage() {
                 placeholder="Password"
                 size="large"
               />
-            </Form.Item>
-
-            <Form.Item>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Checkbox>Remember me</Checkbox>
-                <Link href="#">Forgot password?</Link>
-              </div>
             </Form.Item>
 
             <Form.Item>
