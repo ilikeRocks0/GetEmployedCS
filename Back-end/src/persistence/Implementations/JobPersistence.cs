@@ -6,6 +6,7 @@ using Back_end.Persistence.Model;
 using Back_end.Persistence.Implementations.Types;
 using Back_end.Persistence.Implementations.Queries;
 using Back_end.Persistence.Implementations.Adapters.EntityAdapters;
+using System.Linq.Expressions;
 
 namespace Back_end.Persistence.Implementations;
 
@@ -24,15 +25,15 @@ public class JobPersistence : IJobPersistence
         if (!searchTerm.Equals(String.Empty))
         {
             query = query.Where(e =>
-              e.job_title.Contains(searchTerm) ||
-              e.poster!.employer!.employer_name.Contains(searchTerm) ||
-              e.poster!.jobSeeker!.first_name.Contains(searchTerm) ||
-              e.poster!.jobSeeker!.last_name.Contains(searchTerm) ||
-              e.locations.Any(l =>
-                l.location.city.Contains(searchTerm) ||
-                l.location.state.Contains(searchTerm) ||
-                l.location.country.Contains(searchTerm)
-              )
+                e.job_title.Contains(searchTerm) ||
+                (e.poster!.employer != null && e.poster!.employer.employer_name.Contains(searchTerm)) ||
+                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.first_name.Contains(searchTerm)) ||
+                (e.poster!.jobSeeker != null && e.poster!.jobSeeker.last_name.Contains(searchTerm)) ||
+                e.locations.Any(l =>
+                    l.location.city.Contains(searchTerm) ||
+                    l.location.state.Contains(searchTerm) ||
+                    l.location.country.Contains(searchTerm)
+                )
             );
         }
         if (languages.Count > 0)
