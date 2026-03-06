@@ -6,10 +6,13 @@ public class JobComment
     public int PosterUserId { get; set; }
     public int JobId { get; set; }
 
-    public JobComment(string comment, int posterId, int jobId)
+    public string PosterUsername { get; set; }
+
+    public JobComment(string comment, int posterId, int jobId, string posterUsername)
     {
         this.Comment = comment;
         this.PosterUserId = posterId;
         this.JobId = jobId;
+        this.PosterUsername = posterUsername;
     }
 }

@@ -4,7 +4,7 @@ using Back_end.Util;
 
 namespace Back_end.Services.Interfaces;
 
-class CommentsService (IJobPersistence jobPersistence) : ICommentsService
+class CommentsService (IJobPersistence jobPersistence, IUserPersistence userPersistence) : ICommentsService
 {
     public List<JobComment> GetComments(int jobId)
     {
@@ -13,7 +13,12 @@ class CommentsService (IJobPersistence jobPersistence) : ICommentsService
 
     public JobComment CreateComment(NewJobComment comment)
     {
-        JobComment NewComment = new JobComment(comment.Comment, comment.PosterUserId, comment.JobId);
+        User? user = userPersistence.GetUser(comment.PosterUserId);
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
+        JobComment NewComment = new JobComment(comment.Comment, comment.PosterUserId, comment.JobId, user.Username);
 
         return jobPersistence.CreateJobComment(NewComment);
     }

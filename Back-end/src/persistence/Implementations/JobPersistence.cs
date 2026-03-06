@@ -150,7 +150,7 @@ public class JobPersistence : IJobPersistence
             // Add the retrieved jobs comments to the list that will be returned
             job?.comments?.ToList().ForEach(e =>
             {
-                comments.Add(new JobComment(e.comment, e.poster_id, e.job!.job_id));
+                comments.Add(new JobComment(e.comment, e.poster_id, e.job!.job_id, e.poster!.username));
             });
         }
 
