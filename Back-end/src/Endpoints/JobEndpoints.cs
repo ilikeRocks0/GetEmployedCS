@@ -67,7 +67,7 @@ public static class JobEndpoints
     {
         // This endpoint initializes the job list for the game based on the provided filters and returns a random job to start the game. 
         // The filters are the same as those used in GetJobs.
-        routes.MapPost("/api/job/game", (CurrentUser currentUser, HttpContext context, IJobGameConnector jobGameConnector) =>
+        routes.MapPost("/api/job/game", (CurrentUser currentUser, HttpContext context, IJobGameService jobGameConnector) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
             return jobGameConnector.InitializeJobGame(currentUser, filters.Count > 0 ? filters : null);
@@ -77,7 +77,7 @@ public static class JobEndpoints
             .WithOpenApi();
 
         // this endpoint allows the user to reject the current job in the game and receive the next job.
-        routes.MapPost("/api/job/game/reject", (GameJob gameJob, IJobGameConnector jobGameConnector) =>
+        routes.MapPost("/api/job/game/reject", (GameJob gameJob, IJobGameService jobGameConnector) =>
         {
             return jobGameConnector.RejectJob(gameJob);
         })
@@ -86,7 +86,7 @@ public static class JobEndpoints
             .WithOpenApi();
         
         // this endpoint allows the user to accept the current job in the game and receive the next job.
-        routes.MapPost("/api/job/game/accept", (GameJob gameJob, IJobGameConnector jobGameConnector) =>
+        routes.MapPost("/api/job/game/accept", (GameJob gameJob, IJobGameService jobGameConnector) =>
         {            
             return jobGameConnector.AcceptJob(gameJob);
         })
@@ -95,7 +95,7 @@ public static class JobEndpoints
             .WithOpenApi();
 
         // this endpoint allows the user to retrieve the current game statistics, including the number of accepted and rejected jobs.
-        routes.MapPost("/api/job/game/stats", (CurrentUser currentUser, IJobGameConnector jobGameConnector) =>
+        routes.MapPost("/api/job/game/stats", (CurrentUser currentUser, IJobGameService jobGameConnector) =>
         {            
             return jobGameConnector.GetGameStats(currentUser);
         })
