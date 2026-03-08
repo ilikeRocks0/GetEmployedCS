@@ -18,7 +18,7 @@ builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(A
 builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
 builder.Services.AddScoped<IJobService, JobService>();
-builder.Services.AddSingleton<IJobGameConnector, GameServiceSingleton>();
+builder.Services.AddSingleton<IJobGameService, GameServiceSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
