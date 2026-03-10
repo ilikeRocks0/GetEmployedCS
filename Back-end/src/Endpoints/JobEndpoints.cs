@@ -17,7 +17,8 @@ public static class JobEndpoints
         routes.MapGet("/api/jobs", (HttpContext context, IJobService jobService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
-            return jobService.GetJobs(filters.Count > 0 ? filters : null);
+            var results = jobService.GetJobs(filters.Count > 0 ? filters : null);
+            return new JobsResponse(results.jobList, results.savedJobIds);
         })
             .WithName("GetJobListings")
             .WithTags("Jobs")
