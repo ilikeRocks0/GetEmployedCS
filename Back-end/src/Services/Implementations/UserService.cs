@@ -20,8 +20,20 @@ public class UserService(IUserPersistence userPersistence) : IUserService
             throw new InvalidOperationException("Invalid filter parameters");
         }
         var userId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var uId) ? uId : 0;
-        var jobId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var jId) ? jId : 0;
-        
+        var jobId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.JOBID), out var jId) ? jId : 0;
+
+        if (userId == 0)
+        {
+            throw new InvalidOperationException("Invalid user id.");
+        }
+
+        if (jobId == 0)
+        {
+            throw new InvalidOperationException("Invalid job id.");
+        }
+
+
+
         if (userPersistence.IsJobInLikes(userId, jobId))
         {
             throw new InvalidOperationException("This job has already been liked by this user");
@@ -43,6 +55,17 @@ public class UserService(IUserPersistence userPersistence) : IUserService
             throw new InvalidOperationException("This job has not already been liked by this user");
         }
         return userPersistence.UnsaveJob(userId, jobId);
+    }
+
+    public int Login(LoginRequest loginRequest)
+    {
+        var user = userPersistence.GetUserByCredentials(loginRequest.Email, loginRequest.Password);
+        if (user is null)
+        {
+            throw new InvalidOperationException("Invalid username or password.");
+        }
+
+        return user.UserId;
     }
 
     private static User ExtractUserFromInput(NewUser newUser)
@@ -79,6 +102,17 @@ public class UserService(IUserPersistence userPersistence) : IUserService
     {
         UserFinder userFinder = new UserFinder(userPersistence);
         User? user = userFinder.GetUser(userId);
+        if (user == null)
+        {
+            throw new NullReferenceException("User not found.");   
+        }
+        return new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName);
+    }
+
+    public Profile? GetProfileByUsername(string username)
+    {
+        UserFinder userFinder = new UserFinder(userPersistence);
+        User? user = userFinder.GetUserByUsername(username);
         if (user == null)
         {
             throw new NullReferenceException("User not found.");   

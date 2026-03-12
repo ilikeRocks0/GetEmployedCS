@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import { login, logout } from "@/stub/loginStub";
+import { login, logout } from "@/api/login";
 
 const LoginContext = createContext({ login, logout });
 

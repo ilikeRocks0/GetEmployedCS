@@ -8,4 +8,9 @@ public class UserFinder (IUserPersistence userPersistence)
     {
         return userPersistence.GetUser(userId);
     }
+
+    public User? GetUserByUsername(string username)
+    {
+        return userPersistence.GetUserByUsername(username);
+    }
 }
