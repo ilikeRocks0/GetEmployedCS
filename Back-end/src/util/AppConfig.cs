@@ -4,6 +4,7 @@ public sealed class AppConfig
     public static class FilterKeys
     {
         public const string USERID = "UserId";
+        public const string JOBID = "JobId";
         public const string SEARCH_TERM = "searchTerm";
         public const string LANGUAGES = "languages";
         public const string POSITION_TYPES = "positionTypes";

@@ -5,6 +5,8 @@ namespace Back_end.Services.Interfaces;
 public interface IUserService
 {
     int CreateUser(NewUser newUser);
-    Profile? GetProfile(int user);
+    Profile? GetProfile(int userId);
+    Profile? GetProfileByUsername(string username);
     int SaveJob(IReadOnlyDictionary<string, string>? filters = null);
+    int Login(LoginRequest loginRequest);
 }

@@ -1,6 +1,7 @@
 using Back_end.Services.Interfaces;
 namespace Back_end.Endpoints;
 
+
 public static class CommentEndpoints
 {
     public static void MapCommentsEndpoints(this IEndpointRouteBuilder routes)
@@ -11,7 +12,8 @@ public static class CommentEndpoints
         })
             .WithName("CreateComment")
             .WithTags("Comments")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         routes.MapGet("/api/comments/{jobId}", (int jobId, ICommentsService commentsService) =>
         {            
@@ -19,6 +21,7 @@ public static class CommentEndpoints
         })
             .WithName("GetComments")
             .WithTags("Comments")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
     }
 }
