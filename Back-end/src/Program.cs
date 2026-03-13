@@ -1,10 +1,12 @@
 using DotNetEnv;
 using Back_end.Endpoints;
 using Back_end.Persistence.Implementations;
+using Back_end.Persistence.Objects;
 using Back_end.Persistence.Interfaces;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
 using Back_end.Services.Implementations;
+using Microsoft.AspNetCore.Authentication.Cookies;
 // Load environment variables from .env file
 Env.Load();
 
@@ -22,6 +24,7 @@ builder.Services.AddSingleton<IJobGameConnector, GameServiceSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
+builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<User>, Microsoft.AspNetCore.Identity.PasswordHasher<User>>();
 
 builder.Services.AddCors(options =>
 {
@@ -33,7 +36,24 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+    });
+
+builder.Services.AddAuthorization();
+
+
 var app = builder.Build();
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

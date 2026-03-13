@@ -1,5 +1,6 @@
 using Back_end.Endpoints.Models;
 using Back_end.Services.Interfaces;
+using Back_end.Util;
 
 namespace Back_end.Endpoints;
 
@@ -21,7 +22,8 @@ public static class JobEndpoints
         })
             .WithName("GetJobListings")
             .WithTags("Jobs")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         // This endpoint retrieves the saved jobs for a user based on the provided filters. 
         // The filters are the same as those used in GetJobs, but "SeekerId" is required to identify the user whose saved jobs are being requested.
@@ -29,11 +31,14 @@ public static class JobEndpoints
         routes.MapGet("/api/jobs/saved", (HttpContext context, IJobService jobService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
+            var userId = context.User.FindFirst("UserId")?.Value;
+            filters[AppConfig.FilterKeys.USERID] = userId ?? "0";
             return jobService.GetSavedJobs(filters.Count > 0 ? filters : null);
         })
             .WithName("GetSavedJobs")
             .WithTags("Jobs")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
         
         
         routes.MapGet("/api/jobs/number", (HttpContext context, IJobService jobService) =>
@@ -43,16 +48,20 @@ public static class JobEndpoints
         })
             .WithName("GetNumberOfJobs")
             .WithTags("Jobs")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         routes.MapGet("/api/jobs/saved/number", (HttpContext context, IJobService jobService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
+            var userId = context.User.FindFirst("UserId")?.Value;
+            filters[AppConfig.FilterKeys.USERID] = userId ?? "0";
             return jobService.GetNumberOfSavedJobs(filters.Count > 0 ? filters : null);
         })
             .WithName("GetNumberOfSavedJobs")
             .WithTags("Jobs")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         routes.MapGet("/api/jobs/languages", (IJobService jobService) =>
         {
@@ -60,7 +69,8 @@ public static class JobEndpoints
         })
             .WithName("GetProgrammingLanguages")
             .WithTags("Jobs")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
     }
 
     public static void MapJobGameEndpoints(this IEndpointRouteBuilder routes)
@@ -70,11 +80,14 @@ public static class JobEndpoints
         routes.MapPost("/api/job/game", (CurrentUser currentUser, HttpContext context, IJobGameConnector jobGameConnector) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
+            var userId = context.User.FindFirst("UserId")?.Value;
+            filters[AppConfig.FilterKeys.USERID] = userId ?? "0";
             return jobGameConnector.InitializeJobGame(currentUser, filters.Count > 0 ? filters : null);
         })
             .WithName("InitializeJobGame")
             .WithTags("Job Game")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         // this endpoint allows the user to reject the current job in the game and receive the next job.
         routes.MapPost("/api/job/game/reject", (GameJob gameJob, IJobGameConnector jobGameConnector) =>
@@ -83,7 +96,8 @@ public static class JobEndpoints
         })
             .WithName("RejectJob")
             .WithTags("Job Game")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
         
         // this endpoint allows the user to accept the current job in the game and receive the next job.
         routes.MapPost("/api/job/game/accept", (GameJob gameJob, IJobGameConnector jobGameConnector) =>
@@ -92,7 +106,8 @@ public static class JobEndpoints
         })
             .WithName("AcceptJob")
             .WithTags("Job Game")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
 
         // this endpoint allows the user to retrieve the current game statistics, including the number of accepted and rejected jobs.
         routes.MapPost("/api/job/game/stats", (CurrentUser currentUser, IJobGameConnector jobGameConnector) =>
@@ -101,6 +116,7 @@ public static class JobEndpoints
         })
             .WithName("GetGameStats")
             .WithTags("Job Game")
-            .WithOpenApi();
+            .WithOpenApi()
+            .RequireAuthorization();
     }
 }

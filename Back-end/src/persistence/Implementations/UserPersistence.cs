@@ -3,18 +3,21 @@ using Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Objects;
-using Microsoft.EntityFrameworkCore;
 using Back_end.Persistence.Implementations.Queries;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Persistence.Implementations;
 
 public class UserPersistence : IUserPersistence
 {
-    private IConfiguration config;
+    private readonly IConfiguration config;
+    private readonly IPasswordHasher<User> passwordHasher;
 
-    public UserPersistence(IConfiguration config)
+    public UserPersistence(IConfiguration config, IPasswordHasher<User> passwordHasher)
     {
         this.config = config;
+        this.passwordHasher = passwordHasher;
     }
 
     public User? GetUser(int userId)
@@ -40,18 +43,42 @@ public class UserPersistence : IUserPersistence
         return user;
     }
 
+    public User? GetUserByUsername(string username)
+    {
+        User? user = null;
+
+        using (AppDbContext context = new(this.config))
+        {
+            // Build the query for the user in question
+            UserEntity? userEntity = context.Users
+              .Where(e => e.username == username)
+              .Include(e => e.employer)
+              .Include(e => e.jobSeeker)
+                .ThenInclude(e => e!.experiences)
+              .SingleOrDefault();
+
+            if (userEntity != null)
+            {
+                user = new UserEntityAdapter(userEntity);
+            }
+        }
+
+        return user;
+    }
+
     public int CreateUser(User newUser)
     {
         int userId = -1;
 
         using (AppDbContext context = new(this.config))
         {
-            // Initially, add the user entity to the users table
+            var hashedPassword = passwordHasher.HashPassword(newUser, newUser.Password);
+
             UserEntity newUserEntity = new()
             {
                 email = newUser.Email,
                 username = newUser.Username,
-                password = newUser.Password,
+                password = hashedPassword,
                 about_string = newUser.About
             };
 
@@ -95,11 +122,7 @@ public class UserPersistence : IUserPersistence
             }
 
             // Get the user ID of the newly added entity and return it
-            userId = context.Users
-              .Where(e => e.username.Equals(newUser.Username))
-              .Where(e => e.password.Equals(newUser.Password))
-              .Single()
-              .user_id;
+            userId = newUserEntity.user_id;
         }
 
         return userId;
@@ -149,5 +172,37 @@ public class UserPersistence : IUserPersistence
             }
             return isInLikes;
         }
+    }
+
+    public User? GetUserByCredentials(string email, string password)
+    {
+        User? user = null;
+
+        using (AppDbContext context = new(this.config))
+        {
+            UserEntity? userEntity = context.Users
+              .Where(e => e.email.Equals(email))
+              .Include(e => e.employer)
+              .Include(e => e.jobSeeker)
+                .ThenInclude(e => e!.experiences)
+              .SingleOrDefault();
+
+            if (userEntity != null)
+            {
+                var candidateUser = new UserEntityAdapter(userEntity);
+                var verificationResult = passwordHasher.VerifyHashedPassword(
+                    candidateUser,
+                    userEntity.password,
+                    password);
+
+                if (verificationResult == PasswordVerificationResult.Success ||
+                    verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
+                {
+                    user = candidateUser;
+                }
+            }
+        }
+
+        return user;
     }
 }
