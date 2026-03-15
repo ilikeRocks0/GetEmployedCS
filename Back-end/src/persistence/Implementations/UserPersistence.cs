@@ -133,14 +133,41 @@ public class UserPersistence : IUserPersistence
         }
     }
 
+    public bool UnsaveJob(int userId, int jobId)
+    {
+        bool result = false;
+
+        using (AppDbContext context = new(this.config))
+        {
+            // Query for the job seeker that is unsaving the job
+            JobSeekerEntity? jobSeeker = new JobSeekerQuery(context.JobSeekers).IncludeLikes().GetJobSeekerByUserId(userId);
+
+            if(jobSeeker is not null)
+            {
+                // Get the corresponding like entity
+                LikeEntity? likeEntity = context.Likes.Where(e => e.seeker_id == jobSeeker.seeker_id && e.job_id == jobId).SingleOrDefault();
+
+                // If the like entity is null, then the user has not saved this job
+                if(likeEntity is not null)
+                {
+                    context.Likes.Remove(likeEntity);
+                    context.SaveChanges();
+                    result = true;
+                }
+            }
+        }
+
+        return result;
+    }
+
     public bool IsJobInLikes(int userId, int jobId)
     {
         bool isInLikes = false;
 
-            using (AppDbContext context = new(this.config))
+        using (AppDbContext context = new(this.config))
         {
             //Get the JobSeekerEntity matching the given user ID 
-            JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers).GetJobSeekerByUserId(userId);
+            JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers).IncludeLikes().GetJobSeekerByUserId(userId);
 
             if (jobSeekerEntity is not null)
             {
