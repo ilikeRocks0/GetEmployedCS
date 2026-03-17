@@ -24,6 +24,15 @@ public static class UserEndpoints
             .WithTags("Users")
             .WithOpenApi();
 
+         routes.MapPost("/api/users/unsave", (HttpContext context, IUserService userService) =>
+        {
+            var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
+            return userService.UnsaveJob(filters.Count > 0 ? filters : null);
+        })
+            .WithName("UnsaveJob")
+            .WithTags("Users")
+            .WithOpenApi();
+
         routes.MapGet("/api/users/{userId}", (int userId, IUserService userService) =>
         {          
 
