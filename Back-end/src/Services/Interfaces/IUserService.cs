@@ -7,4 +7,5 @@ public interface IUserService
     int CreateUser(NewUser newUser);
     Profile? GetProfile(int user);
     int SaveJob(IReadOnlyDictionary<string, string>? filters = null);
+    bool UnsaveJob(IReadOnlyDictionary<string, string>? filters = null);
 }

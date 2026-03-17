@@ -29,6 +29,22 @@ public class UserService(IUserPersistence userPersistence) : IUserService
         return userPersistence.SaveJob(userId, jobId);
     }
 
+    public bool UnsaveJob(IReadOnlyDictionary<string, string>? filters = null)
+    {
+        if (filters == null)
+        {
+            throw new InvalidOperationException("Invalid filter parameters");
+        }
+        var userId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var uId) ? uId : 0;
+        var jobId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var jId) ? jId : 0;
+        
+        if (!userPersistence.IsJobInLikes(userId, jobId))
+        {
+            throw new InvalidOperationException("This job has not already been liked by this user");
+        }
+        return userPersistence.UnsaveJob(userId, jobId);
+    }
+
     private static User ExtractUserFromInput(NewUser newUser)
     {
         User savedUser;
