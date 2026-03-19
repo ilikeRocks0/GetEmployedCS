@@ -3,6 +3,7 @@ import type { Job } from "@/types/Job";
 import type { JobFilters } from "@/types/JobFilters";
 import { mapJob, ApiJob } from "@/utils/ApiJobMapper";
 import { getUserIdFromSession } from "@/utils/getIdsFromStubSession";
+import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 function buildParams(filters: JobFilters): URLSearchParams {
   const params = new URLSearchParams();
@@ -20,7 +21,7 @@ function buildSavedJobsParams(filters: JobFilters): URLSearchParams {
 }
 
 export async function fetchLanguages(): Promise<string[]> {
-  const res = await fetch(`${API_BASE_URL}/api/jobs/languages`);
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/jobs/languages`);
   if (!res.ok) throw new Error(`Failed to fetch languages: ${res.status}`);
   return res.json();
 }
@@ -33,7 +34,7 @@ export async function fetchJobs(
 ): Promise<{ data: Job[]; total: number }> {
   const params = buildParams(filters);
 
-  const res = await fetch(`${API_BASE_URL}/api/jobs?${params}`, { signal });
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/jobs?${params}`, { signal });
 
   if (!res.ok) throw new Error(`Failed to fetch jobs: ${res.status}`);
 
@@ -53,7 +54,7 @@ export async function fetchSavedJobs(
 ): Promise<{ data: Job[]; total: number }> {
   const params = buildSavedJobsParams(filters);
 
-  const res = await fetch(`${API_BASE_URL}/api/jobs/saved?${params}`, { signal });
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/jobs/saved?${params}`, { signal });
 
   if (!res.ok) throw new Error(`Failed to fetch jobs: ${res.status}`);
 

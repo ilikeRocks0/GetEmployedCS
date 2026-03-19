@@ -43,9 +43,11 @@ const ProfileMenu: React.FC = () => {
   
   const handleClick: MenuProps["onClick"] = async (e) => {
     switch (e.key) {
-      case "profile":
-        router.push("/profile/14");
+      case "profile": {
+        const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+        if (user.username) router.push(`/profile/${user.username}`);
         break;
+      }
       case "applications":
         router.push("/applications");
         break;

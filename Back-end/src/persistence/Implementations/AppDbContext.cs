@@ -101,6 +101,16 @@ public class AppDbContext : DbContext
           .WithOne(e => e.user)
           .HasForeignKey<JobSeekerEntity>(e => e.user_id);
 
+        // Enforce unique usernames
+        modelBuilder.Entity<UserEntity>()
+          .HasIndex(e => e.username)
+          .IsUnique();
+
+        // Enforce unique emails
+        modelBuilder.Entity<UserEntity>()
+          .HasIndex(e => e.email)
+          .IsUnique();
+
         // Define relationship between JobSeekers and Experiences
         modelBuilder.Entity<JobSeekerEntity>()
           .HasMany(e => e.experiences)

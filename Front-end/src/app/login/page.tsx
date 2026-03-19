@@ -1,8 +1,8 @@
 "use client";
 
-import { App, Layout, Card, Form, Input, Button, Typography, Divider } from "antd";
+import { Layout, Card, Form, Input, Button, Typography, Divider, Alert } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useLogin } from "@/context/LoginContext";
 
 const { Content } = Layout;
@@ -14,19 +14,16 @@ interface LoginFormValues {
 }
 
 function LoginPageContent() {
-  const { notification } = App.useApp();
   const { login } = useLogin();
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   const onFinish = async (values: LoginFormValues) => {
+    setError(null);
     try {
       await login(values.email, values.password);
-      router.push("/");
-    } catch (err) {
-      notification.error({
-        message: "Login Failed",
-        description: err instanceof Error ? err.message : "Something went wrong. Please try again.",
-      });
+      window.location.href = "/";
+    } catch {
+      setError("Invalid username or password.");
     }
   };
 
@@ -91,6 +88,12 @@ function LoginPageContent() {
               />
             </Form.Item>
 
+            {error && (
+              <Form.Item>
+                <Alert type="error" message={error} showIcon />
+              </Form.Item>
+            )}
+
             <Form.Item>
               <Button type="primary" htmlType="submit" block size="large">
                 Log in
@@ -110,9 +113,5 @@ function LoginPageContent() {
 }
 
 export default function LoginPage() {
-  return (
-    <App>
-      <LoginPageContent />
-    </App>
-  );
+  return <LoginPageContent />;
 }
