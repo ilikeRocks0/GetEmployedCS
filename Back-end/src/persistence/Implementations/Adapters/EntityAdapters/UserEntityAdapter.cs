@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using Back_end.Persistence.Implementations.Validation;
 using Back_end.Persistence.Objects;
 
 namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
@@ -7,8 +7,6 @@ public class UserEntityAdapter : User
 {
     private void ValidateEntity(UserEntity userEntity)
     {
-        Regex emailRegex = new Regex("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
-
         if (userEntity.user_id < 0)
         {
             throw new ObjectConversionException("User entity cannot have negative user ID.");
@@ -19,7 +17,7 @@ public class UserEntityAdapter : User
             throw new ObjectConversionException("User entity cannot have empty username.");
         }
 
-        if (!emailRegex.IsMatch(userEntity.email))
+        if (!ValidationRegex.emailRegex.IsMatch(userEntity.email))
         {
             throw new ObjectConversionException("User entity must have a valid email.");
         }

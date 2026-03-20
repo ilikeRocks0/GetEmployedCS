@@ -59,4 +59,11 @@ public interface IJobPersistence
     //<param name="jobId">The target job's jobId.</param>
     //<returns>Returns the matching Job object if found, else returns null.</returns>
     public Job? GetJobFromJobId(int jobId);
+
+    //<summary>
+    //Creates a new job given a Job object.
+    //</summary>
+    //<param name="job">The job to be created.</param>
+    //<returns>Returns the ID of the newly created job in the database if successful, else returns -1.</returns>
+    public int CreateJob(Job job);
 }

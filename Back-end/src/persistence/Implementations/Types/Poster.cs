@@ -2,17 +2,40 @@ namespace Back_end.Persistence.Implementations.Types;
 
 public class Poster
 {
-    public string? Name { get; } = null;
+    public Name? FullName { get; }
+    public string? EmployerName { get; }
+    public bool IsEmployer;
 
     public Poster(UserEntity? poster, bool employerPoster)
     {
+        this.IsEmployer = employerPoster;
+
         if (poster != null && employerPoster && poster.employer != null)
         {
-            Name = poster.employer.employer_name;
+            this.EmployerName = poster.employer.employer_name;
         }
         else if (poster != null && !employerPoster && poster.jobSeeker != null)
         {
-            Name = poster.jobSeeker.first_name + " " + poster.jobSeeker.last_name;
+            this.FullName = new Name(poster.jobSeeker);
         }
+    }
+
+    public Poster(string name, bool employerPoster)
+    {
+        this.IsEmployer = employerPoster;
+
+        if(employerPoster)
+        {
+            this.EmployerName = name;
+        }
+        else
+        {
+            this.FullName = new Name(name);
+        }
+    }
+
+    public override string? ToString()
+    {
+        return this.IsEmployer ? this.EmployerName : this.FullName?.ToString();
     }
 }

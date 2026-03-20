@@ -27,7 +27,7 @@ public class JobSeekerQuery
                                             .ThenInclude(e => e!.jobSeeker)
                                 .Include(e => e.likes!)
                                     .ThenInclude(e => e.savedJob)
-                                    .ThenInclude(e => e!.locations)
+                                    .ThenInclude(e => e!.locations!)
                                         .ThenInclude(e => e.location);
 
         return this;

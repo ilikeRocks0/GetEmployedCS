@@ -68,8 +68,6 @@ public class UserPersistence : IUserPersistence
 
     public int CreateUser(User newUser)
     {
-        int userId = -1;
-
         using (AppDbContext context = new(this.config))
         {
             var hashedPassword = passwordHasher.HashPassword(newUser, newUser.Password);
@@ -121,11 +119,9 @@ public class UserPersistence : IUserPersistence
                 context.SaveChanges();
             }
 
-            // Get the user ID of the newly added entity and return it
-            userId = newUserEntity.user_id;
+            // Return the user ID of the newly added entity
+            return newUserEntity.user_id;
         }
-
-        return userId;
     }
 
     public int SaveJob(int userId, int jobId)
