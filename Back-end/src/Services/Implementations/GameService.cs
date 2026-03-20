@@ -1,7 +1,7 @@
 using Back_end.Persistence.Objects;
 using Back_end.Services.Interfaces;
 
-class GameService (IJobIndexManager jobIndexManager) : IGameService
+public class GameService (IJobIndexManager jobIndexManager) : IGameService
 {
     private int jobAccepted = 0;
     private int jobRejected = 0;
