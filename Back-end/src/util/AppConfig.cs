@@ -13,4 +13,7 @@ public sealed class AppConfig
     }
 
     public const int ITEMS_PER_PAGE = 10;
+
+    //the amount of quiz item ids loaded in at a time from the database
+    public const int QUIZ_ITEM_AMOUNT = 500;
 }
