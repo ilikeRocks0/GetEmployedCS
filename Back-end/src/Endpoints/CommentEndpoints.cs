@@ -6,8 +6,10 @@ public static class CommentEndpoints
 {
     public static void MapCommentsEndpoints(this IEndpointRouteBuilder routes)
     {
-        routes.MapPost("/api/comments/create", (NewJobComment comment, ICommentsService commentsService) =>
+        routes.MapPost("/api/comments/create", (NewJobComment comment, HttpContext context, ICommentsService commentsService) =>
         {
+            var userId = context.User.FindFirst("UserId")?.Value;
+            comment.PosterUserId = int.TryParse(userId, out var id) ? id : 0;
             return commentsService.CreateComment(comment);
         })
             .WithName("CreateComment")
