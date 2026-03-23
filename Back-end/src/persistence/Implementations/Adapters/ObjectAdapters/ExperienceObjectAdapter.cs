@@ -10,5 +10,19 @@ public class ExperienceObjectAdapter : ExperienceEntity
     [SetsRequiredMembers]
     public ExperienceObjectAdapter(Experience experience) : base(experience.CompanyName, experience.PositionTitle, experience.JobDescription)
     {
+        ValidateObject(experience);
+    }
+
+    private void ValidateObject(Experience experience)
+    {
+        if(experience.CompanyName.Trim().Equals(String.Empty))
+        {
+            throw new ObjectConversionException("Experience cannot have empty company name.");
+        }
+
+        if(experience.PositionTitle.Trim().Equals(String.Empty))
+        {
+            throw new ObjectConversionException("Experience cannot have empty position title.");
+        }
     }
 }
