@@ -14,7 +14,7 @@ public class JobQuery
 
     public JobQuery IncludeLocations()
     {
-        this.Query = this.Query.Include(e => e.locations)
+        this.Query = this.Query.Include(e => e.locations!)
                     .ThenInclude(e => e.location);
 
         return this;

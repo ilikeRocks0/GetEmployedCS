@@ -9,5 +9,5 @@ public class LocationEntity
     public required string country { get; set; }
     public required string state { get; set; }
     public required string city { get; set; }
-    public required ICollection<JobLocationEntity> jobs { get; set; }
+    public ICollection<JobLocationEntity>? jobs { get; set; }
 }

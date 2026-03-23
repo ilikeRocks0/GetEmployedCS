@@ -27,9 +27,9 @@ public class JobGameConnector (IUserPersistence userPersistence, IJobService job
         }
         
         //If we already saved it just dont save it again
-        if (!userPersistence.IsJobInLikes(user.UserId, job.JobId))
+        if (!userPersistence.IsJobInLikes(user.UserId, (int)job.JobId!))
         {
-            userPersistence.SaveJob(user.UserId, job.JobId);
+            userPersistence.SaveJob(user.UserId, (int)job.JobId);
         }
 
         return GameServiceList[user.UserId].AcceptJob();
