@@ -22,6 +22,7 @@ builder.Services.AddScoped<IQuizItemsPersistence, QuizItemsPersisitence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddSingleton<IJobGameService, GameServiceSingleton>();
+builder.Services.AddSingleton<IUserGameService, UserGameSingleton>();
 builder.Services.AddSingleton<IQuizGameService, QuizGameSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -101,6 +102,7 @@ app.MapGet("/weatherforecast", () =>
 app.MapJobEndpoints();
 app.MapJobGameEndpoints();
 app.MapUserEndpoints();
+app.MapUserGameEndpoints();
 app.MapCommentsEndpoints();
 app.MapQuizGameEndpoints();
 app.Run();

@@ -121,4 +121,60 @@ public static class UserEndpoints
             .WithOpenApi()
             .RequireAuthorization();
     }
+
+    public static void MapUserGameEndpoints(this IEndpointRouteBuilder routes)
+    {
+        // This endpoint initializes the job list for the game based on the provided filters and returns a random job to start the game. 
+        // The filters are the same as those used in GetJobs.
+        routes.MapPost("/api/users/game", (HttpContext context, IUserGameService userGameService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            return Results.Ok(userGameService.InitializeUserGame(new CurrentUser(userId)));
+        })
+            .WithName("InitializeUserGame")
+            .WithTags("User Game")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+        // this endpoint allows the user to reject the current job in the game and receive the next job.
+        routes.MapPost("/api/users/game/reject/{username}", (string username, HttpContext context, IUserGameService userGameService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            return Results.Ok(userGameService.RejectUser(new CurrentUser(userId), username));
+        })
+            .WithName("RejectUser")
+            .WithTags("User Game")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+        // this endpoint allows the user to accept the current job in the game and receive the next job.
+        routes.MapPost("/api/users/game/accept/{username}", (string username, HttpContext context, IUserGameService userGameService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            return Results.Ok(userGameService.AcceptUser(new CurrentUser(userId), username));
+        })
+            .WithName("AcceptUser")
+            .WithTags("User Game")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+        // this endpoint allows the user to retrieve the current game statistics, including the number of accepted and rejected jobs.
+        routes.MapPost("/api/users/game/stats", (HttpContext context, IUserGameService userGameService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            return Results.Ok(userGameService.GetGameStats(new CurrentUser(userId)));
+        })
+            .WithName("GetUserGameStats")
+            .WithTags("User Game")
+            .WithOpenApi()
+            .RequireAuthorization();
+    }
 }
