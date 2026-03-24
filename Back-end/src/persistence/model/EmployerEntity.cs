@@ -9,4 +9,5 @@ public class EmployerEntity
     public int user_id { get; set; }
     public required string employer_name { get; set; }
     public required UserEntity user { get; set; }
+    public ICollection<FollowsEntity>? follows { get; set; }
 }
