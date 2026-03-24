@@ -1,9 +1,9 @@
 using Back_end.Services.Interfaces;
-using Back_end.Persistence.Implementations;
+using Back_end.Persistence.Interfaces;
 
 namespace Back_end.Services.Implementations;
 
-class GenericWordsService (ResumePersistence resumePersistence): IGenericWordsService
+public class GenericWordsService (IResumePersistence resumePersistence): IGenericWordsService
 {
     public List<int> GetPositionOfGenericWords(string Paragraph)
     {
