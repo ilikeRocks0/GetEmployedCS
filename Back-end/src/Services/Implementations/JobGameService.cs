@@ -38,7 +38,7 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
         {
             throw new InvalidOperationException("UserId doesn't match an existing user");
         }
-        return jobGameConnector.AcceptJob(user, job);  
+        return jobGameConnector.RejectJob(user, job);
     }
 
     public Job? AcceptJob(GameJob gameJob)

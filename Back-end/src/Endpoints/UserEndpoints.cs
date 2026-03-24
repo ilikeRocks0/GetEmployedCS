@@ -35,6 +35,8 @@ public static class UserEndpoints
          routes.MapPost("/api/users/unsave", (HttpContext context, IUserService userService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
+            var userId = context.User.FindFirst("UserId")?.Value;
+            filters[AppConfig.FilterKeys.USERID] = userId ?? "0";
             return userService.UnsaveJob(filters.Count > 0 ? filters : null);
         })
             .WithName("UnsaveJob")

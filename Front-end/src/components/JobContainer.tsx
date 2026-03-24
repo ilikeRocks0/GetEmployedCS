@@ -4,26 +4,35 @@ import { JobsContext } from "@/context/JobsContext";
 import { useContext, useEffect, useState } from "react";
 import JobCard, { Job } from "./JobCard";
 import { PAGE_SIZE } from "@/config/config";
-import {  Pagination, Spin } from "antd";
+import { Pagination, Spin } from "antd";
+import { fetchSavedSublist } from "@/api/fetchJobs";
+import { useIsSavedList } from "@/context/IsSavedListContext";
 
 
 export function JobContainer(){
     const fetchJobs = useContext(JobsContext);
     const {filters:filters} = useContext(FiltersContext);
+    const isSavedList = useIsSavedList();
     const [page, setPage] = useState(1);
     const [jobs, setJobs] = useState<Job[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(false);
-    
+    const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
+
     useEffect(() => {
         const controller = new AbortController();
         setLoading(true);
 
         const timer = setTimeout(async () => {
             try {
-                const result = await fetchJobs(filters, page, PAGE_SIZE, controller.signal);
+                const promises: [ReturnType<typeof fetchJobs>, Promise<Set<number>>?] = [
+                    fetchJobs(filters, page, PAGE_SIZE, controller.signal),
+                    !isSavedList ? fetchSavedSublist(filters, controller.signal) : undefined,
+                ];
+                const [result, sublist] = await Promise.all(promises);
                 setJobs(result.data);
                 setTotal(result.total);
+                if (sublist) setSavedIds(sublist);
             } catch (err) {
                 if ((err as DOMException).name !== "AbortError") throw err;
             } finally {
@@ -35,7 +44,7 @@ export function JobContainer(){
         clearTimeout(timer);
         controller.abort();
         };
-    }, [filters, page, fetchJobs]);
+    }, [filters, page, fetchJobs, isSavedList]);
 
     return (
         <div>
@@ -44,7 +53,7 @@ export function JobContainer(){
                 <p style={{ color: "#888" }}>No jobs match your filters.</p>
                 ) : (
                     jobs.map((job) => (
-                        <JobCard key={job.id} job={job} />
+                        <JobCard key={job.id} job={job} isSaved={isSavedList || savedIds.has(job.id)} onRemove={() => setJobs(prev => prev.filter(j => j.id !== job.id))} />
                     ))
                 )}
             </Spin>
