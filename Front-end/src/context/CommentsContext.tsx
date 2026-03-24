@@ -6,7 +6,7 @@ import { getComments, createComment } from "@/api/comments";
 
 const CommentsContext = createContext({
   getComments: getComments as (jobId: number) => Promise<JobComment[]>,
-  createComment: createComment as (jobId: number, comment: string, posterUserId: number) => Promise<JobComment>,
+  createComment: createComment as (jobId: number, comment: string) => Promise<JobComment>,
 });
 
 export function CommentsProvider({ children }: { children: React.ReactNode }) {

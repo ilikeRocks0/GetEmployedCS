@@ -1,13 +1,11 @@
 
 import { useState } from "react";
-import { Modal, Button, Avatar, Tag, Typography, Divider, Spin, Input } from "antd";
+import { Button, Avatar, Typography, Spin, Input } from "antd";
 import { CommentOutlined, SendOutlined } from "@ant-design/icons";
-import type { Job } from "@/types/Job";
 import type { JobComment } from "@/types/JobComment";
 import { useComments } from "@/context/CommentsContext";
-import { getUserIdFromSession } from "@/utils/getIdsFromStubSession";
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 const { TextArea } = Input;
 
 interface CommentListState {
@@ -36,11 +34,10 @@ export default function CommentList({jobId}: CommentListState){
   }
 
   async function handleSubmitComment() {
-    const userId = getUserIdFromSession();
-    if (!newComment.trim() || userId == null) return;
+    if (!newComment.trim()) return;
     setSubmitting(true);
     try {
-      const posted = await createComment(jobId, newComment.trim(), userId);
+      const posted = await createComment(jobId, newComment.trim());
       setComments((prev) => [...prev, posted]);
       setNewComment("");
     } finally {
