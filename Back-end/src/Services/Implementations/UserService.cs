@@ -48,7 +48,7 @@ public class UserService(IUserPersistence userPersistence) : IUserService
             throw new InvalidOperationException("Invalid filter parameters");
         }
         var userId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var uId) ? uId : 0;
-        var jobId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.USERID), out var jId) ? jId : 0;
+        var jobId = int.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.JOBID), out var jId) ? jId : 0;
         
         if (!userPersistence.IsJobInLikes(userId, jobId))
         {

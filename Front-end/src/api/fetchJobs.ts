@@ -46,6 +46,14 @@ export async function fetchJobs(
   return { data, total };
 }
 
+export async function fetchSavedSublist(filters: JobFilters, signal: AbortSignal): Promise<Set<number>> {
+  const params = buildParams(filters);
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/jobs/saved/sublist?${params}`, { signal });
+  if (!res.ok) throw new Error(`Failed to fetch saved sublist: ${res.status}`);
+  const apiJobs: ApiJob[] = await res.json();
+  return new Set(apiJobs.map((j) => mapJob(j).id));
+}
+
 export async function fetchSavedJobs(
   filters: JobFilters,
   page: number,

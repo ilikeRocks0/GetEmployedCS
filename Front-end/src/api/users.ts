@@ -29,3 +29,14 @@ export async function fetchUser( userId: number, signal: AbortSignal ): Promise<
     const user: User = await res.json();
     return user;
 }
+
+export async function saveJob(jobId: number): Promise<void> {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/users/save?JobId=${jobId}`, { method: "POST" });
+  if (!res.ok) throw new Error(`Failed to save job: ${res.status}`);
+}
+
+export async function unsaveJob(jobId: number): Promise<void> {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/users/unsave?JobId=${jobId}`, { method: "POST" });
+  console.log(jobId)
+  if (!res.ok) throw new Error(`Failed to unsave job: ${res.status}`);
+}
