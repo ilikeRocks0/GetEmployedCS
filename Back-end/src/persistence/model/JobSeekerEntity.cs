@@ -12,4 +12,5 @@ public class JobSeekerEntity
     public ICollection<LikeEntity>? likes { get; set; }
     public ICollection<ExperienceEntity>? experiences { get; set; }
     public UserEntity? user { get; set; }
+    public ICollection<FollowsEntity>? followers { get; set; }
 }
