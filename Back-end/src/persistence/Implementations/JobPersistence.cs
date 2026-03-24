@@ -90,6 +90,33 @@ public class JobPersistence : IJobPersistence
         return filteredList;
     }
 
+    public List<Job> GetJobsSavedSublist(List<Job> jobs, int userId)
+    {
+        List<Job> savedSublist = new();
+
+        using (AppDbContext context = new(this.config))
+        {
+            //Get the job seeker matching the provided userId
+            JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers)
+                                                .IncludeLikes()
+                                                .GetJobSeekerByUserId(userId);
+            ICollection<LikeEntity>? likes = jobSeekerEntity?.likes?.ToList();
+
+            //Compare provided jobs list with the job seeker's likes
+            if (likes != null)
+            {
+                jobs.ForEach(job =>
+                {
+                    if (likes.Any(likeEntry => job.JobId == likeEntry.job_id))
+                    {
+                        savedSublist.Add(job);
+                    }
+                });
+            }
+        }
+        return savedSublist;
+    }
+
     public List<Job> GetSavedJobs(int userId, string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize)
     {
         List<Job> savedJobs = new();

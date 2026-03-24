@@ -25,6 +25,25 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+        // This endpoint retrieves a sublist of a user's saved jobs within the list of jobs based on the provided filters. 
+        // The filters are passed as query parameters and can include:
+        // - "SearchTerm": A keyword string to filter jobs by title.
+        // - "Languages": A comma-separated list of required programming languages or technologies.
+        // - "PositionTypes": A comma-separated list of roles to filter by (e.g., "front-end", "back-end").
+        // - "EmploymentTypes": A comma-separated list of types of contract to filter by (e.g., "full-time", "part-time").
+        // If no filters are provided, all of the user's saved jobs within the jobs list will be returned.
+        routes.MapGet("/api/jobs/saved/sublist", (HttpContext context, IJobService jobService) =>
+        {
+            var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
+            var userId = context.User.FindFirst("UserId")?.Value;
+            filters[AppConfig.FilterKeys.USERID] = userId ?? "0";
+            return jobService.GetJobsSavedSublist(filters.Count > 0 ? filters : null);
+        })
+            .WithName("GetSavedJobListings")
+            .WithTags("Jobs")
+            .WithOpenApi()
+            .RequireAuthorization();
+
         // This endpoint retrieves the saved jobs for a user based on the provided filters. 
         // The filters are the same as those used in GetJobs, but "SeekerId" is required to identify the user whose saved jobs are being requested.
         // If "SeekerId" is missing or invalid, no saved jobs will be returned.
