@@ -1,12 +1,11 @@
 
 import { useState } from "react";
-import { Modal, Button, Avatar, Tag, Typography, Divider, Spin, Input } from "antd";
+import { Button, Avatar, Typography, Spin, Input } from "antd";
 import { CommentOutlined, SendOutlined } from "@ant-design/icons";
-import type { Job } from "@/types/Job";
 import type { JobComment } from "@/types/JobComment";
 import { useComments } from "@/context/CommentsContext";
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 const { TextArea } = Input;
 
 interface CommentListState {
