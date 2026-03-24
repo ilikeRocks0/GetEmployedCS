@@ -9,9 +9,11 @@ public class AppDbContext : DbContext
 {
     private readonly string connectionString;
     public DbSet<EmployerEntity> Employers { get; set; }
+    public DbSet<EmploymentTypeEntity> EmploymentTypes { get; set; }
     public DbSet<ExperienceEntity> Experiences { get; set; }
     public DbSet<FolderEntity> Folders { get; set; }
     public DbSet<FolderContentEntity> FolderContents { get; set; }
+    public DbSet<FollowsEntity> Follows { get; set; }
     public DbSet<GenericWordEntity> GenericWords { get; set; }
     public DbSet<JobEntity> Jobs { get; set; }
     public DbSet<JobLanguageEntity> JobLanguages { get; set; }
@@ -20,6 +22,7 @@ public class AppDbContext : DbContext
     public DbSet<JobCommentEntity> JobComments { get; set; }
     public DbSet<LikeEntity> Likes { get; set; }
     public DbSet<LocationEntity> Locations { get; set; }
+    public DbSet<PositionTypeEntity> PositionTypes { get; set; }
     public DbSet<ProgrammingLanguageEntity> ProgrammingLanguages { get; set; }
     public DbSet<QuizItemEntity> QuizItems { get; set; }
     public DbSet<UserEntity> Users { get; set; }
@@ -127,5 +130,16 @@ public class AppDbContext : DbContext
           .HasOne(e => e.job)
           .WithMany(e => e.comments)
           .HasForeignKey(e => e.job_id);
+
+        // Define relationship between Users and Follows
+        modelBuilder.Entity<FollowsEntity>()
+            .HasOne(e => e.follower)
+            .WithMany(e => e.follows)
+            .HasForeignKey(e => e.follower_id);
+
+        modelBuilder.Entity<FollowsEntity>()
+            .HasOne(e => e.followed)
+            .WithMany(e => e.followers)
+            .HasForeignKey(e => e.followed_id);
     }
 }

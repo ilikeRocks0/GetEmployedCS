@@ -228,4 +228,21 @@ public class UserPersistence : IUserPersistence
 
         return user;
     }
+
+    public void FollowUser(int followerId, int followedId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            context.Follows.Add(new FollowsEntity(followerId, followedId));
+            context.SaveChanges();
+        }
+    }
+
+    public bool IsUserInFollows(int followerId, int followedId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            return context.Follows.Where(e => e.follower_id == followerId && e.followed_id == followedId).SingleOrDefault() is not null;
+        }
+    }
 }
