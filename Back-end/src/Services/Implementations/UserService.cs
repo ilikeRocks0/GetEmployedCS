@@ -119,4 +119,9 @@ public class UserService(IUserPersistence userPersistence) : IUserService
         }
         return new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName);
     }
+
+    public bool CheckUserEmployer(int userId)
+    {
+        return userPersistence.CheckUserEmployer(userId);
+    }
 }

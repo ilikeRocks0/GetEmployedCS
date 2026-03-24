@@ -108,5 +108,17 @@ public static class UserEndpoints
             .WithName("Logout")
             .WithTags("Users")
             .WithOpenApi();
+
+        routes.MapGet("/api/users/check-employer", (HttpContext context, IUserService userService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            return Results.Ok(userService.CheckUserEmployer(userId));
+        })
+            .WithName("CheckUserEmployer")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
     }
 }
