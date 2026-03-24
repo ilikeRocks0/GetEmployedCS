@@ -25,7 +25,7 @@ public class LocationStringAdapter : LocationEntity
     {
         const int ExpectedSplitSize = 3;
         
-        if(splitLocation.Length < ExpectedSplitSize)
+        if(splitLocation.Length != ExpectedSplitSize)
         {
             throw new ObjectConversionException("Location string must have exactly 3 components.");
         }
