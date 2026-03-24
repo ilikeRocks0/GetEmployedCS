@@ -18,9 +18,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(AppOptions)));
 builder.Services.AddScoped<IJobPersistence, JobPersistence>();
+builder.Services.AddScoped<IQuizItemsPersistence, QuizItemsPersisitence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddSingleton<IJobGameService, GameServiceSingleton>();
+builder.Services.AddSingleton<IQuizGameService, QuizGameSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
@@ -100,6 +102,7 @@ app.MapJobEndpoints();
 app.MapJobGameEndpoints();
 app.MapUserEndpoints();
 app.MapCommentsEndpoints();
+app.MapQuizGameEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
