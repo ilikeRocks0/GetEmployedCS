@@ -11,6 +11,7 @@ public interface IUserPersistence
     public bool UnsaveJob(int userId, int jobId);
     public bool IsJobInLikes(int userId, int jobId);
     public User? GetUserByCredentials(string email, string password);
+    public bool CheckUserEmployer(int userId);
     public void FollowUser(int followerId, int followedId);
     public bool IsUserInFollows(int followerId, int followedId);
 }

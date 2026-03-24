@@ -245,4 +245,12 @@ public class UserPersistence : IUserPersistence
             return context.Follows.Where(e => e.follower_id == followerId && e.followed_id == followedId).SingleOrDefault() is not null;
         }
     }
+
+    public bool CheckUserEmployer(int userId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            return context.Employers.Where(e => e.user_id == userId).SingleOrDefault() is not null;
+        }
+    }
 }

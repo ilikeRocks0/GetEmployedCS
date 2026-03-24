@@ -10,5 +10,5 @@ public interface IUserService
     int SaveJob(IReadOnlyDictionary<string, string>? filters = null);
     bool UnsaveJob(IReadOnlyDictionary<string, string>? filters = null);
     int Login(LoginRequest loginRequest);
-
+    bool CheckUserEmployer(int userId);
 }
