@@ -1,17 +1,10 @@
 "use client";
 
 import { useState, useRef, forwardRef, useImperativeHandle } from "react";
-import { Tag, Avatar, Typography } from "antd";
-import type { Job } from "@/types/Job";
+import { Tag, Avatar, Typography, Divider } from "antd";
+import type { User } from "@/types/User";
 
 const { Title, Text } = Typography;
-
-const TYPE_COLORS: Record<string, string> = {
-  "Full-time": "green",
-  "Co-op": "blue",
-  Internship: "blue",
-  Contract: "orange",
-};
 
 const AVATAR_COLORS = ["#1677ff", "#52c41a", "#fa8c16", "#eb2f96", "#722ed1"];
 function avatarColor(name: string) {
@@ -22,21 +15,21 @@ function avatarColor(name: string) {
 const SWIPE_THRESHOLD = 100;
 const FLY_DURATION = 350;
 
-export interface SwipeCardHandle {
+export interface SeekerSwipeCardHandle {
   swipe: (direction: "left" | "right") => void;
 }
 
-interface SwipeCardState {
-  initialJob: Job;
-  onAccept: (jobId: number) => Promise<Job | null>;
-  onReject: (jobId: number) => Promise<Job | null>;
+interface SeekerSwipeCardProps {
+  initialSeeker: User;
+  onAccept: (seekerId: number) => Promise<User | null>;
+  onReject: (seekerId: number) => Promise<User | null>;
   onSwipeStart?: () => void;
   onSwiped: (direction: "left" | "right") => void;
 }
 
-const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardState>(
-  ({ initialJob, onAccept, onReject, onSwipeStart, onSwiped }, ref) => {
-    const [currentJob, setCurrentJob] = useState<Job>(initialJob);
+const SeekerSwipeCard = forwardRef<SeekerSwipeCardHandle, SeekerSwipeCardProps>(
+  ({ initialSeeker, onAccept, onReject, onSwipeStart, onSwiped }, ref) => {
+    const [currentSeeker, setCurrentSeeker] = useState<User>(initialSeeker);
     const [dragX, setDragX] = useState(0);
     const [dragging, setDragging] = useState(false);
     const [flying, setFlying] = useState<"left" | "right" | null>(null);
@@ -51,12 +44,12 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardState>(
       onSwipeStart?.();
 
       try {
-        const [nextJob] = await Promise.all([
-          direction === "right" ? onAccept(currentJob.id) : onReject(currentJob.id),
+        const [nextSeeker] = await Promise.all([
+          direction === "right" ? onAccept(currentSeeker.userId) : onReject(currentSeeker.userId),
           new Promise((resolve) => setTimeout(resolve, FLY_DURATION)),
         ]);
 
-        if (nextJob) setCurrentJob(nextJob);
+        if (nextSeeker) setCurrentSeeker(nextSeeker);
         setFlying(null);
         setDragX(0);
         setEntering(true);
@@ -117,9 +110,11 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardState>(
     const stampOpacity = Math.min(1, Math.abs(dragX) / SWIPE_THRESHOLD);
     const isAccepting = dragX > 0;
     const stampColor = isAccepting ? "#52c41a" : "#ff4d4f";
-    const stampText = isAccepting ? "SAVE" : "PASS";
-    const avatarName = currentJob.company || currentJob.position;
-    const avatarBg = currentJob.logo ? undefined : avatarColor(avatarName);
+    const stampText = isAccepting ? "INTERESTED" : "PASS";
+
+    const displayName = currentSeeker.firstName && currentSeeker.lastName
+      ? `${currentSeeker.firstName} ${currentSeeker.lastName}`
+      : currentSeeker.username;
 
     return (
       <div
@@ -165,60 +160,54 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardState>(
           {stampText}
         </div>
 
-        {/* Company + position */}
+        {/* Name + username */}
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
           <Avatar
             size={56}
-            src={currentJob.logo}
-            style={{ backgroundColor: avatarBg, fontWeight: 700, flexShrink: 0 }}
+            style={{ backgroundColor: avatarColor(displayName), fontWeight: 700, flexShrink: 0 }}
           >
-            {!currentJob.logo && avatarName.slice(0, 2).toUpperCase()}
+            {displayName.slice(0, 2).toUpperCase()}
           </Avatar>
           <div>
-            <Title level={4} style={{ margin: 0 }}>
-              {currentJob.company}
-            </Title>
-            <Text type="secondary" style={{ fontSize: 15 }}>
-              {currentJob.position}
-            </Text>
-            <div style={{ marginTop: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
-              {currentJob.locations.length > 0 && (
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  {currentJob.locations[0]}{currentJob.locations.length > 1 ? ` +${currentJob.locations.length - 1}` : ""}
-                </Text>
-              )}
-              {currentJob.deadline && (
-                <Text type="secondary" style={{ fontSize: 12 }}>
-                  {new Date(currentJob.deadline).toLocaleDateString()}
-                </Text>
-              )}
-            </div>
+            <Title level={4} style={{ margin: 0 }}>{displayName}</Title>
+            <Text type="secondary" style={{ fontSize: 13 }}>@{currentSeeker.username}</Text>
           </div>
         </div>
 
-        {/* Tags */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 20 }}>
-          {currentJob.languages.map((lang) => (
-            <Tag key={lang}>{lang}</Tag>
-          ))}
-          <Tag color={TYPE_COLORS[currentJob.employment_type] ?? "default"}>
-            {currentJob.employment_type}
-          </Tag>
-          {currentJob.isRemote && <Tag color="cyan">Remote</Tag>}
-          {currentJob.isHybrid && <Tag color="geekblue">Hybrid</Tag>}
-        </div>
-
-        {/* Description */}
-        <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
-          <Text type="secondary" style={{ fontSize: 14, lineHeight: 1.7, display: "block" }}>
-            {currentJob.description}
+        {/* Bio */}
+        {currentSeeker.bio && (
+          <Text style={{ fontSize: 14, lineHeight: 1.6, marginBottom: 16, display: "block" }}>
+            {currentSeeker.bio}
           </Text>
-        </div>
+        )}
+
+        {/* Experiences */}
+        {currentSeeker.experiences && currentSeeker.experiences.length > 0 && (
+          <>
+            <Divider style={{ margin: "12px 0" }} />
+            <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
+              <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 8 }}>EXPERIENCE</Text>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {currentSeeker.experiences.map((exp) => (
+                  <div key={exp.experienceId}>
+                    <Text strong style={{ display: "block" }}>{exp.title}</Text>
+                    <Text type="secondary" style={{ fontSize: 13 }}>{exp.company}</Text>
+                    {exp.description && (
+                      <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 2 }}>
+                        {exp.description}
+                      </Text>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     );
   }
 );
 
-SwipeCard.displayName = "SwipeCard";
+SeekerSwipeCard.displayName = "SeekerSwipeCard";
 
-export default SwipeCard;
+export default SeekerSwipeCard;
