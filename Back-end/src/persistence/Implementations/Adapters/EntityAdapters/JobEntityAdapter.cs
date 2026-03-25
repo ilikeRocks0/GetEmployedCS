@@ -45,6 +45,9 @@ public class JobEntityAdapter : Job
         // Create Poster object that validates and constructs the poster's name 
         PosterName = new Poster(jobEntity.poster, jobEntity.employer_poster).ToString();
 
+        // Set employer poster flag
+        EmployerPoster = jobEntity.employer_poster;
+
         // Get job locations
         Locations = new();
         List<JobLocationEntity> jobLocationEntities = jobEntity.locations!.ToList();
