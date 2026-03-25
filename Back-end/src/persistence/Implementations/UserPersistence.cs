@@ -303,4 +303,46 @@ public class UserPersistence : IUserPersistence
             return context.Employers.Where(e => e.user_id == userId).SingleOrDefault() is not null;
         }
     }
+
+    public void UpdateUser(User updatedUser)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            UserEntity? userEntity = context.Users.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+
+            if(userEntity is not null)
+            {
+                // Update user fields
+                userEntity.username = updatedUser.Username;
+                userEntity.password = passwordHasher.HashPassword(updatedUser, updatedUser.Password);
+                userEntity.about_string = updatedUser.About;
+                userEntity.email = updatedUser.Email;
+                
+                // Update fields specific to each user type
+                if(updatedUser.IsEmployer && updatedUser.EmployerName is not null)
+                {
+                    EmployerEntity? employerEntity = context.Employers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+                    if(employerEntity is not null)
+                    {
+                        employerEntity.employer_name = updatedUser.EmployerName;
+                    }
+                }
+                else if(!updatedUser.IsEmployer && updatedUser.FirstName is not null && updatedUser.LastName is not null)
+                {
+                    JobSeekerEntity? jobSeekerEntity = context.JobSeekers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+                    if(jobSeekerEntity is not null)
+                    {
+                        jobSeekerEntity.first_name = updatedUser.FirstName;
+                        jobSeekerEntity.last_name = updatedUser.LastName;
+                    }
+                }
+
+                context.SaveChanges();
+            }
+            else
+            {
+                throw new InvalidOperationException("An existing user could not be found in database");
+            }
+        }
+    }
 }

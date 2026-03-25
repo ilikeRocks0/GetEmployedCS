@@ -15,4 +15,5 @@ public interface IUserPersistence
     public bool CheckUserEmployer(int userId);
     public void FollowUser(int followerId, int followedId);
     public bool IsUserInFollows(int followerId, int followedId);
+    public void UpdateUser(User updatedUser);
 }
