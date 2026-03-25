@@ -7,7 +7,7 @@ namespace Back_end.Services.Implementations;
 
 public class GameServiceSingleton : IJobGameService
 {
-    private IJobGameService? server;
+    private IJobGameService? jobGameService;
 
     public GameServiceSingleton(IServiceScopeFactory scopeFactory)
     {
@@ -16,30 +16,30 @@ public class GameServiceSingleton : IJobGameService
         var jobPersistence = scope.ServiceProvider.GetRequiredService<IJobPersistence>();
         var jobService = scope.ServiceProvider.GetRequiredService<IJobService>();
         
-        server = new JobGameService(userPersistence, jobPersistence, jobService);
+        jobGameService = new JobGameService(userPersistence, jobPersistence, jobService);
     }
 
     public Job? InitializeJobGame(CurrentUser currentUser, IReadOnlyDictionary<string, string>? filters = null)
     {
-        if (server == null) throw new InvalidOperationException("Service not initialized.");
-        return server.InitializeJobGame(currentUser, filters);
+        if (jobGameService == null) throw new InvalidOperationException("Service not initialized.");
+        return jobGameService.InitializeJobGame(currentUser, filters);
     }
 
     public Job? AcceptJob(GameJob gameJob)
     {
-        if (server == null) throw new InvalidOperationException("Game not initialized.");
-        return server.AcceptJob(gameJob);
+        if (jobGameService == null) throw new InvalidOperationException("Game not initialized.");
+        return jobGameService.AcceptJob(gameJob);
     }
 
     public Job? RejectJob(GameJob gameJob)
     {
-        if (server == null) throw new InvalidOperationException("Game not initialized.");
-        return server.RejectJob(gameJob);
+        if (jobGameService == null) throw new InvalidOperationException("Game not initialized.");
+        return jobGameService.RejectJob(gameJob);
     }
 
     public (int accepted, int rejected) GetGameStats(CurrentUser currentUser)
     {
-        if (server == null) throw new InvalidOperationException("Game not initialized.");
-        return server.GetGameStats(currentUser);
+        if (jobGameService == null) throw new InvalidOperationException("Game not initialized.");
+        return jobGameService.GetGameStats(currentUser);
     } 
 }

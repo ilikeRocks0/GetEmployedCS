@@ -17,9 +17,10 @@ public class UserEntityAdapter : User
             throw new ObjectConversionException("User entity cannot have empty username.");
         }
 
-        if (!ValidationRegex.emailRegex.IsMatch(userEntity.email))
+        if (!ValidationRegex.IsValidEmail(userEntity.email))
         {
-            throw new ObjectConversionException("User entity must have a valid email.");
+            throw new ObjectConversionException(
+                $"User entity must have a valid email (user_id={userEntity.user_id}).");
         }
 
         if (userEntity.password.Trim().Equals(String.Empty))

@@ -43,6 +43,56 @@ public class UserPersistence : IUserPersistence
         return user;
     }
 
+    public List<User> GetUsersForGame(int currentUserId, int startIndex, int amount)
+    {
+        const int batchSize = 50;
+
+        using (AppDbContext context = new(this.config))
+        {
+            var result = new List<User>(capacity: amount);
+            var skip = startIndex;
+
+            while (result.Count < amount)
+            {
+                var batch = context.Users
+                  .Where(e => e.user_id != currentUserId && e.employer == null)
+                  .OrderBy(e => e.user_id)
+                  .Skip(skip)
+                  .Take(batchSize)
+                  .Include(e => e.employer)
+                  .Include(e => e.jobSeeker)
+                    .ThenInclude(e => e!.experiences)
+                  .ToList();
+
+                if (batch.Count == 0)
+                {
+                    break;
+                }
+
+                foreach (UserEntity entity in batch)
+                {
+                    if (result.Count >= amount)
+                    {
+                        break;
+                    }
+
+                    try
+                    {
+                        result.Add(new UserEntityAdapter(entity));
+                    }
+                    catch (ObjectConversionException)
+                    {
+                        // Skip rows that fail entity invariants (e.g. bad email)
+                    }
+                }
+
+                skip += batch.Count;
+            }
+
+            return result;
+        }
+    }
+
     public User? GetUserByUsername(string username)
     {
         User? user = null;
