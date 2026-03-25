@@ -12,11 +12,11 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
     UserFinder userFinder = new UserFinder(userPersistence);
     JobFinder jobFinder = new JobFinder(jobPersistence);
 
-    public Job? InitializeJobGame(CurrentUser currentUser, IReadOnlyDictionary<string, string>? filters = null)
+    public Job? InitializeJobGame(CurrentUser currentUser)
     {
-        if (currentUser is null)
+        if (currentUser.UserId < 0)
         {
-            throw new InvalidOperationException("No UserId provided");
+            throw new InvalidOperationException("UserId provided must be non-negative");
         }     
         User? user = userFinder.GetUser(currentUser.UserId);
         if (user is null)
@@ -28,10 +28,14 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
     
     public Job? RejectJob(GameJob gameJob)
     {
-        if (gameJob is null)
+        if (gameJob.UserId < 0)
         {
-            throw new InvalidOperationException("Invalid format for user id and job id provided");
-        }     
+            throw new InvalidOperationException("UserId provided must be non-negative");
+        }
+        else if(gameJob.JobId < 0)
+        {
+            throw new InvalidOperationException("JobId provided must be non-negative");
+        }
         User? user = userFinder.GetUser(gameJob.UserId);
         Job? job = jobFinder.GetJob(gameJob.JobId);
         if (user is null || job is null)
@@ -43,10 +47,14 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
 
     public Job? AcceptJob(GameJob gameJob)
     {
-        if (gameJob is null)
+        if (gameJob.UserId < 0)
         {
-            throw new InvalidOperationException("Invalid format for user id and job id provided");
-        }     
+            throw new InvalidOperationException("UserId provided must be non-negative");
+        }
+        else if(gameJob.JobId < 0)
+        {
+            throw new InvalidOperationException("JobId provided must be non-negative");
+        }
         User? user = userFinder.GetUser(gameJob.UserId);
         Job? job = jobFinder.GetJob(gameJob.JobId);
         if (user is null || job is null)
@@ -58,10 +66,10 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
 
     public (int accepted, int rejected) GetGameStats(CurrentUser currentUser)
     {
-        if (currentUser is null)
+        if (currentUser.UserId < 0)
         {
-            throw new InvalidOperationException("No UserId provided");
-        }     
+            throw new InvalidOperationException("UserId provided must be non-negative");
+        }
         User? user = userFinder.GetUser(currentUser.UserId);
         if (user is null)
         {
