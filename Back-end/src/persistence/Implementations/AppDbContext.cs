@@ -35,8 +35,19 @@ public class AppDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        // Save connection string from environment variables, or throw exception if it returns null
-        string connectionString = config.GetValue<string>(AppConfig.DB_ENV_KEY) ?? throw new ObjectNotFoundException();
+        string? connectionString = config.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            // Save connection string from environment variables, or throw exception if it returns null
+            connectionString = config.GetValue<string>(AppConfig.DB_ENV_KEY);
+        }
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new ObjectNotFoundException("Could not find 'ConnectionStrings:DefaultConnection' in appsettings or environment variables.");      
+        }
+        
         optionsBuilder.UseMySQL(connectionString);
     }
 
