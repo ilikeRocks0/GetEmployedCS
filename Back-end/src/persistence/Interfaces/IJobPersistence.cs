@@ -77,4 +77,10 @@ public interface IJobPersistence
     //<param name="username">The username to find posted jobs for</param>
     //<returns>Returns a list containing the jobs posted by the given username.</returns>
     public List<Job> GetJobsByUsername(string username);
+
+    //<summary>
+    //Deletes a job given a job ID
+    //</summary>
+    //<param name="jobId">The ID of the job to be deleted</param>
+    public void DeleteJob(int jobId);
 }
