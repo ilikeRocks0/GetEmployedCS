@@ -347,7 +347,9 @@ public class UserPersistence : IUserPersistence
 
             // Update user fields
             userEntity.username = updatedUser.Username;
-            userEntity.password = passwordHasher.HashPassword(updatedUser, updatedUser.Password);
+            userEntity.password = updatedUser.Password == userEntity.password
+                ? userEntity.password
+                : passwordHasher.HashPassword(updatedUser, updatedUser.Password);
             userEntity.about_string = updatedUser.About;
             userEntity.email = updatedUser.Email;
             
