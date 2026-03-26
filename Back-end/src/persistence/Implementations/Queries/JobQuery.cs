@@ -1,4 +1,5 @@
 using Back_end.Persistence.Model;
+using Back_end.Persistence.Objects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Persistence.Implementations.Queries;
@@ -40,5 +41,13 @@ public class JobQuery
     public JobEntity? GetJobByJobId(int jobId)
     {
         return this.Query.Where(e => e.job_id == jobId).SingleOrDefault();
+    }
+
+    public List<Job> GetJobByPosterUsername(string username)
+    {
+        return this.Query
+                    .Where(e => e.poster!.username.Equals(username))
+                    .Select(e => (Job)new JobEntityAdapter(e))
+                    .ToList();
     }
 }

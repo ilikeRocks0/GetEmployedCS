@@ -70,4 +70,11 @@ public interface IJobPersistence
     //<param name="job">The job to be created.</param>
     //<returns>Returns the ID of the newly created job in the database if successful, else returns -1.</returns>
     public int CreateJob(Job job);
+
+    //<summary>
+    //Gets jobs posted by a given username.
+    //</summary>
+    //<param name="username">The username to find posted jobs for</param>
+    //<returns>Returns a list containing the jobs posted by the given username.</returns>
+    public List<Job> GetJobsByUsername(string username);
 }

@@ -313,4 +313,16 @@ public class JobPersistence : IJobPersistence
             return newJobEntity.job_id;
         }
     }
+
+    public List<Job> GetJobsByUsername(string username)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            return new JobQuery(context.Jobs)
+                        .IncludeLocations()
+                        .IncludePoster()
+                        .IncludeProgrammingLanguages()
+                        .GetJobByPosterUsername(username);
+        }
+    }
 }
