@@ -8,7 +8,7 @@ namespace Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 public class JobObjectAdapter : JobEntity
 {
     [SetsRequiredMembers]
-    public JobObjectAdapter(Job job) : base(job.JobTitle, job.ApplicationDeadline?.ToDateTime(new TimeOnly()), job.ApplicationLink, job.HasRemote, job.HasHybrid, job.PositionType, job.EmploymentType, job.JobDescription)
+    public JobObjectAdapter(Job job) : base(job.JobTitle, job.EmployerPoster, job.ApplicationDeadline?.ToDateTime(new TimeOnly()), job.ApplicationLink, job.HasRemote, job.HasHybrid, job.PositionType, job.EmploymentType, job.JobDescription)
     {
         ValidateObject(job);
     }

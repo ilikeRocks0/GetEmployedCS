@@ -149,4 +149,18 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
     }
+
+    public static void MapJobCreationEndpoints(this IEndpointRouteBuilder routes)
+    {
+        routes.MapPost("/api/job/add", (NewJob newJob, HttpContext context, IJobAddService jobAddService) =>
+        {
+            var userId = context.User.FindFirst("UserId")?.Value;
+            int posterUserId = int.TryParse(userId, out var id) ? id : 0;
+            return jobAddService.AddNewJob(posterUserId, newJob);
+        })
+            .WithName("AddNewJob")
+            .WithTags("Job Creation")
+            .WithOpenApi()
+            .RequireAuthorization();
+    }
 }

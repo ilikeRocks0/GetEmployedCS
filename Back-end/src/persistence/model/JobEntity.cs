@@ -31,9 +31,10 @@ public class JobEntity
     public JobEntity() {}
 
     [SetsRequiredMembers]
-    public JobEntity(string job_title, DateTime? application_deadline, string application_link, bool? has_remote, bool? has_hybrid, string position_type, string employment_type, string job_description)
+    public JobEntity(string job_title, bool employer_poster, DateTime? application_deadline, string application_link, bool? has_remote, bool? has_hybrid, string position_type, string employment_type, string job_description)
     {
         this.job_title = job_title;
+        this.employer_poster = employer_poster;
         this.application_deadline = application_deadline;
         this.application_link = application_link;
         this.has_remote = has_remote;
