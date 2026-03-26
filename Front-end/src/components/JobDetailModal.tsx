@@ -1,16 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Modal, Button, Avatar, Tag, Typography, Divider, Spin, Input } from "antd";
-import { CommentOutlined, SendOutlined } from "@ant-design/icons";
+import { Modal, Button, Avatar, Tag, Typography, Divider, Input } from "antd";
 import type { Job } from "@/types/Job";
-import type { JobComment } from "@/types/JobComment";
-import { useComments } from "@/context/CommentsContext";
-import { getUserIdFromSession } from "@/utils/getIdsFromStubSession";
 import CommentList from "./CommentList";
 
 const { Text, Title } = Typography;
-const { TextArea } = Input;
 
 const TYPE_COLORS: Record<string, string> = {
   "Full-Time": "green",
