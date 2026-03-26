@@ -43,6 +43,22 @@ public class UserPersistence : IUserPersistence
         return user;
     }
 
+    public List<User> GetUsers(string searchTerm, int startIndex, int pageSize)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            string lowerSearchTerm = searchTerm.ToLower();
+            return context.Users
+                            .Where(e => e.username.ToLower().Contains(lowerSearchTerm)
+                                    || e.about_string.ToLower().Contains(searchTerm)
+                                    || e.email.ToLower().Contains(lowerSearchTerm))
+                            .Include(e => e.employer)
+                            .Include(e => e.jobSeeker)
+                            .Select(e => (User)new UserEntityAdapter(e))
+                            .ToList();
+        }
+    }
+
     public List<User> GetUsersForGame(int currentUserId, int startIndex, int amount)
     {
         const int batchSize = 50;

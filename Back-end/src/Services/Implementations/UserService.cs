@@ -133,11 +133,11 @@ public class UserService(IUserPersistence userPersistence) : IUserService
         User updatedUser;
         if (existing.IsEmployer)
         {
-            updatedUser = new User(userId, existing.Email, request.Username ?? existing.Username, existing.Password, request.About, request.EmployerName ?? existing.EmployerName ?? "");
+            updatedUser = new User(userId, existing.Email, request.Username ?? existing.Username, existing.Password, request.About ?? "", request.EmployerName ?? existing.EmployerName ?? "");
         }
         else
         {
-            updatedUser = new User(userId, existing.Email, request.Username ?? existing.Username, existing.Password, request.About, request.FirstName ?? existing.FirstName ?? "", request.LastName ?? existing.LastName ?? "", existing.Experiences ?? []);
+            updatedUser = new User(userId, existing.Email, request.Username ?? existing.Username, existing.Password, request.About ?? "", request.FirstName ?? existing.FirstName ?? "", request.LastName ?? existing.LastName ?? "", existing.Experiences ?? []);
         }
 
         userPersistence.UpdateUser(updatedUser);
