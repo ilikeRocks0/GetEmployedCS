@@ -13,4 +13,6 @@ public class UserEntity
     public EmployerEntity? employer { get; set; }
     public JobSeekerEntity? jobSeeker { get; set; }
     public List<JobCommentEntity>? jobComments { get; set; }
+    public ICollection<FollowsEntity>? followers { get; set; }
+    public ICollection<FollowsEntity>? follows { get; set; }
 }

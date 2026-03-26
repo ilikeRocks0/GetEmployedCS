@@ -312,6 +312,25 @@ public class UserPersistence : IUserPersistence
         }
     }
 
+    public List<User> GetAllFollowers(int userId)
+    {
+        List<User> followers = new();
+
+        using(AppDbContext context = new(this.config))
+        {
+            followers = context.Follows
+                                    .Where(e => e.followed_id == userId)
+                                    .Include(e => e.follower)
+                                        .ThenInclude(e => e!.employer)
+                                    .Include(e => e.follower)
+                                        .ThenInclude(e => e!.jobSeeker)
+                                    .Select(e => (User)new UserEntityAdapter(e.follower!))
+                                    .ToList();
+        }
+
+        return followers;
+    }
+
     public bool CheckUserEmployer(int userId)
     {
         using(AppDbContext context = new(this.config))
