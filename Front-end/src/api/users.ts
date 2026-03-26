@@ -37,6 +37,11 @@ export async function saveJob(jobId: number): Promise<void> {
 
 export async function unsaveJob(jobId: number): Promise<void> {
   const res = await fetchWithAuth(`${API_BASE_URL}/api/users/unsave?JobId=${jobId}`, { method: "POST" });
-  console.log(jobId)
   if (!res.ok) throw new Error(`Failed to unsave job: ${res.status}`);
+}
+
+export async function checkIfUserIsEmployer(): Promise<boolean> {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/users/check-employer`, { method: "GET" });
+  if (!res.ok) throw new Error(`Failed to check employer status: ${res.status}`);
+  return res.json();
 }
