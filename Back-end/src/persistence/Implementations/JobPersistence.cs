@@ -325,4 +325,15 @@ public class JobPersistence : IJobPersistence
                         .GetJobByPosterUsername(username);
         }
     }
+
+    public void DeleteJob(int jobId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobEntity? jobEntity = new JobQuery(context.Jobs).GetJobByJobId(jobId) ?? throw new InvalidOperationException("Existing job not found in the database");
+            
+            context.Jobs.Remove(jobEntity);
+            context.SaveChanges();
+        }
+    }
 }
