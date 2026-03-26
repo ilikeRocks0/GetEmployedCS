@@ -33,6 +33,13 @@ public class JobSeekerQuery
         return this;
     }
 
+    public JobSeekerQuery IncludeExperiences()
+    {
+        this.Query = this.Query.Include(e => e.experiences);
+
+        return this;
+    }
+
     public JobSeekerEntity? GetJobSeekerByUserId(int userId)
     {
         return this.Query.Where(e => e.user_id == userId).SingleOrDefault();

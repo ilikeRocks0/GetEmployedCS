@@ -308,41 +308,113 @@ public class UserPersistence : IUserPersistence
     {
         using(AppDbContext context = new(this.config))
         {
-            UserEntity? userEntity = context.Users.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+            UserEntity? userEntity = context.Users.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault() ?? throw new InvalidOperationException("An existing user could not be found in database");
 
-            if(userEntity is not null)
+            // Update user fields
+            userEntity.username = updatedUser.Username;
+            userEntity.password = passwordHasher.HashPassword(updatedUser, updatedUser.Password);
+            userEntity.about_string = updatedUser.About;
+            userEntity.email = updatedUser.Email;
+            
+            // Update fields specific to each user type
+            if(updatedUser.IsEmployer && updatedUser.EmployerName is not null)
             {
-                // Update user fields
-                userEntity.username = updatedUser.Username;
-                userEntity.password = passwordHasher.HashPassword(updatedUser, updatedUser.Password);
-                userEntity.about_string = updatedUser.About;
-                userEntity.email = updatedUser.Email;
-                
-                // Update fields specific to each user type
-                if(updatedUser.IsEmployer && updatedUser.EmployerName is not null)
+                EmployerEntity? employerEntity = context.Employers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+                if(employerEntity is not null)
                 {
-                    EmployerEntity? employerEntity = context.Employers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
-                    if(employerEntity is not null)
-                    {
-                        employerEntity.employer_name = updatedUser.EmployerName;
-                    }
+                    employerEntity.employer_name = updatedUser.EmployerName;
                 }
-                else if(!updatedUser.IsEmployer && updatedUser.FirstName is not null && updatedUser.LastName is not null)
+            }
+            else if(!updatedUser.IsEmployer && updatedUser.FirstName is not null && updatedUser.LastName is not null)
+            {
+                JobSeekerEntity? jobSeekerEntity = context.JobSeekers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+                if(jobSeekerEntity is not null)
                 {
-                    JobSeekerEntity? jobSeekerEntity = context.JobSeekers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
-                    if(jobSeekerEntity is not null)
-                    {
-                        jobSeekerEntity.first_name = updatedUser.FirstName;
-                        jobSeekerEntity.last_name = updatedUser.LastName;
-                    }
+                    jobSeekerEntity.first_name = updatedUser.FirstName;
+                    jobSeekerEntity.last_name = updatedUser.LastName;
                 }
+            }
 
-                context.SaveChanges();
-            }
-            else
-            {
-                throw new InvalidOperationException("An existing user could not be found in database");
-            }
+            context.SaveChanges();
         }
+    }
+
+    public int CreateExperience(int userId, Experience experience)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity? jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId) 
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            ExperienceEntity experienceEntity = new ExperienceObjectAdapter(experience);
+            jobSeeker.experiences!.Add(experienceEntity);
+            context.SaveChanges();
+
+            return experienceEntity.experience_id;
+        }
+    }
+
+    public List<Experience> GetExperiences(int userId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId)
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            return jobSeeker.experiences!
+                    .Select(e => (Experience)new ExperienceEntityAdapter(e))
+                    .ToList();
+        }
+    }
+
+    public void UpdateExperience(int userId, Experience oldExperience, Experience newExperience)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId)
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            ExperienceEntity experienceEntity = jobSeeker.experiences!
+                                                    .AsQueryable()
+                                                    .Where(e => e.company_name.Equals(oldExperience.CompanyName) 
+                                                        && e.position_title.Equals(oldExperience.PositionTitle)
+                                                        && e.job_description.Equals(oldExperience.JobDescription))
+                                                    .Single();
+
+            ExperienceEntity newEntity = new ExperienceObjectAdapter(newExperience)
+            {
+                experience_id = experienceEntity.experience_id,
+                seeker_id = experienceEntity.seeker_id
+            };
+            context.Entry(experienceEntity).CurrentValues.SetValues(newEntity);
+            context.SaveChanges();
+        }
+    }
+
+    public void DeleteExperience(int userId, Experience experience)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId)
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            ExperienceEntity experienceEntity = jobSeeker.experiences!
+                                                    .AsQueryable()
+                                                    .Where(e => e.company_name.Equals(experience.CompanyName) 
+                                                        && e.position_title.Equals(experience.PositionTitle)
+                                                        && e.job_description.Equals(experience.JobDescription))
+                                                    .Single();
+
+            context.Experiences.Remove(experienceEntity);
+            context.SaveChanges();
+        }        
     }
 }

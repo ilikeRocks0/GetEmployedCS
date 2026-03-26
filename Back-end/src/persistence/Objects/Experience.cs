@@ -4,9 +4,9 @@ public class Experience
 {
     public string CompanyName { get; set; }
     public string PositionTitle { get; set; }
-    public string? JobDescription { get; set; }
+    public string JobDescription { get; set; }
 
-    public Experience(string companyName, string positionTitle, string? jobDescription)
+    public Experience(string companyName, string positionTitle, string jobDescription)
     {
         this.CompanyName = companyName;
         this.PositionTitle = positionTitle;
