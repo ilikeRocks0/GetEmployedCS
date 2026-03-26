@@ -124,4 +124,23 @@ public class UserService(IUserPersistence userPersistence) : IUserService
     {
         return userPersistence.CheckUserEmployer(userId);
     }
+
+    public Profile UpdateUser(UpdateUserRequest request, int userId)
+    {
+        UserFinder userFinder = new UserFinder(userPersistence);
+        User existing = userFinder.GetUser(userId) ?? throw new InvalidOperationException("User not found.");
+
+        User updatedUser;
+        if (existing.IsEmployer)
+        {
+            updatedUser = new User(userId, existing.Email, request.Username ?? existing.Username, existing.Password, request.About, request.EmployerName ?? existing.EmployerName ?? "");
+        }
+        else
+        {
+            updatedUser = new User(userId, existing.Email, request.Username ?? existing.Username, existing.Password, request.About, request.FirstName ?? existing.FirstName ?? "", request.LastName ?? existing.LastName ?? "", existing.Experiences ?? []);
+        }
+
+        userPersistence.UpdateUser(updatedUser);
+        return GetProfile(userId)!;
+    }
 }

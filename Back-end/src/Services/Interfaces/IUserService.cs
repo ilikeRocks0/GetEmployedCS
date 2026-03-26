@@ -11,4 +11,5 @@ public interface IUserService
     bool UnsaveJob(IReadOnlyDictionary<string, string>? filters = null);
     int Login(LoginRequest loginRequest);
     bool CheckUserEmployer(int userId);
+    Profile UpdateUser(UpdateUserRequest request, int userId);
 }

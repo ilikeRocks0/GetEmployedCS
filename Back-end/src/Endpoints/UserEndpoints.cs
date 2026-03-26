@@ -120,6 +120,18 @@ public static class UserEndpoints
             .WithTags("Users")
             .WithOpenApi()
             .RequireAuthorization();
+
+        routes.MapPut("/api/users", (UpdateUserRequest request, HttpContext context, IUserService userService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            return Results.Ok(userService.UpdateUser(request, userId));
+        })
+            .WithName("UpdateUser")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
     }
 
     public static void MapUserGameEndpoints(this IEndpointRouteBuilder routes)
