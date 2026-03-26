@@ -19,10 +19,10 @@ public class GameServiceSingleton : IJobGameService
         jobGameService = new JobGameService(userPersistence, jobPersistence, jobService);
     }
 
-    public Job? InitializeJobGame(CurrentUser currentUser, IReadOnlyDictionary<string, string>? filters = null)
+    public Job? InitializeJobGame(CurrentUser currentUser)
     {
         if (jobGameService == null) throw new InvalidOperationException("Service not initialized.");
-        return jobGameService.InitializeJobGame(currentUser, filters);
+        return jobGameService.InitializeJobGame(currentUser);
     }
 
     public Job? AcceptJob(GameJob gameJob)

@@ -103,7 +103,7 @@ public static class JobEndpoints
             if (!int.TryParse(userIdStr, out var userId))
                 return Results.Unauthorized();
             filters[AppConfig.FilterKeys.USERID] = userIdStr;
-            return Results.Ok(jobGameService.InitializeJobGame(new CurrentUser(userId), filters.Count > 0 ? filters : null));
+            return Results.Ok(jobGameService.InitializeJobGame(new CurrentUser(userId)));
         })
             .WithName("InitializeJobGame")
             .WithTags("Job Game")
