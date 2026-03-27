@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, Tag, Avatar, Typography, Button, message } from "antd";
-import { HeartOutlined, HeartFilled } from "@ant-design/icons";
+import { Card, Tag, Avatar, Typography, Button, message, Popconfirm } from "antd";
+import { HeartOutlined, HeartFilled, DeleteOutlined } from "@ant-design/icons";
 import JobDetailModal from "./JobDetailModal";
 import type { Job } from "@/types/Job";
 import { saveJob, unsaveJob } from "@/api/users";
@@ -16,6 +16,8 @@ interface JobCardState {
   job: Job;
   onRemove?: () => void;
   isSaved?: boolean;
+  isCurrentUsers?: boolean;
+  onDelete?: (id: number) => void;
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -27,13 +29,13 @@ const TYPE_COLORS: Record<string, string> = {
 
 const AVATAR_COLORS = ["#1677ff", "#52c41a", "#fa8c16", "#eb2f96", "#722ed1"];
 function avatarColor(name: string) {
-  const code = name.charCodeAt(0) + (name.charCodeAt(1) ?? 0);
+  const code = (name?.charCodeAt(0) ?? 0) + (name?.charCodeAt(1) ?? 0);
   return AVATAR_COLORS[code % AVATAR_COLORS.length];
 }
 
 const REMOVE_DURATION = 350;
 
-export default function JobCard({ job, onRemove, isSaved: isSavedProp }: JobCardState) {
+export default function JobCard({ job, onRemove, isSaved: isSavedProp, isCurrentUsers, onDelete }: JobCardState) {
   const isSavedList = useIsSavedList();
   const [modalOpen, setModalOpen] = useState(false);
   const [saved, setSaved] = useState(isSavedProp ?? isSavedList);
@@ -95,9 +97,9 @@ export default function JobCard({ job, onRemove, isSaved: isSavedProp }: JobCard
         <Avatar
           size={48}
           src={job.logo}
-          style={{ backgroundColor: job.logo ? undefined : avatarColor(job.company), flexShrink: 0, fontWeight: 700 }}
+          style={{ backgroundColor: job.logo ? undefined : avatarColor(job.company || "?"), flexShrink: 0, fontWeight: 700 }}
         >
-          {!job.logo && job.company.slice(0, 2).toUpperCase()}
+          {!job.logo && (job.company || "?").slice(0, 2).toUpperCase()}
         </Avatar>
 
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -124,14 +126,33 @@ export default function JobCard({ job, onRemove, isSaved: isSavedProp }: JobCard
           <Tag color={TYPE_COLORS[job.employment_type] ?? "default"}>{job.employment_type}</Tag>
           {job.isRemote && <Tag color="cyan">Remote</Tag>}
           {job.isHybrid && <Tag color="geekblue">Hybrid</Tag>}
-          <Button
-            type="text"
-            shape="circle"
-            loading={saving}
-            icon={saved ? <HeartFilled style={{ color: "#1677ff" }} /> : <HeartOutlined />}
-            onClick={handleSaveToggle}
-          />
+          {!isCurrentUsers && (
+            <Button
+              type="text"
+              shape="circle"
+              loading={saving}
+              icon={saved ? <HeartFilled style={{ color: "#1677ff" }} /> : <HeartOutlined />}
+              onClick={handleSaveToggle}
+            />
+          )}
         </div>
+
+        {isCurrentUsers && onDelete && (
+          <Popconfirm
+              title="Delete job posting?"
+              description="Are you sure you want to remove this?"
+              onConfirm={() => onDelete(job.id)}
+              okText="Yes"
+              cancelText="No"
+          >
+            <Button
+                type="text"
+                size="small"
+                danger
+                icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
+        )}
       </Card>
 
       <JobDetailModal

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, Dropdown, MenuProps } from "antd";
 import {
   UserOutlined,
@@ -8,6 +8,12 @@ import {
   FileTextOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+
+const AVATAR_COLORS = ["#1677ff", "#52c41a", "#fa8c16", "#eb2f96", "#722ed1"];
+function avatarColor(name: string) {
+  const code = name.charCodeAt(0) + (name.charCodeAt(1) ?? 0);
+  return AVATAR_COLORS[code % AVATAR_COLORS.length];
+}
 import { useRouter } from "next/navigation";
 import { useLogin } from "@/context/LoginContext";
 
@@ -60,6 +66,12 @@ const ProfileMenu: React.FC = () => {
     }
   };
 
+  const [username] = useState(() => {
+    const userJson = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+    return userJson ? (JSON.parse(userJson).username ?? "") : "";
+  });
+  const initials = username ? username.slice(0, 2).toUpperCase() : "??";
+
   return (
     <Dropdown
       menu={{ items, onClick: handleClick }}
@@ -68,12 +80,14 @@ const ProfileMenu: React.FC = () => {
     >
       <Avatar
         size="large"
-        icon={<UserOutlined />}
         style={{
           cursor: "pointer",
-          backgroundColor: "#111",
+          backgroundColor: avatarColor(username || "?"),
+          fontWeight: 700,
         }}
-      />
+      >
+        {initials || "?"}
+      </Avatar>
     </Dropdown>
   );
 };

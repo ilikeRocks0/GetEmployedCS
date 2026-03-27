@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal, Button, Avatar, Tag, Typography, Divider, Input } from "antd";
+import { Modal, Button, Avatar, Tag, Typography, Divider } from "antd";
 import type { Job } from "@/types/Job";
 import CommentList from "./CommentList";
 

@@ -162,5 +162,29 @@ public static class JobEndpoints
             .WithTags("Job Creation")
             .WithOpenApi()
             .RequireAuthorization();
+
+        routes.MapDelete("/api/jobs/{jobId}", (int jobId, HttpContext context, IJobService jobService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            try
+            {
+                jobService.DeleteJob(userId, jobId);
+                return Results.Ok();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Results.Forbid();
+            }
+            catch (InvalidOperationException)
+            {
+                return Results.NotFound();
+            }
+        })
+            .WithName("DeleteJob")
+            .WithTags("Job Creation")
+            .WithOpenApi()
+            .RequireAuthorization();
     }
 }

@@ -13,35 +13,35 @@ public class ExperienceObjectAdapterTest
     [Test]
     public void HappyCaseTest()
     {
-        Experience experience = new Experience(validCompanyName, validPositionTitle, validJobDescription);
+        Experience experience = new Experience(0, validCompanyName, validPositionTitle, validJobDescription);
         Assert.DoesNotThrow(delegate{ new ExperienceObjectAdapter(experience); });
     }
 
     [Test]
     public void EmptyCompanyNameTest()
     {
-        Experience experience = new Experience("", validPositionTitle,validJobDescription);
+        Experience experience = new Experience(0, "", validPositionTitle, validJobDescription);
         Assert.Throws<ObjectConversionException>(delegate{new ExperienceObjectAdapter(experience);});
     }
 
     [Test]
     public void SpaceCompanyNameTest()
     {
-        Experience experience = new Experience("    ", validPositionTitle,validJobDescription);
+        Experience experience = new Experience(0, "    ", validPositionTitle, validJobDescription);
         Assert.Throws<ObjectConversionException>(delegate{new ExperienceObjectAdapter(experience);});
     }
 
     [Test]
     public void EmptyPositionTitleTest()
     {
-        Experience experience = new Experience(validCompanyName, "",validJobDescription);
+        Experience experience = new Experience(0, validCompanyName, "", validJobDescription);
         Assert.Throws<ObjectConversionException>(delegate{new ExperienceObjectAdapter(experience);});
     }
 
     [Test]
     public void SpacePositionTitleTest()
     {
-        Experience experience = new Experience(validCompanyName, "     ",validJobDescription);
+        Experience experience = new Experience(0, validCompanyName, "     ", validJobDescription);
         Assert.Throws<ObjectConversionException>(delegate{new ExperienceObjectAdapter(experience);});
     }
 }

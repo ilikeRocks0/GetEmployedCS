@@ -6,6 +6,7 @@ import { fetchUser, registerUser } from "@/api/users";
 const UsersContext = createContext({registerUser, fetchUser});
 
 export function UsersProvider({ children }: { children: React.ReactNode }) {
+
   return (
     <UsersContext.Provider value={{registerUser, fetchUser}}>
       {children}

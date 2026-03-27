@@ -331,9 +331,18 @@ public class JobPersistence : IJobPersistence
         using(AppDbContext context = new(this.config))
         {
             JobEntity? jobEntity = new JobQuery(context.Jobs).GetJobByJobId(jobId) ?? throw new InvalidOperationException("Existing job not found in the database");
-            
+
             context.Jobs.Remove(jobEntity);
             context.SaveChanges();
+        }
+    }
+
+    public bool IsJobOwner(int userId, int jobId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobEntity? jobEntity = new JobQuery(context.Jobs).GetJobByJobId(jobId);
+            return jobEntity?.poster_id == userId;
         }
     }
 }

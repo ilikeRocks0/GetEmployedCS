@@ -1,3 +1,4 @@
 .vscode/
 coverage_html
 StrykerOutput
+.env

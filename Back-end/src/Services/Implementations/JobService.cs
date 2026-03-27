@@ -68,4 +68,12 @@ public class JobService(IJobPersistence jobPersistence) : IJobService
     {
         return jobPersistence.GetProgrammingLanguages();
     }
+
+    public void DeleteJob(int userId, int jobId)
+    {
+        if (!jobPersistence.IsJobOwner(userId, jobId))
+            throw new UnauthorizedAccessException("Job does not belong to this user.");
+
+        jobPersistence.DeleteJob(jobId);
+    }
 }

@@ -47,6 +47,7 @@ public class JobQuery
     {
         return this.Query
                     .Where(e => e.poster!.username.Equals(username))
+                    .ToList()
                     .Select(e => (Job)new JobEntityAdapter(e))
                     .ToList();
     }

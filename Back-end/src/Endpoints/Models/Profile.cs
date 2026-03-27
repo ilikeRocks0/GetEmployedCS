@@ -13,8 +13,10 @@ public class Profile
     public List<Experience>? Experiences { get; set; }
     public bool IsEmployer { get; set; }
     public string? EmployerName { get; set; }
+    public bool IsSelf { get; set; }
+    public List<Job>? PostedJobs { get; set; }
 
-    public Profile(int userId, string username, string email, string? firstName, string? lastName, string? bio, List<Experience>? experiences, bool isEmployer, string? EmployerName)
+    public Profile(int userId, string username, string email, string? firstName, string? lastName, string? bio, List<Experience>? experiences, bool isEmployer, string? EmployerName, bool isSelf = false, List<Job>? postedJobs = null)
     {
         this.UserId = userId;
         this.Username = username;
@@ -25,5 +27,7 @@ public class Profile
         this.Experiences = experiences;
         this.IsEmployer = isEmployer;
         this.EmployerName = EmployerName;
+        this.IsSelf = isSelf;
+        this.PostedJobs = postedJobs;
     }
 }

@@ -18,7 +18,7 @@ public class ExperienceEntityAdapter : Experience
         }
     }
 
-    public ExperienceEntityAdapter(ExperienceEntity experienceEntity) : base(experienceEntity.company_name, experienceEntity.position_title, experienceEntity.job_description)
+    public ExperienceEntityAdapter(ExperienceEntity experienceEntity) : base(experienceEntity.experience_id, experienceEntity.company_name, experienceEntity.position_title, experienceEntity.job_description)
     {
         ValidateEntity(experienceEntity);
     }
