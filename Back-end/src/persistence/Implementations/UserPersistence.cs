@@ -419,7 +419,7 @@ public class UserPersistence : IUserPersistence
 
             ExperienceEntity experienceEntity = jobSeeker.experiences!
                                                     .AsQueryable()
-                                                    .Where(e => e.company_name.Equals(oldExperience.CompanyName) 
+                                                    .Where(e => e.company_name.Equals(oldExperience.CompanyName)
                                                         && e.position_title.Equals(oldExperience.PositionTitle)
                                                         && e.job_description.Equals(oldExperience.JobDescription))
                                                     .Single();
@@ -445,13 +445,25 @@ public class UserPersistence : IUserPersistence
 
             ExperienceEntity experienceEntity = jobSeeker.experiences!
                                                     .AsQueryable()
-                                                    .Where(e => e.company_name.Equals(experience.CompanyName) 
+                                                    .Where(e => e.company_name.Equals(experience.CompanyName)
                                                         && e.position_title.Equals(experience.PositionTitle)
                                                         && e.job_description.Equals(experience.JobDescription))
                                                     .Single();
 
             context.Experiences.Remove(experienceEntity);
             context.SaveChanges();
-        }        
+        }
+    }
+
+    public bool IsExperienceOwner(int userId, int experienceId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity? jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId);
+
+            return jobSeeker?.experiences?.Any(e => e.experience_id == experienceId) ?? false;
+        }
     }
 }

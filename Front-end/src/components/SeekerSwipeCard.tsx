@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, forwardRef, useImperativeHandle } from "react";
-import { Tag, Avatar, Typography, Divider } from "antd";
+import { Avatar, Typography, Divider } from "antd";
 import type { User } from "@/types/User";
 
 const { Title, Text } = Typography;
@@ -188,13 +188,13 @@ const SeekerSwipeCard = forwardRef<SeekerSwipeCardHandle, SeekerSwipeCardProps>(
             <div style={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
               <Text type="secondary" style={{ fontSize: 12, display: "block", marginBottom: 8 }}>EXPERIENCE</Text>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {currentSeeker.experiences.map((exp) => (
-                  <div key={exp.experienceId}>
-                    <Text strong style={{ display: "block" }}>{exp.title}</Text>
-                    <Text type="secondary" style={{ fontSize: 13 }}>{exp.company}</Text>
-                    {exp.description && (
+                {currentSeeker.experiences.map((exp, i) => (
+                  <div key={exp.experienceId || i}>
+                    <Text strong style={{ display: "block" }}>{exp.positionTitle}</Text>
+                    <Text type="secondary" style={{ fontSize: 13 }}>{exp.companyName}</Text>
+                    {exp.jobDescription && (
                       <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 2 }}>
-                        {exp.description}
+                        {exp.jobDescription}
                       </Text>
                     )}
                   </div>

@@ -12,6 +12,14 @@ export interface RegisterUserRequest {
   email: string;
 }
 
+export interface UpdateUserRequest {
+  username?: string;
+  about?: string;
+  firstName?: string;
+  lastName?: string;
+  employerName?: string;
+}
+
 export async function registerUser(payload: RegisterUserRequest): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/api/users`, {
     method: "POST",
@@ -22,12 +30,20 @@ export async function registerUser(payload: RegisterUserRequest): Promise<void> 
   if (!res.ok) throw new Error(`Registration failed: ${res.status}`);
 }
 
-export async function fetchUser( userId: number, signal: AbortSignal ): Promise<User> {
-    const res = await fetchWithAuth(`${API_BASE_URL}/api/users/${userId}`, { signal });
+export async function fetchUser( username: string, signal?: AbortSignal ): Promise<User> {
+    const res = await fetchWithAuth(`${API_BASE_URL}/api/users/${username}`, { signal });
     if (!res.ok) throw new Error(`Failed to retrieve user: ${res.status}`);
+    return res.json();
+}
 
-    const user: User = await res.json();
-    return user;
+export async function updateUser(payload: UpdateUserRequest): Promise<User> {
+    const res = await fetchWithAuth(`${API_BASE_URL}/api/users`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`Failed to update user: ${res.status}`);
+    return res.json();
 }
 
 export async function saveJob(jobId: number): Promise<void> {

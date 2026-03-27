@@ -37,3 +37,46 @@ body {
 .ant-menu-horizontal > .ant-menu-item-selected::after {
   border-bottom: 2px solid #000 !important;
 }
+
+/* Make carousel arrows visible and blue */
+.ant-carousel .slick-prev,
+.ant-carousel .slick-next {
+  font-size: 24px !important;
+  color: #2f2f2f !important;
+  width: 40px !important;
+  height: 40px !important;
+  z-index: 2;
+  transition: all 0.3s;
+}
+
+.ant-carousel .slick-prev {
+  left: -25px;
+}
+
+.ant-carousel .slick-next {
+  right: -25px;
+}
+.ant-carousel .slick-list {
+  margin-bottom: 40px;
+}
+.ant-carousel .slick-dots {
+  bottom: -35px !important;
+}
+
+/* Make dots darker so they are visible */
+.ant-carousel .slick-dots li button {
+  height: 8px !important;
+  width: 25px !important;
+  background: #000000 !important;
+  border-radius: 4px;
+}
+
+.ant-carousel .slick-dots li.slick-active button {
+  background: #0354f6 !important;
+  width: 35px !important;
+}
+
+.ant-carousel .slick-prev:hover,
+.ant-carousel .slick-next:hover {
+  color: #40a9ff !important;
+}

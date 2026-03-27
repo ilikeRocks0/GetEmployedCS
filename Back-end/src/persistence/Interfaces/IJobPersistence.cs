@@ -83,4 +83,12 @@ public interface IJobPersistence
     //</summary>
     //<param name="jobId">The ID of the job to be deleted</param>
     public void DeleteJob(int jobId);
+
+    //<summary>
+    //Checks whether a user is the poster of a job.
+    //</summary>
+    //<param name="userId">The user ID to check against.</param>
+    //<param name="jobId">The job ID to check ownership of.</param>
+    //<returns>True if the user posted the job, false otherwise.</returns>
+    public bool IsJobOwner(int userId, int jobId);
 }

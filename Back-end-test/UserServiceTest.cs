@@ -13,12 +13,14 @@ public class UserServiceTest
 {
     private UserService userService;
     private IUserPersistence userPersistenceMock;
+    private IJobPersistence jobPersistenceMock;
 
     [SetUp]
     public void Setup()
     {
         userPersistenceMock = Substitute.For<IUserPersistence>();
-        userService = new UserService(userPersistenceMock);
+        jobPersistenceMock = Substitute.For<IJobPersistence>();
+        userService = new UserService(userPersistenceMock, jobPersistenceMock);
     }
 
     [Test]

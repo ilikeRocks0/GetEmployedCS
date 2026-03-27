@@ -5,7 +5,7 @@ using Back_end.Services.Implementations.Finders;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
 
-public class UserService(IUserPersistence userPersistence) : IUserService
+public class UserService(IUserPersistence userPersistence, IJobPersistence jobPersistence) : IUserService
 {
     public int CreateUser(NewUser newUser)
     {
@@ -106,7 +106,8 @@ public class UserService(IUserPersistence userPersistence) : IUserService
         {
             throw new NullReferenceException("User not found.");   
         }
-        return new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName);
+        var postedJobs = jobPersistence.GetJobsByUsername(user.Username);
+        return new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName, postedJobs: postedJobs);
     }
 
     public Profile? GetProfileByUsername(string username)
@@ -115,9 +116,10 @@ public class UserService(IUserPersistence userPersistence) : IUserService
         User? user = userFinder.GetUserByUsername(username);
         if (user == null)
         {
-            throw new NullReferenceException("User not found.");   
+            throw new NullReferenceException("User not found.");
         }
-        return new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName);
+        var postedJobs = jobPersistence.GetJobsByUsername(user.Username);
+        return new Profile(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.About, user.Experiences, user.IsEmployer, user.EmployerName, postedJobs: postedJobs);
     }
 
     public bool CheckUserEmployer(int userId)
@@ -142,5 +144,32 @@ public class UserService(IUserPersistence userPersistence) : IUserService
 
         userPersistence.UpdateUser(updatedUser);
         return GetProfile(userId)!;
+    }
+
+    public int AddExperience(int userId, Experience experience)
+    {
+        if (userPersistence.CheckUserEmployer(userId))
+        {
+            throw new InvalidOperationException("Only job seekers can add experiences.");
+        }
+
+
+        return userPersistence.CreateExperience(userId, experience);
+    }
+
+    public void EditExperience(int userId, Experience oldExperience, Experience newExperience)
+    {
+        if (userPersistence.CheckUserEmployer(userId))
+            throw new InvalidOperationException("Only job seekers can edit experiences.");
+
+        userPersistence.UpdateExperience(userId, oldExperience, newExperience);
+    }
+
+    public void DeleteExperience(int userId, Experience experience)
+    {
+        if (userPersistence.CheckUserEmployer(userId))
+            throw new InvalidOperationException("Only job seekers can delete experiences.");
+
+        userPersistence.DeleteExperience(userId, experience);
     }
 }

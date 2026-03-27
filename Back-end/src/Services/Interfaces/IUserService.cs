@@ -1,4 +1,5 @@
 using Back_end.Endpoints.Models;
+using Back_end.Persistence.Objects;
 
 namespace Back_end.Services.Interfaces;
 
@@ -12,4 +13,7 @@ public interface IUserService
     int Login(LoginRequest loginRequest);
     bool CheckUserEmployer(int userId);
     Profile UpdateUser(UpdateUserRequest request, int userId);
+    int AddExperience(int userId, Experience experience);
+    void EditExperience(int userId, Experience oldExperience, Experience newExperience);
+    void DeleteExperience(int userId, Experience experience);
 }

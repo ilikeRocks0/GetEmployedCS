@@ -82,13 +82,13 @@ function EmployerContent() {
       .catch(() => setLoading(false));
   }, [initUserGame]);
 
-  async function onAccept(_seekerId: number): Promise<User | null> {
+  async function onAccept(): Promise<User | null> {
     const next = await acceptUser(currentSeekerRef.current!.username);
     currentSeekerRef.current = next;
     return next;
   }
 
-  async function onReject(_seekerId: number): Promise<User | null> {
+  async function onReject(): Promise<User | null> {
     const next = await rejectUser(currentSeekerRef.current!.username);
     currentSeekerRef.current = next;
     return next;

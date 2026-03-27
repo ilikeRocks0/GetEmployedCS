@@ -1,8 +1,10 @@
 using Back_end.Services.Interfaces;
 using Back_end.Endpoints.Models;
+using Back_end.Persistence.Objects;
 using Back_end.Util;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Back_end.Endpoints;
@@ -44,10 +46,26 @@ public static class UserEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
-         routes.MapGet("/api/users/{username}", (string username, IUserService userService) =>
-        {          
+         routes.MapGet("/api/users/{username}", (string username, HttpContext context, IUserService userService) =>
+        {
+            var profile = userService.GetProfileByUsername(username);
+            if (profile is null) return Results.NotFound();
+            bool isSelf = int.TryParse(context.User.FindFirst("UserId")?.Value, out var requestingUserId)
+                && profile.UserId == requestingUserId;
 
-            return userService.GetProfileByUsername(username); 
+            return Results.Ok(new {
+                profile.UserId,
+                profile.Username,
+                profile.Email,
+                profile.FirstName,
+                profile.LastName,
+                profile.Bio,
+                profile.Experiences,
+                profile.IsEmployer,
+                profile.EmployerName,
+                profile.PostedJobs,
+                isSelf
+            });
         })
             .WithName("GetProfile")
             .WithTags("Users")
@@ -129,6 +147,66 @@ public static class UserEndpoints
             return Results.Ok(userService.UpdateUser(request, userId));
         })
             .WithName("UpdateUser")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+        routes.MapPost("/api/users/experiences", (Experience experience, HttpContext context, IUserService userService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            try
+            {
+                var experienceId = userService.AddExperience(userId, experience);
+                return Results.Ok(experienceId);
+            }
+            catch (InvalidOperationException)
+            {
+                return Results.Forbid();
+            }
+        })
+            .WithName("AddExperience")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+        routes.MapPut("/api/users/experiences", (UpdateExperienceRequest request, HttpContext context, IUserService userService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            try
+            {
+                userService.EditExperience(userId, request.OldExperience, request.NewExperience);
+                return Results.Ok();
+            }
+            catch (InvalidOperationException)
+            {
+                return Results.Forbid();
+            }
+        })
+            .WithName("EditExperience")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+        routes.MapDelete("/api/users/experiences", ([FromBody] Experience experience, HttpContext context, IUserService userService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            try
+            {
+                userService.DeleteExperience(userId, experience);
+                return Results.Ok();
+            }
+            catch (InvalidOperationException)
+            {
+                return Results.Forbid();
+            }
+        })
+            .WithName("DeleteExperience")
             .WithTags("Users")
             .WithOpenApi()
             .RequireAuthorization();

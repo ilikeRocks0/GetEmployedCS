@@ -46,5 +46,6 @@ public interface IJobService
     int GetNumberOfSavedJobs(IReadOnlyDictionary<string, string>? filters = null);
     
     List<string> GetProgrammingLanguages();
+    void DeleteJob(int userId, int jobId);
 }
 

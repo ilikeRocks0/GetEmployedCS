@@ -10,7 +10,7 @@ const { Content } = Layout
 function Home() {
   return (
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
-      <SiteHeader selectedKey="home" />
+      <SiteHeader selectedKey="/" />
       <Content style={{ padding: "40px 80px" }}>
         <Title level={1}>Welcome to GetEmployed!</Title>
         <Title level={5}>Vision Statement</Title>

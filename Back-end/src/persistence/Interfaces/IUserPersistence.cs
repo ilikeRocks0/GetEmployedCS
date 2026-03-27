@@ -19,4 +19,8 @@ public interface IUserPersistence
     public List<User> GetAllFollowers(int userId);
     public void UpdateUser(User updatedUser);
     public int CreateExperience(int userId, Experience experience);
+    public List<Experience> GetExperiences(int userId);
+    public void UpdateExperience(int userId, Experience oldExperience, Experience newExperience);
+    public void DeleteExperience(int userId, Experience experience);
+    public bool IsExperienceOwner(int userId, int experienceId);
 }

@@ -8,7 +8,7 @@ namespace Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 public class ExperienceObjectAdapter : ExperienceEntity
 {
     [SetsRequiredMembers]
-    public ExperienceObjectAdapter(Experience experience) : base(experience.CompanyName, experience.PositionTitle, experience.JobDescription)
+    public ExperienceObjectAdapter(Experience experience) : base(experience.CompanyName, experience.PositionTitle, experience.JobDescription ?? string.Empty)
     {
         ValidateObject(experience);
     }
