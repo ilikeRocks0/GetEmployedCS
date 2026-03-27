@@ -4,7 +4,6 @@ using Back_end.Persistence.Implementations;
 using Back_end.Persistence.Objects;
 using Back_end.Persistence.Interfaces;
 using Back_end.Services.Interfaces;
-using Back_end.Util;
 using Back_end.Services.Implementations;
 using Microsoft.AspNetCore.Authentication.Cookies;
 // Load environment variables from .env file
@@ -20,7 +19,6 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
 {
     options.SerializerOptions.AllowTrailingCommas = true;
 });
-builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(AppOptions)));
 builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IQuizItemsPersistence, QuizItemsPersisitence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();

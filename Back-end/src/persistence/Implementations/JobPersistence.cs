@@ -237,21 +237,22 @@ public class JobPersistence : IJobPersistence
             if(job.PosterName is not null)
             {
                 // Try to get ID from an employer
-                int? posterId = context.Employers.Where(e => e.employer_name.Equals(job.PosterName)).SingleOrDefault()?.user_id;
-
+                EmployerEntity? employer = context.Employers.Where(e => e.employer_name.Equals(job.PosterName)).SingleOrDefault();
+                if(employer is not null)
+                {
+                    newJobEntity.poster_id = employer.user_id;
+                }
                 // If no matching employer, try to get it from a job seeker
-                if(posterId is null)
+                else
                 {
                     // Create a poster object to split the name into first and last
+                    // Poster ID is set to default value 0 if no matching employer/job seeker is found as the poster
                     Poster poster = new Poster(job.PosterName, false);
-                    posterId = context.JobSeekers.Where(e => e.first_name.ToLower().Equals(poster.FullName!.FirstName.ToLower()) 
+                    newJobEntity.poster_id = context.JobSeekers.Where(e => e.first_name.ToLower().Equals(poster.FullName!.FirstName.ToLower()) 
                                                         && e.last_name.ToLower().Equals(poster.FullName.LastName.ToLower()))
                                                     .SingleOrDefault()?
-                                                    .user_id;
+                                                    .user_id ?? 0;
                 }
-
-                // Poster ID is set to null if no matching employer/job seeker is found as the poster
-                newJobEntity.poster_id = posterId;
             }
 
             // Save job entity before setting navigations

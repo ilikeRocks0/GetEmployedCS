@@ -26,6 +26,8 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test
+        env:
+          DB_CONNECTION_STRING: ${{ secrets.DB_TEST_CONNECTION_STRING }}
         run: dotnet test --configuration Release --no-build --verbosity normal
 
   # --- FRONTEND ---
