@@ -5,6 +5,8 @@ using Back_end.Persistence.Objects;
 using Back_end.Services.Implementations.Finders;
 using Back_end.Services.Interfaces;
 
+namespace Back_end.Services.Implementations;
+
 public class JobAddService(IJobPersistence jobPersistence, IUserPersistence userPersistence) : IJobAddService
 {
     public int AddNewJob(int userId, NewJob newJob)
