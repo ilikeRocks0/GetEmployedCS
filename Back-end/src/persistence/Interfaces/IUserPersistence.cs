@@ -17,6 +17,7 @@ public interface IUserPersistence
     public void FollowUser(int followerId, int followedId);
     public bool IsUserInFollows(int followerId, int followedId);
     public List<User> GetAllFollowers(int userId);
+    public List<User> GetAllFollowing(int userId);
     public void UpdateUser(User updatedUser);
     public int CreateExperience(int userId, Experience experience);
     public List<Experience> GetExperiences(int userId);

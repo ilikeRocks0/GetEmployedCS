@@ -7,6 +7,25 @@ using Back_end.Util;
 
 public class UserService(IUserPersistence userPersistence, IJobPersistence jobPersistence) : IUserService
 {
+    public List<User> GetAllFollowing(int userId) => userPersistence.GetAllFollowing(userId);
+
+    public List<User> GetUsers(IReadOnlyDictionary<string, string>? filters = null)
+    {
+        var searchTerm = filters?.GetValueOrDefault(AppConfig.FilterKeys.SEARCH_TERM) ?? "";
+        var pageNumber = int.TryParse(filters?.GetValueOrDefault(AppConfig.FilterKeys.PAGE_NUMBER), out var pg) ? pg : 1;
+        var startIndex = (pageNumber - 1) * AppConfig.ITEMS_PER_PAGE;
+
+        if (filters != null && bool.TryParse(filters.GetValueOrDefault(AppConfig.FilterKeys.EMPLOYER), out var employer))
+        {
+            return userPersistence.GetUsers(searchTerm, employer, startIndex, AppConfig.ITEMS_PER_PAGE);
+        }
+
+        // No employer filter — return both employers and job seekers
+        var employers = userPersistence.GetUsers(searchTerm, true, startIndex, AppConfig.ITEMS_PER_PAGE);
+        var seekers = userPersistence.GetUsers(searchTerm, false, startIndex, AppConfig.ITEMS_PER_PAGE);
+        return [..employers, ..seekers];
+    }
+
     public int CreateUser(NewUser newUser)
     {
         User savedUser = ExtractUserFromInput(newUser);

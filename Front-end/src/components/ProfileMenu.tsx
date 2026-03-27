@@ -4,22 +4,40 @@ import React, { useEffect, useState } from "react";
 import { Avatar, Dropdown, MenuProps } from "antd";
 import {
   UserOutlined,
-  SettingOutlined,
   FileTextOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
+import { checkIfUserIsEmployer } from "@/api/users";
+import { useRouter } from "next/navigation";
+import { useLogin } from "@/context/LoginContext";
 
 const AVATAR_COLORS = ["#1677ff", "#52c41a", "#fa8c16", "#eb2f96", "#722ed1"];
 function avatarColor(name: string) {
   const code = name.charCodeAt(0) + (name.charCodeAt(1) ?? 0);
   return AVATAR_COLORS[code % AVATAR_COLORS.length];
 }
-import { useRouter } from "next/navigation";
-import { useLogin } from "@/context/LoginContext";
 
 const ProfileMenu: React.FC = () => {
   const router = useRouter();
   const { logout } = useLogin();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+    if (user.username) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUsername(user.username);
+    }
+  }, []);
+
+  const [isEmployer, setIsEmployer] = useState(false);
+
+  useEffect(() => {
+    checkIfUserIsEmployer()
+      .then(setIsEmployer)
+      .catch(() => {});
+  }, []);
+
   const items: MenuProps["items"] = [
     {
       key: "profile",
@@ -29,12 +47,7 @@ const ProfileMenu: React.FC = () => {
     {
       key: "applications",
       icon: <FileTextOutlined />,
-      label: "My Applications",
-    },
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "Settings",
+      label: isEmployer ? "Saved Employees" : "Saved Jobs",
     },
     {
       type: "divider",
@@ -46,7 +59,7 @@ const ProfileMenu: React.FC = () => {
       label: "Logout",
     },
   ];
-  
+
   const handleClick: MenuProps["onClick"] = async (e) => {
     switch (e.key) {
       case "profile": {
@@ -55,9 +68,7 @@ const ProfileMenu: React.FC = () => {
         break;
       }
       case "applications":
-        router.push("/applications");
-        break;
-      case "settings":
+        router.push(isEmployer ? "/saved-users" : "/applications");
         break;
       case "logout":
         await logout();
@@ -66,15 +77,6 @@ const ProfileMenu: React.FC = () => {
     }
   };
 
-  const [username, setUsername] = useState("");
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
-    if (user.username) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUsername(user.username);
-    }
-  }, []);
   const initials = username ? username.slice(0, 2).toUpperCase() : "??";
 
   return (

@@ -6,6 +6,8 @@ namespace Back_end.Services.Interfaces;
 public interface IUserService
 {
     int CreateUser(NewUser newUser);
+    List<User> GetUsers(IReadOnlyDictionary<string, string>? filters = null);
+    List<User> GetAllFollowing(int userId);
     Profile? GetProfile(int userId);
     Profile? GetProfileByUsername(string username);
     int SaveJob(IReadOnlyDictionary<string, string>? filters = null);

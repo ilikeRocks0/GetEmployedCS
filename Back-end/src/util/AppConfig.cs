@@ -10,6 +10,7 @@ public sealed class AppConfig
         public const string POSITION_TYPES = "positionTypes";
         public const string EMPLOYMENT_TYPES = "employmentTypes";
         public const string PAGE_NUMBER = "pageNumber";
+        public const string EMPLOYER = "employer";
     }
 
     public const int ITEMS_PER_PAGE = 10;
