@@ -3,7 +3,7 @@
 import { App, Layout, Spin } from "antd";
 import SiteHeader from "@/components/SiteHeader";
 import ProfileView from "@/components/ProfileView";import { UsersProvider, useUser } from "@/context/UserContext";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { User } from "@/types/User";
 
 const { Content } = Layout;
@@ -17,14 +17,16 @@ function ProfilePageContent({ username }: ProfileProps) {
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState<User>();
     const [notFound, setNotFound] = useState(false);
+    const isInitialLoad = useRef(true);
 
     const loadUserData = useCallback(async (signal?: AbortSignal) => {
         try {
-            if (!user) setLoading(true);
+            if (isInitialLoad.current) setLoading(true);
 
             const result = await fetchUser(username, signal);
             setUser(result);
             setNotFound(false);
+            isInitialLoad.current = false;
         } catch (err: unknown) {
             if (err instanceof Error) {
                 if (err.name === "AbortError") return;
@@ -36,7 +38,7 @@ function ProfilePageContent({ username }: ProfileProps) {
         } finally {
             setLoading(false);
         }
-    }, [username, fetchUser, user]);
+    }, [username, fetchUser]);
 
     useEffect(() => {
         const controller = new AbortController();
