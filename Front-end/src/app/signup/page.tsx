@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { App, Layout, Card, Form, Input, Button, Typography, Divider, Result } from "antd";
+import { App, Layout, Card, Form, Input, Button, Typography, Divider, Result, Tooltip } from "antd";
 import { UserOutlined, LockOutlined, TeamOutlined, SolutionOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import { UsersProvider, useUser } from "@/context/UserContext";
 
@@ -104,6 +104,9 @@ function SignUpPageContent() {
               />
             ) : isEmployer === null ? (
               <>
+                <Tooltip title="Back to login">
+                  <Button type="text" href="/login" icon={<ArrowLeftOutlined />} size="large" style={{position: "absolute"}}/>
+                </Tooltip>
                 <div style={{ textAlign: "center", marginBottom: 8 }}>
                   <span style={{
                     fontSize: "28px",
@@ -168,19 +171,31 @@ function SignUpPageContent() {
                     <Input prefix={<UserOutlined />} placeholder="Username" size="large" />
                   </Form.Item>
 
-                  <Form.Item
-                    name="firstName"
-                    rules={[{ required: true, message: "Please enter your first name." }]}
-                  >
-                    <Input prefix={<UserOutlined />} placeholder="First Name" size="large" />
-                  </Form.Item>
+                  {isEmployer && (
+                    <Form.Item
+                      name="employerName"
+                      rules={[{ required: true, message: "Please enter your company name." }]}
+                    >
+                      <Input prefix={<TeamOutlined />} placeholder="Company Name" size="large" />
+                    </Form.Item>
+                  )}
 
-                  <Form.Item
-                    name="lastName"
-                    rules={[{ required: true, message: "Please enter your last name." }]}
-                  >
-                    <Input prefix={<UserOutlined />} placeholder="Last Name" size="large" />
-                  </Form.Item>
+                  {!isEmployer && (
+                    <>
+                      <Form.Item
+                        name="firstName"
+                        rules={[{ required: true, message: "Please enter your first name." }]}
+                      >
+                        <Input prefix={<UserOutlined />} placeholder="First Name" size="large" />
+                      </Form.Item>
+                      <Form.Item
+                        name="lastName"
+                        rules={[{ required: true, message: "Please enter your last name." }]}
+                      >
+                        <Input prefix={<UserOutlined />} placeholder="Last Name" size="large" />
+                      </Form.Item>
+                    </>
+                  )}
 
                   <Form.Item
                     name="email"
@@ -212,15 +227,6 @@ function SignUpPageContent() {
                   >
                     <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" size="large" />
                   </Form.Item>
-
-                  {isEmployer && (
-                    <Form.Item
-                      name="employerName"
-                      rules={[{ required: true, message: "Please enter your company name." }]}
-                    >
-                      <Input prefix={<TeamOutlined />} placeholder="Company Name" size="large" />
-                    </Form.Item>
-                  )}
 
                   <Divider />
 
