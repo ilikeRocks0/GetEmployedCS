@@ -5,37 +5,41 @@ using Back_end.Services.Interfaces;
 
 namespace Back_end.Services.Implementations;
 
-public class GameServiceSingleton(IServiceScopeFactory scopeFactory) : IJobGameConnector
+public class GameServiceSingleton : IJobGameService
 {
-    private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
-    private JobGameConnector? activeGame;
+    private IJobGameService? jobGameService;
 
-    public Job? InitializeJobGame(CurrentUser currentUser, IReadOnlyDictionary<string, string>? filters = null)
+    public GameServiceSingleton(IServiceScopeFactory scopeFactory)
     {
-        using var scope = _scopeFactory.CreateScope();
+        using var scope = scopeFactory.CreateScope();
         var userPersistence = scope.ServiceProvider.GetRequiredService<IUserPersistence>();
         var jobPersistence = scope.ServiceProvider.GetRequiredService<IJobPersistence>();
         var jobService = scope.ServiceProvider.GetRequiredService<IJobService>();
         
-        activeGame = new JobGameConnector(userPersistence, jobPersistence, jobService);
-        return activeGame.InitializeJobGame(currentUser, filters);
+        jobGameService = new JobGameService(userPersistence, jobPersistence, jobService);
+    }
+
+    public Job? InitializeJobGame(CurrentUser currentUser)
+    {
+        if (jobGameService == null) throw new InvalidOperationException("Service not initialized.");
+        return jobGameService.InitializeJobGame(currentUser);
     }
 
     public Job? AcceptJob(GameJob gameJob)
     {
-        if (activeGame == null) throw new InvalidOperationException("Game not initialized.");
-        return activeGame.AcceptJob(gameJob);
+        if (jobGameService == null) throw new InvalidOperationException("Game not initialized.");
+        return jobGameService.AcceptJob(gameJob);
     }
 
     public Job? RejectJob(GameJob gameJob)
     {
-        if (activeGame == null) throw new InvalidOperationException("Game not initialized.");
-        return activeGame.RejectJob(gameJob);
+        if (jobGameService == null) throw new InvalidOperationException("Game not initialized.");
+        return jobGameService.RejectJob(gameJob);
     }
 
     public (int accepted, int rejected) GetGameStats(CurrentUser currentUser)
     {
-        if (activeGame == null) throw new InvalidOperationException("Game not initialized.");
-        return activeGame.GetGameStats(currentUser);
+        if (jobGameService == null) throw new InvalidOperationException("Game not initialized.");
+        return jobGameService.GetGameStats(currentUser);
     } 
 }

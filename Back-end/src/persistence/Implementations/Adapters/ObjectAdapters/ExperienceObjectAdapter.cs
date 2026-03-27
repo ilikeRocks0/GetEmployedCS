@@ -8,7 +8,21 @@ namespace Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 public class ExperienceObjectAdapter : ExperienceEntity
 {
     [SetsRequiredMembers]
-    public ExperienceObjectAdapter(Experience experience) : base(experience.CompanyName, experience.PositionTitle, experience.JobDescription)
+    public ExperienceObjectAdapter(Experience experience) : base(experience.CompanyName, experience.PositionTitle, experience.JobDescription ?? string.Empty)
     {
+        ValidateObject(experience);
+    }
+
+    private void ValidateObject(Experience experience)
+    {
+        if(experience.CompanyName.Trim().Equals(String.Empty))
+        {
+            throw new ObjectConversionException("Experience cannot have empty company name.");
+        }
+
+        if(experience.PositionTitle.Trim().Equals(String.Empty))
+        {
+            throw new ObjectConversionException("Experience cannot have empty position title.");
+        }
     }
 }

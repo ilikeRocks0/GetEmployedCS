@@ -1,0 +1,15 @@
+{
+  "stryker-config": {
+    "solution": "../GetEmployedCS.sln",
+    "project": "Back-end.csproj",
+    "reporters": [ "progress", "html", "cleartext" ],
+    "mutate": [
+      "**/*.cs",
+      "!**/Program.cs",
+      "!**/src/persistence/Interfaces/**/*.cs",
+      "!**/src/Services/Interfaces/**/*.cs",
+      "!**/src/persistence/model/**/*.cs",
+      "!**/src/Endpoints/Models/**/*.cs"
+    ]
+  }
+}

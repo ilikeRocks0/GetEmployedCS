@@ -1,79 +1,44 @@
-using Back_end.Endpoints.Models;
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Objects;
-using Back_end.Services.Implementations.Finders;
 using Back_end.Services.Interfaces;
 
 namespace Back_end.Services.Implementations;
 
-public class JobGameConnector (IUserPersistence userPersistence, IJobPersistence jobPersistence, IJobService jobService) : IJobGameConnector
+public class JobGameConnector (IUserPersistence userPersistence, IJobService jobService) : IJobGameConnector
 {
     Dictionary<int, IGameService> GameServiceList = new Dictionary<int, IGameService>(); //mapping of game service to user
-    UserFinder userFinder = new UserFinder(userPersistence);
-    JobFinder jobFinder = new JobFinder(jobPersistence);
-
-    public Job? InitializeJobGame(CurrentUser currentUser, IReadOnlyDictionary<string, string>? filters = null)
+    public Job? InitializeJobGame(User currentUser, IReadOnlyDictionary<string, string>? filters = null)
     {
-        if (currentUser is null)
-        {
-            throw new InvalidOperationException("No UserId provided");
-        }     
-        User? user = userFinder.GetUser(currentUser.UserId);
-        if (user is null)
-        {
-            throw new InvalidOperationException("UserId doesn't match an existing user");
-        }
-        GameServiceList[user.UserId] = new GameService(new ShuffleJobsService(jobService));
-        return GameServiceList[user.UserId].InitializeJobGame();
+        GameServiceList[currentUser.UserId] = new GameService(new ShuffleJobsService(jobService));
+        return GameServiceList[currentUser.UserId].InitializeJobGame();
     }
     
-    public Job? RejectJob(GameJob gameJob)
+    public Job? RejectJob(User user, Job job)
     {
-        if (gameJob is null)
-        {
-            throw new InvalidOperationException("Invalid format for user id and job id provided");
-        }     
-        User? user = userFinder.GetUser(gameJob.UserId);
-        Job? job = jobFinder.GetJob(gameJob.JobId);
-        if (user is null || job is null || !GameServiceList.ContainsKey(user.UserId))
-        {
-            throw new InvalidOperationException("UserId doesn't match an existing user");
-        }
         return GameServiceList[user.UserId].RejectJob();  
     }
 
-    public Job? AcceptJob(GameJob gameJob)
+    public Job? AcceptJob(User user, Job job)
     {
-        if (gameJob is null)
-        {
-            throw new InvalidOperationException("Invalid format for user id and job id provided");
-        }     
-        User? user = userFinder.GetUser(gameJob.UserId);
-        Job? job = jobFinder.GetJob(gameJob.JobId);
-        if (user is null || job is null || !GameServiceList.ContainsKey(user.UserId))
+        if (!GameServiceList.ContainsKey(user.UserId))
         {
             throw new InvalidOperationException("UserId doesn't match an existing user");
         }
         
-        if (userPersistence.IsJobInLikes(user.UserId, job.JobId))
+        //If we already saved it just dont save it again
+        if (!userPersistence.IsJobInLikes(user.UserId, (int)job.JobId!))
         {
-            throw new InvalidOperationException("This job has already been liked by this user");
+            userPersistence.SaveJob(user.UserId, (int)job.JobId);
         }
 
-        userPersistence.SaveJob(user.UserId, job.JobId);
         return GameServiceList[user.UserId].AcceptJob();
     }
 
-    public (int accepted, int rejected) GetGameStats(CurrentUser currentUser)
+    public (int accepted, int rejected) GetGameStats(User user)
     {
-        if (currentUser is null)
+        if (!GameServiceList.ContainsKey(user.UserId))
         {
-            throw new InvalidOperationException("No UserId provided");
-        }     
-        User? user = userFinder.GetUser(currentUser.UserId);
-        if (user is null || !GameServiceList.ContainsKey(user.UserId))
-        {
-            return (-1, -1); //if user doesn't exist or is not in GameServiceList's mapping
+            throw new InvalidOperationException("UserId doesn't match an existing user");
         }
         return GameServiceList[user.UserId].GetGameStats();        
     }

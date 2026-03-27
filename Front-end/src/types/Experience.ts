@@ -1,7 +1,13 @@
 export interface Experience {
     experienceId: number,
     seekerId: number,
-    company: string,
-    title: string,
-    description: string
+    companyName: string,
+    positionTitle: string,
+    jobDescription: string,
+}
+
+export interface ExperienceValues {
+    companyName: string;
+    positionTitle: string;
+    jobDescription: string;
 }

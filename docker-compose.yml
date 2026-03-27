@@ -1,19 +1,31 @@
 services:
   backend:
-    build:
-      context: ./Back-end
-    ports:
-      - "5000:8080"
-    environment: 
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
-  
+    build: ./Back-end
+    environment:
+      - LOGGING__LOGLEVEL__MICROSOFT=Information
+      - LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE.AUTHENTICATION=Debug
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+      - ConnectionStrings__DefaultConnection=${ConnectionStrings__DefaultConnection}
+
   frontend:
     build:
       context: ./Front-end
-    ports:
-      - "3000:3000"
+      args:
+        - NEXT_PUBLIC_API_URL=https://localhost
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:5000
+      - NEXT_PUBLIC_API_URL=https://localhost
     depends_on:
+      - backend
+
+  gateway:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - frontend
       - backend

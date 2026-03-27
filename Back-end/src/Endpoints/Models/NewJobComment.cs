@@ -1,4 +1,4 @@
-class NewJobComment
+public class NewJobComment
 {
     public string Comment { get; set; }
     public int PosterUserId { get; set; }

@@ -6,6 +6,7 @@ export interface ApiJob {
   jobTitle: string;
   applicationDeadline: string | null;
   posterName: string | null;
+  employerPoster: boolean;
   applicationLink: string;
   hasRemote: boolean | null;
   hasHybrid: boolean | null;
@@ -30,5 +31,7 @@ export function mapJob(apiJob: ApiJob): Job {
     position_type: apiJob.positionType,
     deadline: apiJob.applicationDeadline ?? null,
     applicationLink: apiJob.applicationLink,
+    posterName: apiJob.posterName ?? null,
+    employerPoster: apiJob.employerPoster,
   };
 }

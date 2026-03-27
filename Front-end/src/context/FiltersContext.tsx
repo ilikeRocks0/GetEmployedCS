@@ -3,8 +3,12 @@
 import { createContext, useState } from "react";
 import { DEFAULT_FILTERS, JobFilters } from "@/types/JobFilters";
 
+interface FiltersContextType {
+  filters: JobFilters;
+  update: (filters: JobFilters) => void;
+}
 
-export const FiltersContext = createContext({filters: DEFAULT_FILTERS, update: (filters: JobFilters) => {},});
+export const FiltersContext = createContext<FiltersContextType>({filters: DEFAULT_FILTERS, update: () => {}});
 
 export function FiltersProvider({ children }: { children: React.ReactNode }) {
   const [filters, setFilters] = useState(DEFAULT_FILTERS)

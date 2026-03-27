@@ -1,7 +1,8 @@
 import { FiltersContext } from "@/context/FiltersContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { JOB_TYPES } from "@/data/JobsStub";
 import { App, Input, Select, Space } from "antd";
+
+const EMPLOYMENT_TYPES = ["Co-op", "Contract", "Full-time", "Internship", "Part-time"];
 import { useContext, useEffect, useState } from "react";
 
 export function FilterOptions(){
@@ -29,7 +30,7 @@ export function FilterOptions(){
             placeholder="Job type"
             allowClear
             style={{ width: 160 }}
-            options={JOB_TYPES.map((t) => ({ label: t, value: t }))}
+            options={EMPLOYMENT_TYPES.map((t) => ({ label: t, value: t }))}
             onChange={(value) => { setFilters({ ...filters, selectedType: value ?? null });}}
           />
           <Select

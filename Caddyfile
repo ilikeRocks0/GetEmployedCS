@@ -1,0 +1,11 @@
+localhost {
+    # Send all /api requests to the dotnet backend
+    handle /api/* {
+        reverse_proxy backend:8080
+    }
+
+    # Send everything else to the frontend
+    handle {
+        reverse_proxy frontend:3000
+    }
+}

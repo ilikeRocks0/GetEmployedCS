@@ -1,20 +1,18 @@
-using System.Text.RegularExpressions;
 using Back_end.Persistence.Implementations.Types;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Objects;
+using Back_end.Persistence.Implementations.Validation;
 
 public class JobEntityAdapter : Job
 {
     private void ValidateEntity(JobEntity jobEntity)
     {
-        Regex linkRegex = new Regex("(https://)?(\\S+)\\.(\\S+\\.)*(\\S+)(/\\S+)");
-
         if (jobEntity.job_title.Trim().Equals(String.Empty))
         {
             throw new ObjectConversionException("Job entity cannot have empty job title.");
         }
 
-        if (!linkRegex.IsMatch(jobEntity.application_link))
+        if (!ValidationRegex.linkRegex.IsMatch(jobEntity.application_link))
         {
             throw new ObjectConversionException("Job entity must have a valid application link.");
         }
@@ -45,15 +43,18 @@ public class JobEntityAdapter : Job
         ApplicationDeadline = new ApplicationDate(jobEntity.application_deadline).Date;
 
         // Create Poster object that validates and constructs the poster's name 
-        PosterName = new Poster(jobEntity.poster, jobEntity.employer_poster).Name;
+        PosterName = new Poster(jobEntity.poster, jobEntity.employer_poster).ToString();
+
+        // Set employer poster flag
+        EmployerPoster = jobEntity.employer_poster;
 
         // Get job locations
         Locations = new();
-        List<JobLocationEntity> jobLocationEntities = jobEntity.locations.ToList();
+        List<JobLocationEntity> jobLocationEntities = jobEntity.locations!.ToList();
 
         jobLocationEntities.ForEach(e =>
         {
-            Locations.Add(new JobLocation(e.location).Location);
+            Locations.Add(new JobLocation(e.location!).Location);
         });
 
         ProgrammingLanguages = new List<string>();

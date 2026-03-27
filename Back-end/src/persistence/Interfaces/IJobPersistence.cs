@@ -12,6 +12,10 @@ public interface IJobPersistence
     //<param name="pageSize">The max amount of objects to return.</param>
     public List<Job> GetJobs(string searchTerm, List<string> languages, List<string> positionTypes, List<string> employmentTypes, int startIndex, int pageSize);
 
+    //<param name="jobList">A list of jobs to extract a user's saved jobs from.</param>
+    //<param name="userId">The unique identifier of the user.</param>
+    public List<Job> GetJobsSavedSublist(List<Job> jobs, int userId);
+   
     //<param name="userId">The unique identifier of the user.</param>
     //<param name="searchTerm">A keyword string to filter jobs by title.</param>
     //<param name="languages">A list of required programming languages or technologies.</param>
@@ -59,4 +63,32 @@ public interface IJobPersistence
     //<param name="jobId">The target job's jobId.</param>
     //<returns>Returns the matching Job object if found, else returns null.</returns>
     public Job? GetJobFromJobId(int jobId);
+
+    //<summary>
+    //Creates a new job given a Job object.
+    //</summary>
+    //<param name="job">The job to be created.</param>
+    //<returns>Returns the ID of the newly created job in the database if successful, else returns -1.</returns>
+    public int CreateJob(Job job);
+
+    //<summary>
+    //Gets jobs posted by a given username.
+    //</summary>
+    //<param name="username">The username to find posted jobs for</param>
+    //<returns>Returns a list containing the jobs posted by the given username.</returns>
+    public List<Job> GetJobsByUsername(string username);
+
+    //<summary>
+    //Deletes a job given a job ID
+    //</summary>
+    //<param name="jobId">The ID of the job to be deleted</param>
+    public void DeleteJob(int jobId);
+
+    //<summary>
+    //Checks whether a user is the poster of a job.
+    //</summary>
+    //<param name="userId">The user ID to check against.</param>
+    //<param name="jobId">The job ID to check ownership of.</param>
+    //<returns>True if the user posted the job, false otherwise.</returns>
+    public bool IsJobOwner(int userId, int jobId);
 }

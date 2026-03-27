@@ -21,6 +21,7 @@ const SiteHeader: React.FC<SiteHeaderState> = ({
     { key: "/", label: "Home" },
     { key: "/quick-hire", label: "Quick Hire"},
     { key: "/search-jobs", label: "Find Jobs" },
+    { key: "/search-users", label: "Find Users" },
     { key: "/resume-help", label: "Resume Helper Tools" }, // does not currently exist yet
   ];
 
@@ -52,6 +53,8 @@ const SiteHeader: React.FC<SiteHeaderState> = ({
           display: "flex",
           alignItems: "center",
           gap: "48px",
+          flex: 1,
+          minWidth: 0,
         }}
       >
         {/* Logo */}
@@ -73,7 +76,6 @@ const SiteHeader: React.FC<SiteHeaderState> = ({
         {/* Navigation */}
         <Menu
           mode="horizontal"
-          overflowedIndicator={null}
           selectedKeys={[selectedKey]}
           onClick={handleClick}
           items={items}
@@ -82,6 +84,8 @@ const SiteHeader: React.FC<SiteHeaderState> = ({
             background: "transparent",
             fontSize: "15px",
             fontWeight: 500,
+            flex: 1,
+            minWidth: 0,
           }}
         />
       </div>

@@ -7,11 +7,13 @@ namespace Back_end.Persistence.Implementations;
 
 public class AppDbContext : DbContext
 {
-    private readonly string connectionString;
+    private readonly IConfiguration config;
     public DbSet<EmployerEntity> Employers { get; set; }
+    public DbSet<EmploymentTypeEntity> EmploymentTypes { get; set; }
     public DbSet<ExperienceEntity> Experiences { get; set; }
     public DbSet<FolderEntity> Folders { get; set; }
     public DbSet<FolderContentEntity> FolderContents { get; set; }
+    public DbSet<FollowsEntity> Follows { get; set; }
     public DbSet<GenericWordEntity> GenericWords { get; set; }
     public DbSet<JobEntity> Jobs { get; set; }
     public DbSet<JobLanguageEntity> JobLanguages { get; set; }
@@ -20,6 +22,7 @@ public class AppDbContext : DbContext
     public DbSet<JobCommentEntity> JobComments { get; set; }
     public DbSet<LikeEntity> Likes { get; set; }
     public DbSet<LocationEntity> Locations { get; set; }
+    public DbSet<PositionTypeEntity> PositionTypes { get; set; }
     public DbSet<ProgrammingLanguageEntity> ProgrammingLanguages { get; set; }
     public DbSet<QuizItemEntity> QuizItems { get; set; }
     public DbSet<UserEntity> Users { get; set; }
@@ -27,16 +30,25 @@ public class AppDbContext : DbContext
 
     public AppDbContext(IConfiguration config)
     {
-        AppOptions options = new();
-        config.GetSection(nameof(AppOptions)).Bind(options);
-
-        // Save connection string from environment variables, or throw exception if it returns null
-        this.connectionString = Environment.GetEnvironmentVariable(options.DBEnvConnectionString) ?? throw new ObjectNotFoundException();
+        this.config = config;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseMySQL(this.connectionString);
+        string? connectionString = config.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            // Save connection string from environment variables, or throw exception if it returns null
+            connectionString = config.GetValue<string>(AppConfig.DB_ENV_KEY);
+        }
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new ObjectNotFoundException("Could not find 'ConnectionStrings:DefaultConnection' in appsettings or environment variables.");      
+        }
+        
+        optionsBuilder.UseMySQL(connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -101,6 +113,16 @@ public class AppDbContext : DbContext
           .WithOne(e => e.user)
           .HasForeignKey<JobSeekerEntity>(e => e.user_id);
 
+        // Enforce unique usernames
+        modelBuilder.Entity<UserEntity>()
+          .HasIndex(e => e.username)
+          .IsUnique();
+
+        // Enforce unique emails
+        modelBuilder.Entity<UserEntity>()
+          .HasIndex(e => e.email)
+          .IsUnique();
+
         // Define relationship between JobSeekers and Experiences
         modelBuilder.Entity<JobSeekerEntity>()
           .HasMany(e => e.experiences)
@@ -117,5 +139,16 @@ public class AppDbContext : DbContext
           .HasOne(e => e.job)
           .WithMany(e => e.comments)
           .HasForeignKey(e => e.job_id);
+
+        // Define relationship between Users and Follows
+        modelBuilder.Entity<FollowsEntity>()
+            .HasOne(e => e.follower)
+            .WithMany(e => e.follows)
+            .HasForeignKey(e => e.follower_id);
+
+        modelBuilder.Entity<FollowsEntity>()
+            .HasOne(e => e.followed)
+            .WithMany(e => e.followers)
+            .HasForeignKey(e => e.followed_id);
     }
 }

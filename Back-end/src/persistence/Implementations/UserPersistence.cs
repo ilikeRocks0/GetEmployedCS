@@ -3,18 +3,21 @@ using Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 using Back_end.Persistence.Interfaces;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Objects;
-using Microsoft.EntityFrameworkCore;
 using Back_end.Persistence.Implementations.Queries;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Back_end.Persistence.Implementations;
 
 public class UserPersistence : IUserPersistence
 {
-    private IConfiguration config;
+    private readonly IConfiguration config;
+    private readonly IPasswordHasher<User> passwordHasher;
 
-    public UserPersistence(IConfiguration config)
+    public UserPersistence(IConfiguration config, IPasswordHasher<User> passwordHasher)
     {
         this.config = config;
+        this.passwordHasher = passwordHasher;
     }
 
     public User? GetUser(int userId)
@@ -40,18 +43,120 @@ public class UserPersistence : IUserPersistence
         return user;
     }
 
-    public int CreateUser(User newUser)
+    public List<User> GetUsers(string searchTerm, bool employer, int startIndex, int pageSize)
     {
-        int userId = -1;
+        using(AppDbContext context = new(this.config))
+        {
+            string lowerSearchTerm = searchTerm.ToLower();
+            List<User> users;
+
+            if(employer)
+            {
+                users = context.Employers
+                                    .Include(e => e.user)
+                                        .ThenInclude(e => e!.employer)
+                                    .Where(e => e.employer_name.ToLower().Contains(lowerSearchTerm) || e.user!.username.ToLower().Contains(lowerSearchTerm) || e.user.email.ToLower().Contains(lowerSearchTerm))
+                                    .Select(e => (User)new UserEntityAdapter(e.user!))
+                                    .ToList();
+            }
+            else
+            {
+                users = context.JobSeekers
+                                    .Include(e => e.user)
+                                        .ThenInclude(e => e!.jobSeeker)
+                                    .Where(e => e.first_name.ToLower().Contains(lowerSearchTerm) || e.last_name.ToLower().Contains(lowerSearchTerm) || e.user!.username.ToLower().Contains(lowerSearchTerm) || e.user.email.ToLower().Contains(lowerSearchTerm))
+                                    .Select(e => (User)new UserEntityAdapter(e.user!))
+                                    .ToList();
+            }
+
+            return users;
+        }
+    }
+
+    public List<User> GetUsersForGame(int currentUserId, int startIndex, int amount)
+    {
+        const int batchSize = 50;
 
         using (AppDbContext context = new(this.config))
         {
-            // Initially, add the user entity to the users table
+            var result = new List<User>(capacity: amount);
+            var skip = startIndex;
+
+            while (result.Count < amount)
+            {
+                var batch = context.Users
+                  .Where(e => e.user_id != currentUserId && e.employer == null)
+                  .OrderBy(e => e.user_id)
+                  .Skip(skip)
+                  .Take(batchSize)
+                  .Include(e => e.employer)
+                  .Include(e => e.jobSeeker)
+                    .ThenInclude(e => e!.experiences)
+                  .ToList();
+
+                if (batch.Count == 0)
+                {
+                    break;
+                }
+
+                foreach (UserEntity entity in batch)
+                {
+                    if (result.Count >= amount)
+                    {
+                        break;
+                    }
+
+                    try
+                    {
+                        result.Add(new UserEntityAdapter(entity));
+                    }
+                    catch (ObjectConversionException)
+                    {
+                        // Skip rows that fail entity invariants (e.g. bad email)
+                    }
+                }
+
+                skip += batch.Count;
+            }
+
+            return result;
+        }
+    }
+
+    public User? GetUserByUsername(string username)
+    {
+        User? user = null;
+
+        using (AppDbContext context = new(this.config))
+        {
+            // Build the query for the user in question
+            UserEntity? userEntity = context.Users
+              .Where(e => e.username == username)
+              .Include(e => e.employer)
+              .Include(e => e.jobSeeker)
+                .ThenInclude(e => e!.experiences)
+              .SingleOrDefault();
+
+            if (userEntity != null)
+            {
+                user = new UserEntityAdapter(userEntity);
+            }
+        }
+
+        return user;
+    }
+
+    public int CreateUser(User newUser)
+    {
+        using (AppDbContext context = new(this.config))
+        {
+            var hashedPassword = passwordHasher.HashPassword(newUser, newUser.Password);
+
             UserEntity newUserEntity = new()
             {
                 email = newUser.Email,
                 username = newUser.Username,
-                password = newUser.Password,
+                password = hashedPassword,
                 about_string = newUser.About
             };
 
@@ -94,15 +199,9 @@ public class UserPersistence : IUserPersistence
                 context.SaveChanges();
             }
 
-            // Get the user ID of the newly added entity and return it
-            userId = context.Users
-              .Where(e => e.username.Equals(newUser.Username))
-              .Where(e => e.password.Equals(newUser.Password))
-              .Single()
-              .user_id;
+            // Return the user ID of the newly added entity
+            return newUserEntity.user_id;
         }
-
-        return userId;
     }
 
     public int SaveJob(int userId, int jobId)
@@ -133,14 +232,41 @@ public class UserPersistence : IUserPersistence
         }
     }
 
+    public bool UnsaveJob(int userId, int jobId)
+    {
+        bool result = false;
+
+        using (AppDbContext context = new(this.config))
+        {
+            // Query for the job seeker that is unsaving the job
+            JobSeekerEntity? jobSeeker = new JobSeekerQuery(context.JobSeekers).IncludeLikes().GetJobSeekerByUserId(userId);
+
+            if(jobSeeker is not null)
+            {
+                // Get the corresponding like entity
+                LikeEntity? likeEntity = context.Likes.Where(e => e.seeker_id == jobSeeker.seeker_id && e.job_id == jobId).SingleOrDefault();
+
+                // If the like entity is null, then the user has not saved this job
+                if(likeEntity is not null)
+                {
+                    context.Likes.Remove(likeEntity);
+                    context.SaveChanges();
+                    result = true;
+                }
+            }
+        }
+
+        return result;
+    }
+
     public bool IsJobInLikes(int userId, int jobId)
     {
         bool isInLikes = false;
 
-            using (AppDbContext context = new(this.config))
+        using (AppDbContext context = new(this.config))
         {
             //Get the JobSeekerEntity matching the given user ID 
-            JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers).GetJobSeekerByUserId(userId);
+            JobSeekerEntity? jobSeekerEntity = new JobSeekerQuery(context.JobSeekers).IncludeLikes().GetJobSeekerByUserId(userId);
 
             if (jobSeekerEntity is not null)
             {
@@ -148,6 +274,225 @@ public class UserPersistence : IUserPersistence
                 isInLikes = jobSeekerEntity.likes?.Any(like => like.job_id == jobId) ?? false;
             }
             return isInLikes;
+        }
+    }
+
+    public User? GetUserByCredentials(string email, string password)
+    {
+        User? user = null;
+
+        using (AppDbContext context = new(this.config))
+        {
+            UserEntity? userEntity = context.Users
+              .Where(e => e.email.Equals(email))
+              .Include(e => e.employer)
+              .Include(e => e.jobSeeker)
+                .ThenInclude(e => e!.experiences)
+              .SingleOrDefault();
+
+            if (userEntity != null)
+            {
+                var candidateUser = new UserEntityAdapter(userEntity);
+                var verificationResult = passwordHasher.VerifyHashedPassword(
+                    candidateUser,
+                    userEntity.password,
+                    password);
+
+                if (verificationResult == PasswordVerificationResult.Success ||
+                    verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
+                {
+                    user = candidateUser;
+                }
+            }
+        }
+
+        return user;
+    }
+
+    public void FollowUser(int followerId, int followedId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            context.Follows.Add(new FollowsEntity(followerId, followedId));
+            context.SaveChanges();
+        }
+    }
+
+    public bool IsUserInFollows(int followerId, int followedId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            return context.Follows.Where(e => e.follower_id == followerId && e.followed_id == followedId).SingleOrDefault() is not null;
+        }
+    }
+
+    public List<User> GetAllFollowers(int userId)
+    {
+        List<User> followers = new();
+
+        using(AppDbContext context = new(this.config))
+        {
+            followers = context.Follows
+                                    .Where(e => e.followed_id == userId)
+                                    .Include(e => e.follower)
+                                        .ThenInclude(e => e!.employer)
+                                    .Include(e => e.follower)
+                                        .ThenInclude(e => e!.jobSeeker)
+                                    .Select(e => (User)new UserEntityAdapter(e.follower!))
+                                    .ToList();
+        }
+
+        return followers;
+    }
+
+    public List<User> GetAllFollowing(int userId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            return context.Follows
+                                .Where(e => e.follower_id == userId)
+                                .Include(e => e.followed)
+                                    .ThenInclude(e => e!.employer)
+                                .Include(e => e.followed)
+                                    .ThenInclude(e => e!.jobSeeker)
+                                .Select(e => (User)new UserEntityAdapter(e.followed!))
+                                .ToList();
+        }
+    }
+
+    public bool CheckUserEmployer(int userId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            return context.Employers.Where(e => e.user_id == userId).SingleOrDefault() is not null;
+        }
+    }
+
+    public void UpdateUser(User updatedUser)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            UserEntity? userEntity = context.Users.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault() ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            // Update user fields
+            userEntity.username = updatedUser.Username;
+            userEntity.password = updatedUser.Password == userEntity.password
+                ? userEntity.password
+                : passwordHasher.HashPassword(updatedUser, updatedUser.Password);
+            userEntity.about_string = updatedUser.About;
+            userEntity.email = updatedUser.Email;
+            
+            // Update fields specific to each user type
+            if(updatedUser.IsEmployer && updatedUser.EmployerName is not null)
+            {
+                EmployerEntity? employerEntity = context.Employers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+                if(employerEntity is not null)
+                {
+                    employerEntity.employer_name = updatedUser.EmployerName;
+                }
+            }
+            else if(!updatedUser.IsEmployer && updatedUser.FirstName is not null && updatedUser.LastName is not null)
+            {
+                JobSeekerEntity? jobSeekerEntity = context.JobSeekers.Where(e => e.user_id == updatedUser.UserId).SingleOrDefault();
+                if(jobSeekerEntity is not null)
+                {
+                    jobSeekerEntity.first_name = updatedUser.FirstName;
+                    jobSeekerEntity.last_name = updatedUser.LastName;
+                }
+            }
+
+            context.SaveChanges();
+        }
+    }
+
+    public int CreateExperience(int userId, Experience experience)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity? jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId) 
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            ExperienceEntity experienceEntity = new ExperienceObjectAdapter(experience);
+            jobSeeker.experiences!.Add(experienceEntity);
+            context.SaveChanges();
+
+            return experienceEntity.experience_id;
+        }
+    }
+
+    public List<Experience> GetExperiences(int userId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId)
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            return jobSeeker.experiences!
+                    .Select(e => (Experience)new ExperienceEntityAdapter(e))
+                    .ToList();
+        }
+    }
+
+    public void UpdateExperience(int userId, Experience oldExperience, Experience newExperience)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId)
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            ExperienceEntity experienceEntity = jobSeeker.experiences!
+                                                    .AsQueryable()
+                                                    .Where(e => e.company_name.Equals(oldExperience.CompanyName)
+                                                        && e.position_title.Equals(oldExperience.PositionTitle)
+                                                        && e.job_description.Equals(oldExperience.JobDescription))
+                                                    .Single();
+
+            ExperienceEntity newEntity = new ExperienceObjectAdapter(newExperience)
+            {
+                experience_id = experienceEntity.experience_id,
+                seeker_id = experienceEntity.seeker_id
+            };
+            context.Entry(experienceEntity).CurrentValues.SetValues(newEntity);
+            context.SaveChanges();
+        }
+    }
+
+    public void DeleteExperience(int userId, Experience experience)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId)
+                                            ?? throw new InvalidOperationException("An existing user could not be found in database");
+
+            ExperienceEntity experienceEntity = jobSeeker.experiences!
+                                                    .AsQueryable()
+                                                    .Where(e => e.company_name.Equals(experience.CompanyName)
+                                                        && e.position_title.Equals(experience.PositionTitle)
+                                                        && e.job_description.Equals(experience.JobDescription))
+                                                    .Single();
+
+            context.Experiences.Remove(experienceEntity);
+            context.SaveChanges();
+        }
+    }
+
+    public bool IsExperienceOwner(int userId, int experienceId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            JobSeekerEntity? jobSeeker = new JobSeekerQuery(context.JobSeekers)
+                                            .IncludeExperiences()
+                                            .GetJobSeekerByUserId(userId);
+
+            return jobSeeker?.experiences?.Any(e => e.experience_id == experienceId) ?? false;
         }
     }
 }

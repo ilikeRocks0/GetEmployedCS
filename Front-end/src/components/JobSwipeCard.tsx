@@ -22,7 +22,7 @@ function avatarColor(name: string) {
 const SWIPE_THRESHOLD = 100;
 const FLY_DURATION = 350;
 
-export interface SwipeCardHandle {
+export interface JobSwipeCardHandle {
   swipe: (direction: "left" | "right") => void;
 }
 
@@ -34,7 +34,7 @@ interface SwipeCardState {
   onSwiped: (direction: "left" | "right") => void;
 }
 
-const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardState>(
+const JobSwipeCard = forwardRef<JobSwipeCardHandle, SwipeCardState>(
   ({ initialJob, onAccept, onReject, onSwipeStart, onSwiped }, ref) => {
     const [currentJob, setCurrentJob] = useState<Job>(initialJob);
     const [dragX, setDragX] = useState(0);
@@ -219,6 +219,6 @@ const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardState>(
   }
 );
 
-SwipeCard.displayName = "SwipeCard";
+JobSwipeCard.displayName = "JobSwipeCard";
 
-export default SwipeCard;
+export default JobSwipeCard;

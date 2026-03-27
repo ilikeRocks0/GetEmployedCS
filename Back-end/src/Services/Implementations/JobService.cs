@@ -12,6 +12,13 @@ public class JobService(IJobPersistence jobPersistence) : IJobService
         return jobPersistence.GetJobs(searchTerm, languages, positions, employments, startIndex, AppConfig.ITEMS_PER_PAGE);
     }
 
+    public IReadOnlyList<Job> GetJobsSavedSublist(IReadOnlyDictionary<string, string>? filters = null)
+    {
+        var (UserId, searchTerm, languages, positions, employments, startIndex) = ParseFilters(filters);
+        var jobs = jobPersistence.GetJobs(searchTerm, languages, positions, employments, startIndex, AppConfig.ITEMS_PER_PAGE);
+        return jobPersistence.GetJobsSavedSublist(jobs, UserId);
+    }
+
     public IReadOnlyList<Job> GetSavedJobs(IReadOnlyDictionary<string, string>? filters = null)
     {
         var (UserId, searchTerm, languages, positions, employments, startIndex) = ParseFilters(filters);
@@ -58,5 +65,13 @@ public class JobService(IJobPersistence jobPersistence) : IJobService
     public List<string> GetProgrammingLanguages()
     {
         return jobPersistence.GetProgrammingLanguages();
+    }
+
+    public void DeleteJob(int userId, int jobId)
+    {
+        if (!jobPersistence.IsJobOwner(userId, jobId))
+            throw new UnauthorizedAccessException("Job does not belong to this user.");
+
+        jobPersistence.DeleteJob(jobId);
     }
 }
