@@ -43,19 +43,33 @@ public class UserPersistence : IUserPersistence
         return user;
     }
 
-    public List<User> GetUsers(string searchTerm, int startIndex, int pageSize)
+    public List<User> GetUsers(string searchTerm, bool employer, int startIndex, int pageSize)
     {
         using(AppDbContext context = new(this.config))
         {
             string lowerSearchTerm = searchTerm.ToLower();
-            return context.Users
-                            .Where(e => e.username.ToLower().Contains(lowerSearchTerm)
-                                    || e.about_string.ToLower().Contains(searchTerm)
-                                    || e.email.ToLower().Contains(lowerSearchTerm))
-                            .Include(e => e.employer)
-                            .Include(e => e.jobSeeker)
-                            .Select(e => (User)new UserEntityAdapter(e))
-                            .ToList();
+            List<User> users;
+
+            if(employer)
+            {
+                users = context.Employers
+                                    .Include(e => e.user)
+                                        .ThenInclude(e => e!.employer)
+                                    .Where(e => e.employer_name.ToLower().Contains(lowerSearchTerm) || e.user!.username.ToLower().Contains(lowerSearchTerm) || e.user.email.ToLower().Contains(lowerSearchTerm))
+                                    .Select(e => (User)new UserEntityAdapter(e.user!))
+                                    .ToList();
+            }
+            else
+            {
+                users = context.JobSeekers
+                                    .Include(e => e.user)
+                                        .ThenInclude(e => e!.jobSeeker)
+                                    .Where(e => e.first_name.ToLower().Contains(lowerSearchTerm) || e.last_name.ToLower().Contains(lowerSearchTerm) || e.user!.username.ToLower().Contains(lowerSearchTerm) || e.user.email.ToLower().Contains(lowerSearchTerm))
+                                    .Select(e => (User)new UserEntityAdapter(e.user!))
+                                    .ToList();
+            }
+
+            return users;
         }
     }
 

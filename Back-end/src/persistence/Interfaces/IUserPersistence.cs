@@ -5,7 +5,7 @@ namespace Back_end.Persistence.Interfaces;
 public interface IUserPersistence
 {
     public User? GetUser(int userId);
-    public List<User> GetUsers(string searchTerm, int startIndex, int pageSize);
+    public List<User> GetUsers(string searchTerm, bool employer, int startIndex, int pageSize);
     public List<User> GetUsersForGame(int currentUserId, int startIndex, int amount);
     public User? GetUserByUsername(string username);
     public int CreateUser(User newUser);
