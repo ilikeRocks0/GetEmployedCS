@@ -9,7 +9,7 @@ namespace Back_end.Persistence.Model;
 public class JobEntity
 {
     public int job_id { get; set; }
-    public int? poster_id { get; set; }
+    public int poster_id { get; set; }
     public UserEntity? poster { get; set; }
     public bool employer_poster { get; set; }
     public required string job_title { get; set; }

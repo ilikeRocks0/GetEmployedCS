@@ -37,7 +37,7 @@ public class JobAddService(IJobPersistence jobPersistence, IUserPersistence user
 
         //setup for the rest of the Job attributes
         DateOnly? deadlineDate = null;
-        if (NewJob.Deadline != null)
+        if (!NewJob.Deadline.Equals(String.Empty))
         {
             bool isValidDate = DateOnly.TryParse(NewJob.Deadline, out DateOnly parsedDate);
             if (!isValidDate)

@@ -16,4 +16,6 @@ public sealed class AppConfig
 
     //the amount of quiz item ids loaded in at a time from the database
     public const int QUIZ_ITEM_AMOUNT = 500;
+
+    public const string DB_ENV_KEY = "DB_CONNECTION_STRING";
 }

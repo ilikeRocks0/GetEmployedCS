@@ -7,7 +7,7 @@ namespace Back_end.Persistence.Implementations;
 
 public class AppDbContext : DbContext
 {
-    private readonly string connectionString;
+    private readonly IConfiguration config;
     public DbSet<EmployerEntity> Employers { get; set; }
     public DbSet<EmploymentTypeEntity> EmploymentTypes { get; set; }
     public DbSet<ExperienceEntity> Experiences { get; set; }
@@ -30,16 +30,14 @@ public class AppDbContext : DbContext
 
     public AppDbContext(IConfiguration config)
     {
-        AppOptions options = new();
-        config.GetSection(nameof(AppOptions)).Bind(options);
-
-        // Save connection string from environment variables, or throw exception if it returns null
-        this.connectionString = Environment.GetEnvironmentVariable(options.DBEnvConnectionString) ?? throw new ObjectNotFoundException();
+        this.config = config;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseMySQL(this.connectionString);
+        // Save connection string from environment variables, or throw exception if it returns null
+        string connectionString = config.GetValue<string>(AppConfig.DB_ENV_KEY) ?? throw new ObjectNotFoundException();
+        optionsBuilder.UseMySQL(connectionString);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
