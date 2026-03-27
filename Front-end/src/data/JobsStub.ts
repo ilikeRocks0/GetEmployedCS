@@ -15,6 +15,8 @@ const ALL_JOBS: Job[] = [
     description: "Build and maintain user-facing features for our internal energy management dashboard using React and TypeScript.",
     deadline: "2026-04-30",
     applicationLink: "https://example.com/apply/1",
+    posterName: "Canada Hydro",
+    employerPoster: true,
   },
   {
     id: 2,
@@ -29,6 +31,8 @@ const ALL_JOBS: Job[] = [
     description: "Design and implement RESTful APIs and microservices to support our growing suite of enterprise SaaS products.",
     deadline: null,
     applicationLink: "https://example.com/apply/2",
+    posterName: "TechCorp",
+    employerPoster: true,
   },
   {
     id: 3,
@@ -43,6 +47,8 @@ const ALL_JOBS: Job[] = [
     description: "Create wireframes, prototypes, and high-fidelity designs for mobile and web products in close collaboration with engineering.",
     deadline: "2026-03-31",
     applicationLink: "https://example.com/apply/3",
+    posterName: "InnovateX",
+    employerPoster: true,
   },
   {
     id: 4,
@@ -57,6 +63,8 @@ const ALL_JOBS: Job[] = [
     description: "Build and maintain scalable data pipelines that process millions of events daily using Python, Spark, and Airflow.",
     deadline: null,
     applicationLink: "https://example.com/apply/4",
+    posterName: "Maple Analytics",
+    employerPoster: true,
   },
   {
     id: 5,
@@ -71,6 +79,8 @@ const ALL_JOBS: Job[] = [
     description: "Manage CI/CD pipelines, Kubernetes clusters, and cloud infrastructure across AWS and GCP environments.",
     deadline: "2026-05-15",
     applicationLink: "https://example.com/apply/5",
+    posterName: "Orbit Systems",
+    employerPoster: true,
   },
   {
     id: 6,
@@ -85,6 +95,8 @@ const ALL_JOBS: Job[] = [
     description: "Develop and productionize ML models for recommendation and personalization features used by 2M+ active users.",
     deadline: "2026-04-01",
     applicationLink: "https://example.com/apply/6",
+    posterName: "jane_doe",
+    employerPoster: false,
   },
   {
     id: 7,
@@ -99,6 +111,8 @@ const ALL_JOBS: Job[] = [
     description: "Own features end-to-end across a Next.js front end and a Node.js/PostgreSQL back end for our fintech platform.",
     deadline: null,
     applicationLink: "https://example.com/apply/7",
+    posterName: "NorthStack",
+    employerPoster: true,
   },
   {
     id: 8,
@@ -113,6 +127,8 @@ const ALL_JOBS: Job[] = [
     description: "Build cross-platform mobile features in React Native for our flagship consumer app with 500K+ downloads.",
     deadline: "2026-04-15",
     applicationLink: "https://example.com/apply/8",
+    posterName: "john_smith",
+    employerPoster: false,
   },
   {
     id: 9,
@@ -127,6 +143,8 @@ const ALL_JOBS: Job[] = [
     description: "Architect and maintain the core API layer powering our AI document processing platform, handling 10K+ requests per minute.",
     deadline: null,
     applicationLink: "https://example.com/apply/9",
+    posterName: "ClearPath AI",
+    employerPoster: true,
   },
   {
     id: 10,
@@ -141,6 +159,8 @@ const ALL_JOBS: Job[] = [
     description: "Design resilient, multi-region cloud infrastructure and drive cost optimisation initiatives across our platform.",
     deadline: "2026-06-01",
     applicationLink: "https://example.com/apply/10",
+    posterName: "Vantage Cloud",
+    employerPoster: true,
   },
   {
     id: 11,
@@ -155,6 +175,8 @@ const ALL_JOBS: Job[] = [
     description: "Build and document a shared component library in React and TypeScript used across six product teams.",
     deadline: null,
     applicationLink: "https://example.com/apply/11",
+    posterName: "PixelForge",
+    employerPoster: true,
   },
   {
     id: 12,
@@ -169,6 +191,8 @@ const ALL_JOBS: Job[] = [
     description: "Analyse product and growth metrics, build dashboards in Metabase, and surface insights to support strategic decisions.",
     deadline: "2026-04-30",
     applicationLink: "https://example.com/apply/12",
+    posterName: "alex_dev",
+    employerPoster: false,
   },
 ];
 

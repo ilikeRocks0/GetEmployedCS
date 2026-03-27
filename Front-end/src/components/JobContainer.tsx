@@ -20,6 +20,10 @@ export function JobContainer(){
     const [savedIds, setSavedIds] = useState<Set<number>>(new Set());
 
     useEffect(() => {
+        setPage(1);
+    }, [filters]);
+
+    useEffect(() => {
         const controller = new AbortController();
         setLoading(true);
 
@@ -27,7 +31,7 @@ export function JobContainer(){
             try {
                 const promises: [ReturnType<typeof fetchJobs>, Promise<Set<number>>?] = [
                     fetchJobs(filters, page, PAGE_SIZE, controller.signal),
-                    !isSavedList ? fetchSavedSublist(filters, controller.signal) : undefined,
+                    !isSavedList ? fetchSavedSublist(filters, page, controller.signal) : undefined,
                 ];
                 const [result, sublist] = await Promise.all(promises);
                 setJobs(result.data);

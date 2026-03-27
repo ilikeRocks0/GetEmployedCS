@@ -11,6 +11,7 @@ import ExperienceCard from "./ExperienceCard";
 import JobCard from "./JobCard";
 import { deleteJob } from "@/api/fetchJobs";
 import { mapJob } from "@/utils/ApiJobMapper";
+import CreateJobModal from "./CreateJobModal";
 
 const AVATAR_COLORS = ["#1677ff", "#52c41a", "#fa8c16", "#eb2f96", "#722ed1"];
 function avatarColor(name: string) {
@@ -30,6 +31,7 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
     const [modalOpen, setModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [expModalOpen, setExpModalOpen] = useState(false);
+    const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
     const [editingExp, setEditingExp] = useState<Experience | null>(null);
 
     const handleSaveProfile = async (values: UpdateUserRequest) => {
@@ -204,7 +206,7 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
                             icon={<PlusCircleOutlined />}
                             block
                             style={{ height: 60, marginBottom: 12 }}
-                            onClick={() => {/* logic to open Job Create Modal */}}
+                            onClick={() => setCreateJobModalOpen(true)}
                         >
                             Post a New Job
                         </Button>
@@ -220,6 +222,7 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
             </div>
             <ProfileEditModal open={modalOpen} user={user} loading={loading} onClose={() => setModalOpen(false)} onSave={handleSaveProfile}/>
             <ExperienceEditModal open={expModalOpen} initialValues={editingExp} onClose={() => setExpModalOpen(false)} onSave={handleSaveExperience} />
+            <CreateJobModal open={createJobModalOpen} onClose={() => setCreateJobModalOpen(false)} onCreated={onRefresh} />
         </div>
     )
 }

@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button, Avatar, Typography, Spin, Input } from "antd";
 import { CommentOutlined, SendOutlined } from "@ant-design/icons";
 import type { JobComment } from "@/types/JobComment";
@@ -65,9 +66,15 @@ export default function CommentList({jobId}: CommentListState){
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 16 }}>
               {comments.map((c, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-                  <Avatar>{(c.posterUsername ?? "?").slice(0, 2).toUpperCase()}</Avatar>
+                  <Link href={`/profile/${c.posterUsername}`}>
+                    <Avatar style={{ cursor: "pointer" }}>{(c.posterUsername ?? "?").slice(0, 2).toUpperCase()}</Avatar>
+                  </Link>
                   <div>
-                    {c.posterUsername && <Text strong style={{ display: "block" }}>{c.posterUsername}</Text>}
+                    {c.posterUsername && (
+                      <Link href={`/profile/${c.posterUsername}`} style={{ color: "#1677ff", fontWeight: 600, display: "block" }}>
+                        {c.posterUsername}
+                      </Link>
+                    )}
                     <Text>{c.comment}</Text>
                   </div>
                 </div>
