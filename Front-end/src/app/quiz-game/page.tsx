@@ -2,7 +2,7 @@
 
 import SiteHeader from "@/components/SiteHeader"
 import { App, Flex, Layout, Space, Spin, Typography } from "antd"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { QuizGameProvider, useQuizGame } from "@/context/QuizGameContext";
 import { QuizOptions } from "@/types/QuizOptions";
 import { QuizStats } from "@/types/QuizStats";
@@ -51,13 +51,18 @@ function QuizGame(){
             })
     }
 
-    useEffect(() => {
-        initQuizGame()
-            .then(() => {
-                loadNextSentences();
-            })
-    }, [])
+    //navigating to this page using router.push() causes the use effect to fire twice
+    //this blocks it
+    const hasInitialized = useRef(false);
 
+    useEffect(() => {
+        if (hasInitialized.current) return;
+        hasInitialized.current = true;
+
+        initQuizGame().then(() => {
+            loadNextSentences();
+        });
+    }, []);
 
     return(
         <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
