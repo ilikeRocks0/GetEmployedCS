@@ -183,11 +183,15 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
                                     </Card>
                                 </div>
                             )}
-                            {user.experiences?.map((exp) => (
-                                <div key={exp.experienceId} style={{ padding: '0 10px' }}>
-                                    <ExperienceCard isSelf={isSelf} experience={exp} onEdit={handleExpEditClick} onDelete={handleExperienceDelete} />
-                                </div>
-                            ))}
+                            {user.experiences && user.experiences.length > 0 ? (
+                                user.experiences?.map((exp) => (
+                                    <div key={exp.experienceId} style={{ padding: '0 10px' }}>
+                                        <ExperienceCard isSelf={isSelf} experience={exp} onEdit={handleExpEditClick} onDelete={handleExperienceDelete} />
+                                    </div>
+                                ))
+                            ) : (
+                                <Empty description="No experiences" />
+                            )}
                         </Carousel>
                     </div>
                 )}

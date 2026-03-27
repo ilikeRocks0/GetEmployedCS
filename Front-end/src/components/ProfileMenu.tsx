@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Dropdown, MenuProps } from "antd";
 import {
   UserOutlined,
@@ -66,10 +66,15 @@ const ProfileMenu: React.FC = () => {
     }
   };
 
-  const [username] = useState(() => {
-    const userJson = typeof window !== "undefined" ? localStorage.getItem("user") : null;
-    return userJson ? (JSON.parse(userJson).username ?? "") : "";
-  });
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") ?? "{}");
+    if (user.username) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUsername(user.username);
+    }
+  }, []);
   const initials = username ? username.slice(0, 2).toUpperCase() : "??";
 
   return (

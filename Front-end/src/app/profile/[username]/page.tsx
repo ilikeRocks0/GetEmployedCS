@@ -36,7 +36,7 @@ function ProfilePageContent({ username }: ProfileProps) {
         } finally {
             setLoading(false);
         }
-    }, [username]);
+    }, [username, fetchUser, user]);
 
     useEffect(() => {
         const controller = new AbortController();
