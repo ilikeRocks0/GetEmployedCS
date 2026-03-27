@@ -13,6 +13,18 @@ public static class UserEndpoints
 {
     public static void MapUserEndpoints(this IEndpointRouteBuilder routes)
     {
+        // This endpoint retrieves a list of users based on the provided filters.
+        // The filters are passed as query parameters.
+        routes.MapGet("/api/users/search", (HttpContext context, IUserService userService) =>
+        {
+            var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
+            return userService.GetUsers(filters.Count > 0 ? filters : null);
+        })
+            .WithName("SearchUsers")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
+
         routes.MapPost("/api/users", (NewUser newUser, IUserService userService) =>
         {
             return userService.CreateUser(newUser);
@@ -126,6 +138,18 @@ public static class UserEndpoints
             .WithName("Logout")
             .WithTags("Users")
             .WithOpenApi();
+        
+        routes.MapGet("/api/users/following", (HttpContext context, IUserService userService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            return Results.Ok(userService.GetAllFollowing(userId));
+        })
+            .WithName("GetFollowing")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
 
         routes.MapGet("/api/users/check-employer", (HttpContext context, IUserService userService) =>
         {
