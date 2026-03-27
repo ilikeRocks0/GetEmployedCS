@@ -1,7 +1,7 @@
 "use client";
 
 import SiteHeader from "@/components/SiteHeader"
-import { App, Flex, Layout, Space, Spin } from "antd"
+import { App, Flex, Layout, Space, Spin, Typography } from "antd"
 import { useEffect, useState } from "react";
 import { QuizGameProvider, useQuizGame } from "@/context/QuizGameContext";
 import { QuizOptions } from "@/types/QuizOptions";
@@ -9,6 +9,7 @@ import { QuizStats } from "@/types/QuizStats";
 import { QuizView } from "./components/QuizView";
 import { QuizStatsView } from "./components/QuizStatsView";
 
+const { Title, Text } = Typography;
 const { Content } = Layout
 
 function QuizGame(){
@@ -70,6 +71,10 @@ function QuizGame(){
             padding: "40px 20px",
             }}
         >
+        <Title level={1}>Quiz Game</Title>
+        <Text>
+            Select the stronger sentence out of the two provided below.
+        </Text>
         <Space orientation="vertical" size="large" align="center">
         <QuizStatsView quizStats={quizStats}/>
         {!noMore ? (

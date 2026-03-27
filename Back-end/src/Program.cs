@@ -24,6 +24,8 @@ builder.Services.Configure<AppOptions>(builder.Configuration.GetSection(nameof(A
 builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IQuizItemsPersistence, QuizItemsPersisitence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
+builder.Services.AddScoped<IResumePersistence, ResumePersistence>();
+builder.Services.AddScoped<IGenericWordsService, GenericWordsService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IJobAddService, JobAddService>();
 builder.Services.AddSingleton<IJobGameService, GameServiceSingleton>();
@@ -111,6 +113,7 @@ app.MapUserEndpoints();
 app.MapUserGameEndpoints();
 app.MapCommentsEndpoints();
 app.MapQuizGameEndpoints();
+app.MapGenericWordEndpoints();
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
