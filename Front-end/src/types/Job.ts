@@ -12,4 +12,6 @@ export interface Job {
   description: string;
   deadline: string | null;
   applicationLink: string;
+  posterName: string | null;
+  employerPoster: boolean;
 }

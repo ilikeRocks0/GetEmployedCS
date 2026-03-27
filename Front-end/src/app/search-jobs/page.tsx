@@ -16,7 +16,9 @@ function JobsPageContent() {
     <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
       <SiteHeader selectedKey="search-jobs" />
       <Content style={{ padding: "40px 80px" }}>
-        <Title level={1}>Search Jobs</Title>
+        <div style={{ marginBottom: 24 }}>
+          <Title level={1} style={{ margin: 0 }}>Search Jobs</Title>
+        </div>
         <FilterOptions/>
         <JobContainer/>
       </Content>

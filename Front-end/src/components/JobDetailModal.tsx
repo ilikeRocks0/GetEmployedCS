@@ -40,14 +40,17 @@ export default function JobDetailModal({ job, open, onClose, isCurrentUsers }: J
         <Avatar
           size={56}
           src={job.logo}
-          style={{ backgroundColor: job.logo ? undefined : avatarColor(job.company), flexShrink: 0, fontWeight: 700 }}
+          style={{ backgroundColor: job.logo ? undefined : avatarColor(job.company || "?"), flexShrink: 0, fontWeight: 700 }}
         >
-          {!job.logo && job.company.slice(0, 2).toUpperCase()}
+          {!job.logo && (job.company || "?").slice(0, 2).toUpperCase()}
         </Avatar>
         <div>
-          <Title level={4} style={{ margin: 0, lineHeight: 1.3 }}>{job.company}</Title>
-          <Text type="secondary" style={{ fontSize: 15 }}>{job.position}</Text>
-          <div style={{ marginTop: 6, display: "flex", gap: 6 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Title level={4} style={{ margin: 0, lineHeight: 1.3 }}>{job.position}</Title>
+            <Tag color={job.employerPoster ? "blue" : "purple"}>{job.employerPoster ? "Employer Posting" : "Community Posting"}</Tag>
+          </div>
+          <Text type="secondary" style={{ fontSize: 14 }}>Posted by {job.posterName ?? "Unknown"}</Text>
+          <div style={{ marginTop: 6, display: "flex", gap: 6, flexWrap: "wrap" }}>
             {job.languages.map((lang) => <Tag key={lang}>{lang}</Tag>)}
             <Tag color={TYPE_COLORS[job.employment_type] ?? "default"}>{job.employment_type}</Tag>
           </div>

@@ -2,21 +2,14 @@ import { API_BASE_URL } from "@/config/config";
 import type { Job } from "@/types/Job";
 import type { JobFilters } from "@/types/JobFilters";
 import { mapJob, ApiJob } from "@/utils/ApiJobMapper";
-import { getUserIdFromSession } from "@/utils/getIdsFromStubSession";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
-function buildParams(filters: JobFilters): URLSearchParams {
+function buildParams(filters: JobFilters, page?: number): URLSearchParams {
   const params = new URLSearchParams();
   if (filters.searchText) params.set("searchTerm", filters.searchText);
   if (filters.selectedType) params.set("employmentTypes", filters.selectedType);
   filters.selectedLanguages.forEach((lang) => params.append("languages", lang));
-  return params;
-}
-
-function buildSavedJobsParams(filters: JobFilters): URLSearchParams {
-  const params = buildParams(filters);
-  const seekerId = getUserIdFromSession();
-  if (seekerId != null) params.set("UserId", String(seekerId));
+  if (page != null) params.set("pageNumber", String(page));
   return params;
 }
 
@@ -29,21 +22,24 @@ export async function fetchLanguages(): Promise<string[]> {
 export async function fetchJobs(
   filters: JobFilters,
   page: number,
-  pageSize: number,
+  _pageSize: number,
   signal: AbortSignal
 ): Promise<{ data: Job[]; total: number }> {
-  const params = buildParams(filters);
+  const params = buildParams(filters, page);
+  const countParams = buildParams(filters);
 
-  const res = await fetchWithAuth(`${API_BASE_URL}/api/jobs?${params}`, { signal });
+  const [jobsRes, countRes] = await Promise.all([
+    fetchWithAuth(`${API_BASE_URL}/api/jobs?${params}`, { signal }),
+    fetchWithAuth(`${API_BASE_URL}/api/jobs/number?${countParams}`, { signal }),
+  ]);
 
-  if (!res.ok) throw new Error(`Failed to fetch jobs: ${res.status}`);
+  if (!jobsRes.ok) throw new Error(`Failed to fetch jobs: ${jobsRes.status}`);
+  if (!countRes.ok) throw new Error(`Failed to fetch job count: ${countRes.status}`);
 
-  const apiJobs: ApiJob[] = await res.json();
-  const total = apiJobs.length;
-  const start = (page - 1) * pageSize;
-  const data = apiJobs.slice(start, start + pageSize).map(mapJob);
+  const apiJobs: ApiJob[] = await jobsRes.json();
+  const total: number = await countRes.json();
 
-  return { data, total };
+  return { data: apiJobs.map(mapJob), total };
 }
 
 export async function deleteJob(id: number) {
@@ -53,8 +49,8 @@ export async function deleteJob(id: number) {
   if (!res.ok) throw new Error(`Failed to fetch jobs: ${res.status}`);
 }
 
-export async function fetchSavedSublist(filters: JobFilters, signal: AbortSignal): Promise<Set<number>> {
-  const params = buildParams(filters);
+export async function fetchSavedSublist(filters: JobFilters, page: number, signal: AbortSignal): Promise<Set<number>> {
+  const params = buildParams(filters, page);
   const res = await fetchWithAuth(`${API_BASE_URL}/api/jobs/saved/sublist?${params}`, { signal });
   if (!res.ok) throw new Error(`Failed to fetch saved sublist: ${res.status}`);
   const apiJobs: ApiJob[] = await res.json();
@@ -64,19 +60,22 @@ export async function fetchSavedSublist(filters: JobFilters, signal: AbortSignal
 export async function fetchSavedJobs(
   filters: JobFilters,
   page: number,
-  pageSize: number,
+  _pageSize: number,
   signal: AbortSignal
 ): Promise<{ data: Job[]; total: number }> {
-  const params = buildSavedJobsParams(filters);
+  const params = buildParams(filters, page);
+  const countParams = buildParams(filters);
 
-  const res = await fetchWithAuth(`${API_BASE_URL}/api/jobs/saved?${params}`, { signal });
+  const [jobsRes, countRes] = await Promise.all([
+    fetchWithAuth(`${API_BASE_URL}/api/jobs/saved?${params}`, { signal }),
+    fetchWithAuth(`${API_BASE_URL}/api/jobs/saved/number?${countParams}`, { signal }),
+  ]);
 
-  if (!res.ok) throw new Error(`Failed to fetch jobs: ${res.status}`);
+  if (!jobsRes.ok) throw new Error(`Failed to fetch saved jobs: ${jobsRes.status}`);
+  if (!countRes.ok) throw new Error(`Failed to fetch saved job count: ${countRes.status}`);
 
-  const apiJobs: ApiJob[] = await res.json();
-  const total = apiJobs.length;
-  const start = (page - 1) * pageSize;
-  const data = apiJobs.slice(start, start + pageSize).map(mapJob);
+  const apiJobs: ApiJob[] = await jobsRes.json();
+  const total: number = await countRes.json();
 
-  return { data, total };
+  return { data: apiJobs.map(mapJob), total };
 }

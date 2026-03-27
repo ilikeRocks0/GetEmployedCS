@@ -1,6 +1,6 @@
 "use client";
 
-import { Layout, Spin } from "antd";
+import { App, Layout, Spin } from "antd";
 import SiteHeader from "@/components/SiteHeader";
 import ProfileView from "@/components/ProfileView";import { UsersProvider, useUser } from "@/context/UserContext";
 import { use, useCallback, useEffect, useState } from "react";
@@ -72,8 +72,10 @@ export default function ProfilePage({
 }) {
     const { username } = use(params);
     return(
-        <UsersProvider>
-            <ProfilePageContent username={username}/>
-        </UsersProvider>
+        <App>
+            <UsersProvider>
+                <ProfilePageContent username={username}/>
+            </UsersProvider>
+        </App>
     )
 }

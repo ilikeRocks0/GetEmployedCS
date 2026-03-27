@@ -103,10 +103,13 @@ export default function JobCard({ job, onRemove, isSaved: isSavedProp, isCurrent
         </Avatar>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <Title level={5} style={{ margin: 0, lineHeight: 1.3 }}>
-            {job.company}
-          </Title>
-          <Text type="secondary">{job.position}</Text>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Title level={5} style={{ margin: 0, lineHeight: 1.3 }}>
+              {job.position}
+            </Title>
+            <Tag color={job.employerPoster ? "blue" : "purple"}>{job.employerPoster ? "Employer" : "Community"}</Tag>
+          </div>
+          <Text type="secondary">Posted by {job.posterName ?? "Unknown"}</Text>
           <div style={{ marginTop: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
             {job.locations.length > 0 && (
               <Text type="secondary" style={{ fontSize: 12 }}>
