@@ -159,6 +159,7 @@ export default function JobCard({ job, onRemove, isSaved: isSavedProp, isCurrent
         job={job}
         open={modalOpen}
         onClose={() => setModalOpen(false)}
+        isCurrentUsers={isCurrentUsers || false}
       />
     </div>
   );
