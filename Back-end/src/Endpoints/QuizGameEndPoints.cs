@@ -55,8 +55,12 @@ public static class QuizGameEndPoints
             var userIdStr = context.User.FindFirst("UserId")?.Value;
             if (!int.TryParse(userIdStr, out var userId))
                 return Results.Unauthorized();
-
-            return Results.Ok(quizGameService.GetNextQuiz(new CurrentUser(userId)));
+            QuizItem? quizItem = quizGameService.GetNextQuiz(new CurrentUser(userId));
+            if (quizItem == null)
+            {
+                return Results.Ok();
+            }
+            return Results.Ok(new QuizOptions(quizItem));
         })
             .WithName("GetNextQuiz")
             .WithTags("Quiz Game")
