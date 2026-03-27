@@ -22,9 +22,10 @@ interface JobDetailModalState {
   job: Job | null;
   open: boolean;
   onClose: () => void;
+  isCurrentUsers: boolean;
 }
 
-export default function JobDetailModal({ job, open, onClose }: JobDetailModalState) {
+export default function JobDetailModal({ job, open, onClose, isCurrentUsers }: JobDetailModalState) {
   if (!job) return null;
 
   return (
@@ -88,9 +89,11 @@ export default function JobDetailModal({ job, open, onClose }: JobDetailModalSta
       
       <CommentList jobId={job.id} />
 
-      <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end" }}>
-        <Button type="primary" size="large" href={job.applicationLink} target="_blank" rel="noopener noreferrer">Apply Now</Button>
-      </div>
+      {!isCurrentUsers && (
+        <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end" }}>
+          <Button type="primary" size="large" href={job.applicationLink} target="_blank" rel="noopener noreferrer">Apply Now</Button>
+        </div>
+      )}
     </Modal>
   );
 }
