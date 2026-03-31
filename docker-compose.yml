@@ -3,8 +3,6 @@ services:
     image: lsteski/getemployed-backend:latest
     build: ./Back-end
     environment:
-      - LOGGING__LOGLEVEL__MICROSOFT=Information
-      - LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE.AUTHENTICATION=Debug
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true

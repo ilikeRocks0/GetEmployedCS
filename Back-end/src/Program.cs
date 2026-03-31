@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -52,7 +53,15 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("https://localhost", "https://localhost:3000")
+        var origins = new HashSet<string> {"https://localhost", "https://localhost:3000"};
+        var envOrigin = Environment.GetEnvironmentVariable("FRONTEND_URL");
+
+        if (!string.IsNullOrEmpty(envOrigin))
+        {
+            origins.Add(envOrigin);
+        }
+
+        policy.WithOrigins([.. origins])
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -95,16 +104,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseHttpsRedirection();
 }
-else
+
+if (!app.Environment.IsDevelopment())
 {
-    // In Docker, Caddy handles HTTPS.
     app.UseForwardedHeaders();
 }
 
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-// app.UseHttpsRedirection();
 
 var summaries = new[]
 {
@@ -134,7 +142,15 @@ app.MapUserGameEndpoints();
 app.MapCommentsEndpoints();
 app.MapQuizGameEndpoints();
 app.MapGenericWordEndpoints();
-app.Run();
+
+if (app.Environment.IsDevelopment())
+{
+    app.Run();
+}
+else
+{
+    app.Run($"http://0.0.0.0:{port}");
+}
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
