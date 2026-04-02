@@ -150,5 +150,16 @@ public class AppDbContext : DbContext
             .HasOne(e => e.followed)
             .WithMany(e => e.followers)
             .HasForeignKey(e => e.followed_id);
+
+        // Define relationship between Users and UserComments
+        modelBuilder.Entity<UserCommentEntity>()
+            .HasOne(e => e.posterUser)
+            .WithMany(e => e.postedComments)
+            .HasForeignKey(e => e.poster_id);
+
+        modelBuilder.Entity<UserCommentEntity>()
+            .HasOne(e => e.profileUser)
+            .WithMany(e => e.profileComments)
+            .HasForeignKey(e => e.profile_id);
     }
 }

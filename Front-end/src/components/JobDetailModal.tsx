@@ -3,6 +3,7 @@
 import { Modal, Button, Avatar, Tag, Typography, Divider } from "antd";
 import type { Job } from "@/types/Job";
 import CommentList from "./CommentList";
+import { getComments, createComment } from "@/api/comments";
 
 const { Text, Title } = Typography;
 
@@ -90,7 +91,7 @@ export default function JobDetailModal({ job, open, onClose, isCurrentUsers }: J
       <Text type="secondary">{job.description}</Text>
       <Divider />
       
-      <CommentList jobId={job.id} />
+      <CommentList getComments={() => getComments(job.id)} createComment={(comment) => createComment(job.id, comment)} />
 
       {!isCurrentUsers && (
         <div style={{ marginTop: 24, display: "flex", justifyContent: "flex-end" }}>

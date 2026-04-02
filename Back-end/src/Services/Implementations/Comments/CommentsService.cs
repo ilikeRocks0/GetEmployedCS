@@ -1,9 +1,7 @@
 using Back_end.Persistence.Interfaces;
 using Back_end.Objects;
 using Back_end.Services.Interfaces;
-using Back_end.Util;
 using Back_end.Endpoints.Models;
-
 namespace Back_end.Services.Implementations;
 
 public class CommentsService (IJobPersistence jobPersistence, IUserPersistence userPersistence) : ICommentsService
@@ -24,7 +22,7 @@ public class CommentsService (IJobPersistence jobPersistence, IUserPersistence u
         
         if (user == null)
         {
-            throw new Exception("User not found");
+            throw new NullReferenceException("User not found");
         }
         else if(comment.JobId < 0)
         {

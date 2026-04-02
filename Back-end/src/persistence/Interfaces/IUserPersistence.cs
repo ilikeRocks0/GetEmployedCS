@@ -15,6 +15,7 @@ public interface IUserPersistence
     public User? GetUserByCredentials(string email, string password);
     public bool CheckUserEmployer(int userId);
     public void FollowUser(int followerId, int followedId);
+    public void UnfollowUser(int followerId, int followedId);
     public bool IsUserInFollows(int followerId, int followedId);
     public List<User> GetAllFollowers(int userId);
     public List<User> GetAllFollowing(int userId);
@@ -24,4 +25,7 @@ public interface IUserPersistence
     public void UpdateExperience(int userId, Experience oldExperience, Experience newExperience);
     public void DeleteExperience(int userId, Experience experience);
     public bool IsExperienceOwner(int userId, int experienceId);
+    public void VerifyUser(string token);
+    public UserComment CreateUserComment(UserComment comment);
+    public List<UserComment> GetProfileComments(int userId);
 }

@@ -25,5 +25,25 @@ public static class CommentEndpoints
             .WithTags("Comments")
             .WithOpenApi()
             .RequireAuthorization();
+        
+        routes.MapPost("/api/usercomments/create", (NewUserComment comment, HttpContext context, IUserCommentsService userCommentsService) =>
+        {
+            var userId = context.User.FindFirst("UserId")?.Value;
+            comment.PosterUserId = int.TryParse(userId, out var id) ? id : 0;
+            return userCommentsService.CreateComment(comment);
+        })
+            .WithName("CreateUserComment")
+            .WithTags("UserComments")
+            .WithOpenApi()
+            .RequireAuthorization();
+        
+        routes.MapGet("/api/usercomments/{username}", (string username, IUserCommentsService userCommentsService) =>
+        {
+            return userCommentsService.GetComments(username);
+        })
+            .WithName("GetUserComments")
+            .WithTags("UserComments")
+            .WithOpenApi()
+            .RequireAuthorization();
     }
 }

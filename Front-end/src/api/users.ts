@@ -67,3 +67,13 @@ export async function checkIfUserIsEmployer(): Promise<boolean> {
   if (!res.ok) throw new Error(`Failed to check employer status: ${res.status}`);
   return res.json();
 }
+
+export async function followUser(username: string): Promise<void> {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/users/follow/${username}`, { method: "POST" });
+  if (!res.ok) throw new Error(`Failed to follow user: ${res.status}`);
+}
+
+export async function unfollowUser(username: string): Promise<void> {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/users/unfollow/${username}`, { method: "POST" });
+  if (!res.ok) throw new Error(`Failed to unfollow user: ${res.status}`);
+}

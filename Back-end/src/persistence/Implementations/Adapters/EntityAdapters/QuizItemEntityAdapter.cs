@@ -6,7 +6,7 @@ namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 public class QuizItemEntityAdapter : QuizItem
 {
-    private void ValidateEntity(QuizItemEntity quizItemEntity)
+    private static void ValidateEntity(QuizItemEntity quizItemEntity)
     {
         if (quizItemEntity.strong_sentence.Trim().Equals(String.Empty))
         {

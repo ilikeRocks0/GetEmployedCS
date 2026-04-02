@@ -11,10 +11,14 @@ public class UserEntity
     public required string password { get; set; }
     public required string about_string { get; set; }
     public required string email { get; set; }
+    public required bool verified { get; set; }
+    public string? verify_token { get; set; }
     public ICollection<JobEntity>? postedJobs { get; set; }
     public EmployerEntity? employer { get; set; }
     public JobSeekerEntity? jobSeeker { get; set; }
     public List<JobCommentEntity>? jobComments { get; set; }
     public ICollection<FollowsEntity>? followers { get; set; }
     public ICollection<FollowsEntity>? follows { get; set; }
+    public ICollection<UserCommentEntity>? postedComments { get; set; }
+    public ICollection<UserCommentEntity>? profileComments { get; set; }
 }

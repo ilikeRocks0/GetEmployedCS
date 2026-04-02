@@ -44,10 +44,15 @@ const ProfileMenu: React.FC = () => {
       icon: <UserOutlined />,
       label: "Profile",
     },
-    {
+    ...(!isEmployer ? [{
       key: "applications",
       icon: <FileTextOutlined />,
-      label: isEmployer ? "Saved Employees" : "Saved Jobs",
+      label: "Saved Jobs",
+    }] : []),
+    {
+      key: "saved-users",
+      icon: <UserOutlined />,
+      label: "Followed Users",
     },
     {
       type: "divider",
@@ -69,6 +74,9 @@ const ProfileMenu: React.FC = () => {
       }
       case "applications":
         router.push(isEmployer ? "/saved-users" : "/applications");
+        break;
+      case "saved-users":
+        router.push("/saved-users");
         break;
       case "logout":
         await logout();

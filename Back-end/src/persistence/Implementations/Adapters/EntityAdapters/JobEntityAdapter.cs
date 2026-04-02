@@ -8,7 +8,7 @@ namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 public class JobEntityAdapter : Job
 {
-    private void ValidateEntity(JobEntity jobEntity)
+    private static void ValidateEntity(JobEntity jobEntity)
     {
         if (jobEntity.job_title.Trim().Equals(String.Empty))
         {
