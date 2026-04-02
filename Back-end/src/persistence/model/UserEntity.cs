@@ -1,6 +1,8 @@
 using Back_end.Persistence.Model;
 using Microsoft.EntityFrameworkCore;
 
+namespace Back_end.Persistence.Model;
+
 [PrimaryKey(nameof(user_id))]
 public class UserEntity
 {

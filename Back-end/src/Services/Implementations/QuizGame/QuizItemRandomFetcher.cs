@@ -1,7 +1,11 @@
 //Gets a list of quiz items that is randomly fetched
 using Back_end.Persistence.Interfaces;
+using Back_end.Objects;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
+
+namespace Back_end.Services.Implementations;
+
 public class QuizItemRandomFetcher : IQuizItemFetcher
 {
     Queue<QuizItem> quizItems = [];

@@ -1,8 +1,10 @@
 using Back_end.Endpoints.Models;
 using Back_end.Persistence.Interfaces;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Services.Implementations.Finders;
 using Back_end.Services.Interfaces;
+
+namespace Back_end.Services.Implementations;
 
 public class QuizGameService : IQuizGameService
 {

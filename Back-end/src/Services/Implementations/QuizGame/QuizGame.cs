@@ -1,4 +1,7 @@
+using Back_end.Objects;
 using Back_end.Services.Interfaces;
+
+namespace Back_end.Services.Implementations;
 
 public class QuizGame : IQuizGame
 {

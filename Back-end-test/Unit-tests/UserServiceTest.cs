@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Back_end.Services.Implementations;
 using Back_end.Persistence.Interfaces;
 using Org.BouncyCastle.Bcpg;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Endpoints.Models;
 
 namespace Tests;

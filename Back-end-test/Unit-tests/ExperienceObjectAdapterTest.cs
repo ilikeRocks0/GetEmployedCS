@@ -1,8 +1,9 @@
 namespace test;
 
 using Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using NUnit.Framework;
+using Back_end.Persistence.Exceptions;
 
 public class ExperienceObjectAdapterTest
 {

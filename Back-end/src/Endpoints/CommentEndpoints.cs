@@ -1,6 +1,6 @@
+using Back_end.Endpoints.Models;
 using Back_end.Services.Interfaces;
 namespace Back_end.Endpoints;
-
 
 public static class CommentEndpoints
 {

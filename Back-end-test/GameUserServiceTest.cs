@@ -1,6 +1,6 @@
 namespace test;
 
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Services.Implementations;
 using Back_end.Services.Interfaces;
 using NSubstitute;

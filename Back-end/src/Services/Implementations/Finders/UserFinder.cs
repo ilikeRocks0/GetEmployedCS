@@ -1,5 +1,6 @@
 using Back_end.Persistence.Interfaces;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
+
 namespace Back_end.Services.Implementations.Finders;
 
 public class UserFinder (IUserPersistence userPersistence)
