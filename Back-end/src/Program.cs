@@ -5,6 +5,7 @@ using Back_end.Persistence.Objects;
 using Back_end.Persistence.Interfaces;
 using Back_end.Services.Interfaces;
 using Back_end.Services.Implementations;
+using Back_end.Services.Implementations.AI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 // Load environment variables from .env file
@@ -25,7 +26,9 @@ builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IQuizItemsPersistence, QuizItemsPersisitence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
 builder.Services.AddScoped<IResumePersistence, ResumePersistence>();
+builder.Services.AddSingleton<IGroqService, GroqService>();
 builder.Services.AddScoped<IGenericWordsService, GenericWordsService>();
+builder.Services.AddScoped<IAiGenericWordsService, GroqGenericWordsService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IJobAddService, JobAddService>();
 builder.Services.AddSingleton<IJobGameService, GameServiceSingleton>();

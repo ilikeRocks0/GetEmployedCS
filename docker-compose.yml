@@ -7,6 +7,9 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
       - ConnectionStrings__DefaultConnection=${ConnectionStrings__DefaultConnection}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_API_URL=${GROQ_API_URL}
+      - GROQ_MODEL=${GROQ_MODEL}
 
   frontend:
     image: lsteski/getemployed-frontend:latest

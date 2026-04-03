@@ -62,11 +62,11 @@ function QuizGame(){
         initQuizGame().then(() => {
             loadNextSentences();
         });
-    }, []);
+    }, [initQuizGame, loadNextSentences]);
 
     return(
         <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
-        <SiteHeader selectedKey= "Resume Help" />
+        <SiteHeader selectedKey="/resume-help" />
         <Content
             style={{
             display: "flex",
