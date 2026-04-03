@@ -1,5 +1,7 @@
 using System.Data.Entity;
+using Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 using Back_end.Persistence.Interfaces;
+using Back_end.Objects;
 
 namespace Back_end.Persistence.Implementations;
 

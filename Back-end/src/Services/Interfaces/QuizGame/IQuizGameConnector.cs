@@ -1,4 +1,4 @@
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 namespace Back_end.Services.Interfaces;
 public interface IQuizGameConnector
 {

@@ -1,5 +1,6 @@
 namespace test;
 
+using Back_end.Persistence.Exceptions;
 using Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 using NUnit.Framework;
 

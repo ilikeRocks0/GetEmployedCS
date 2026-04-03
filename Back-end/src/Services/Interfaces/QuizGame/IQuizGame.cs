@@ -1,3 +1,5 @@
+using Back_end.Objects;
+
 namespace Back_end.Services.Interfaces;
 public interface IQuizGame
 {

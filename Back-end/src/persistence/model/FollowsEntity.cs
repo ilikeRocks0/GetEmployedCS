@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
+namespace Back_end.Persistence.Model;
+
 [PrimaryKey(nameof(follower_id), nameof(followed_id))]
 public class FollowsEntity
 {

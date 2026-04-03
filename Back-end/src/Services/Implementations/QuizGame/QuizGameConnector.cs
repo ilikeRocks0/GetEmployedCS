@@ -1,7 +1,9 @@
 using Back_end.Persistence.Implementations;
 using Back_end.Persistence.Interfaces;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Services.Interfaces;
+
+namespace Back_end.Services.Implementations;
 
 //Holds all users game sessions for the quiz game
 //the game is indexed by there user id

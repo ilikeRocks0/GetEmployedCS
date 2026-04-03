@@ -1,3 +1,5 @@
+using Back_end.Persistence.Model;
+
 namespace Back_end.Persistence.Implementations.Types;
 
 public class Poster

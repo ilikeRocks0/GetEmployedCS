@@ -1,6 +1,8 @@
 namespace test;
 
+using Back_end.Persistence.Exceptions;
 using Back_end.Persistence.Implementations.Adapters.EntityAdapters;
+using Back_end.Persistence.Model;
 using NUnit.Framework;
 
 public class UserEntityAdapterTest

@@ -1,4 +1,5 @@
 using Back_end.Endpoints.Models;
+using Back_end.Objects;
 namespace Back_end.Services.Interfaces;
 public interface IQuizGameService
 {

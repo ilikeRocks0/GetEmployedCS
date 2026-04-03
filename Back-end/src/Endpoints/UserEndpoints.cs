@@ -1,6 +1,6 @@
 using Back_end.Services.Interfaces;
 using Back_end.Endpoints.Models;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Util;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

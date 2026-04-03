@@ -1,7 +1,7 @@
 using DotNetEnv;
 using Back_end.Endpoints;
 using Back_end.Persistence.Implementations;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Persistence.Interfaces;
 using Back_end.Services.Interfaces;
 using Back_end.Services.Implementations;

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Back_end.Persistence.Model;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
+using Back_end.Persistence.Exceptions;
 
 namespace Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 

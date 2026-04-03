@@ -1,3 +1,5 @@
+namespace Back_end.Persistence.Exceptions;
+
 public class ObjectConversionException : InvalidOperationException
 {
     public ObjectConversionException() : base() { }
