@@ -25,7 +25,11 @@ namespace MyLoadTest
                 SpamAddDeleteJob(),
                 SpamGetComments(),
                 SpamUpdateProfile(),
-                SpamAddDeleteExperience()
+                SpamAddDeleteExperience(),
+                SpamUserGameReject(),
+                SpamUserGameAccept(),
+                SpamJobGameReject(),
+                SpamJobGameAccept()
             };
 
             foreach (var scenario in scenarios)
@@ -113,6 +117,7 @@ namespace MyLoadTest
             {
                 await LogOutMulti(httpClients);
             });
+
             return scenario;
         }
 
@@ -146,7 +151,7 @@ namespace MyLoadTest
             })
             .WithoutWarmUp()
             .WithLoadSimulations(
-                Simulation.Inject(rate: 5,
+                Simulation.Inject(rate: 10,
                                   interval: TimeSpan.FromSeconds(1),
                                   during: TimeSpan.FromSeconds(30))
             ).WithInit(async context =>
@@ -576,6 +581,222 @@ namespace MyLoadTest
                 {
                     string jobIdForURI = jobId.ToString();
                     var response = await client.DeleteAsync($"https://localhost/api/jobs/{jobIdForURI}");
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
+            });
+
+            return scenario;
+        }
+        public static ScenarioProps SpamJobGameReject()
+        {
+
+            List<HttpClient> httpClients = [];
+
+            var scenario = Scenario.Create("Spam Job Game Reject", async context =>
+            {
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
+
+                var step1 = await Step.Run("initialize job game reject",context, async () =>
+                {
+                    using StringContent jsonContent = new StringContent("");
+                    var response = await client.PostAsync("https://localhost/api/job/game", jsonContent);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step2 = await Step.Run("spam job game reject",context, async () =>
+                {
+                    using StringContent jsonContent = new(
+                            JsonSerializer.Serialize(new
+                            {
+                                jobId = 1
+                            }),
+                            Encoding.UTF8,
+                            "application/json");
+                    var response = await client.PostAsync("https://localhost/api/job/game/reject", jsonContent);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
+            });
+
+            return scenario;
+        }
+
+        public static ScenarioProps SpamJobGameAccept()
+        {
+            List<HttpClient> httpClients = [];
+            
+            var scenario = Scenario.Create("Spam Job Game Accept", async context =>
+            {
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
+
+                var step1 = await Step.Run("initialize job game accept",context, async () =>
+                {
+                    using StringContent jsonContent = new StringContent("");
+                    var response = await client.PostAsync("https://localhost/api/job/game", jsonContent);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step2 = await Step.Run("spam job game accept",context, async () =>
+                {
+                    using StringContent jsonContent = new(
+                            JsonSerializer.Serialize(new
+                            {
+                                jobId = 2
+                            }),
+                            Encoding.UTF8,
+                            "application/json");
+                    var response = await client.PostAsync("https://localhost/api/job/game/accept", jsonContent);
+                    var unsaveResponse = await client.PostAsync("https://localhost/api/users/unsave?JobId=2", jsonContent);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
+            });
+
+            return scenario;
+        }
+
+        public static ScenarioProps SpamUserGameReject()
+        {
+            List<HttpClient> httpClients = [];
+
+            var scenario = Scenario.Create("Spam User Game Reject", async context =>
+            {
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
+
+                var step1 = await Step.Run("initialize user game reject",context, async () =>
+                {
+                    using StringContent jsonContent = new StringContent("");
+                    var response = await client.PostAsync("https://localhost/api/users/game", jsonContent);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step2 = await Step.Run("spam quiz game reject",context, async () =>
+                {
+                    using StringContent jsonContent = new(
+                            JsonSerializer.Serialize(new
+                            {
+                                username = "aefeafzdfvz"
+                            }),
+                            Encoding.UTF8,
+                            "application/json");
+                    var username = "aefeafzdfvz";        
+                    var response = await client.PostAsync($"https://localhost/api/users/game/reject/{username}", jsonContent);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
+            });
+
+            return scenario;
+        }
+
+        public static ScenarioProps SpamUserGameAccept()
+        {
+            List<HttpClient> httpClients = [];
+
+            var scenario = Scenario.Create("Spam User Game Accept", async context =>
+            {
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
+
+                var step1 = await Step.Run("initialize user game accept",context, async () =>
+                {
+                    using StringContent jsonContent = new StringContent("");
+                    var response = await client.PostAsync("https://localhost/api/users/game", jsonContent);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step2 = await Step.Run("spam user game accept",context, async () =>
+                {
+                    using StringContent jsonContent = new(
+                            JsonSerializer.Serialize(new
+                            {
+                                username = "aefeafzdfvz"
+                            }),
+                            Encoding.UTF8,
+                            "application/json");
+                    var username = "aefeafzdfvz";
+                    var response = await client.PostAsync($"https://localhost/api/users/game/accept/{username}", null);
+                    var unsaveResponse = await client.PostAsync($"https://localhost/api/users/unfollow/{username}", null);
                     return response.IsSuccessStatusCode
                         ? Response.Ok()
                         : Response.Fail();
