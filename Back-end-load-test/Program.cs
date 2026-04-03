@@ -18,7 +18,10 @@ namespace MyLoadTest
                     AccessWebsiteTest(), 
                     LogInLogOutTest(),
                     SpamGenericWord(),
-                    SpamQuizGame())
+                    SpamQuizGame(),
+                    SpamGetJobs(), 
+                    SpamGetSavedJobs(),
+                    SpamSaveUnsaveJob())
                 .Run();
             
         }  
@@ -192,6 +195,125 @@ namespace MyLoadTest
                 });
 
                 var step4 = await Step.Run("logout", context, async () =>
+                {
+                    var response = await LogOut(client);
+
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                return Response.Ok();        
+            });
+
+            return scenario;
+        }
+
+        static ScenarioProps SpamGetJobs()
+        {
+            var scenario = Scenario.Create("Spam getting all jobs", async context =>
+            {
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                HttpClient client = new HttpClient(clientHandler);
+
+                var step1 = await Step.Run("login", context, async () =>
+                {
+                    var response = await Login(client);
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                var step2 = await Step.Run("get jobs",context, async () =>
+                {
+                    var response = await client.GetAsync("https://localhost/api/jobs");
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step3 = await Step.Run("logout", context, async () =>
+                {
+                    var response = await LogOut(client);
+
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                return Response.Ok();        
+            });
+
+            return scenario;
+        }
+
+        static ScenarioProps SpamGetSavedJobs()
+        {
+            var scenario = Scenario.Create("Spam getting saved jobs", async context =>
+            {
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                HttpClient client = new HttpClient(clientHandler);
+
+                var step1 = await Step.Run("login", context, async () =>
+                {
+                    var response = await Login(client);
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                var step2 = await Step.Run("get saved jobs",context, async () =>
+                {
+                    var response = await client.GetAsync("https://localhost/api/jobs/saved");
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step3 = await Step.Run("logout", context, async () =>
+                {
+                    var response = await LogOut(client);
+
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                return Response.Ok();        
+            });
+
+            return scenario;
+        }
+
+        static ScenarioProps SpamSaveUnsaveJob()
+        {
+            var scenario = Scenario.Create("Spam saving and unsaving a job", async context =>
+            {
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                HttpClient client = new HttpClient(clientHandler);
+
+                var step1 = await Step.Run("login", context, async () =>
+                {
+                    var response = await Login(client);
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                var step2 = await Step.Run("save and unsave job",context, async () =>
+                {
+                    using StringContent jsonContentEmpty = new StringContent("");
+                    var response = await client.PostAsync("https://localhost/api/users/save?JobId=1", jsonContentEmpty);
+                    var unsaveResponse = await client.PostAsync("https://localhost/api/users/unsave?JobId=1", jsonContentEmpty);
+                    return unsaveResponse.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step3 = await Step.Run("logout", context, async () =>
                 {
                     var response = await LogOut(client);
 
