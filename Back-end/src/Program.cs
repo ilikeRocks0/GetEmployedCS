@@ -37,6 +37,8 @@ builder.Services.AddSingleton<IQuizGameService, QuizGameSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
+builder.Services.AddScoped<IUserCommentsService, UserCommentsService>();
+builder.Services.AddScoped<IFollowService, FollowService>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<User>, Microsoft.AspNetCore.Identity.PasswordHasher<User>>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>

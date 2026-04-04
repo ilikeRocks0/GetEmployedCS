@@ -158,7 +158,9 @@ public class UserPersistence : IUserPersistence
                 email = newUser.Email,
                 username = newUser.Username,
                 password = hashedPassword,
-                about_string = newUser.About
+                about_string = newUser.About,
+                verified = false,
+                verify_token = Guid.NewGuid().ToString()
             };
 
             context.Users.Add(newUserEntity);
@@ -316,6 +318,14 @@ public class UserPersistence : IUserPersistence
         {
             context.Follows.Add(new FollowsEntity(followerId, followedId));
             context.SaveChanges();
+        }
+    }
+
+    public void UnfollowUser(int followerId, int followedId)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            context.Follows.Where(e => e.follower_id == followerId && e.followed_id == followedId).ExecuteDelete();
         }
     }
 
@@ -495,5 +505,57 @@ public class UserPersistence : IUserPersistence
 
             return jobSeeker?.experiences?.Any(e => e.experience_id == experienceId) ?? false;
         }
+    }
+
+    public void VerifyUser(string token)
+    {
+        using(AppDbContext context = new(this.config))
+        {
+            UserEntity userEntity = context.Users.Where(e => e.verify_token!.Equals(token)).Single();
+            userEntity.verified = true;
+            userEntity.verify_token = null;
+            context.SaveChanges();
+        }
+    }
+
+    public UserComment CreateUserComment(UserComment comment)
+    {
+        using (AppDbContext context = new(this.config))
+        {
+            UserCommentEntity newComment = new()
+            {
+                profile_id = comment.ProfileUserId,
+                poster_id = comment.PosterUserId,
+                comment = comment.Comment
+            };
+
+            context.UserComments.Add(newComment);
+            context.SaveChanges();
+        }
+
+        return comment;
+    }
+
+    public List<UserComment> GetProfileComments(int userId)
+    {
+        List<UserComment> comments = new();
+
+        using(AppDbContext context = new(this.config))
+        {
+            UserEntity user = context.Users
+                            .Where(e => e.user_id == userId)
+                            .Include(e => e.profileComments!)
+                                .ThenInclude(e => e.posterUser)
+                            .Single();
+
+            if(user.profileComments is not null)
+            {
+                comments = user.profileComments
+                                .Where(e => e.posterUser is not null)
+                                .Select(e => (UserComment)new UserCommentEntityAdapter(e)).ToList();
+            }
+        }
+
+        return comments;
     }
 }

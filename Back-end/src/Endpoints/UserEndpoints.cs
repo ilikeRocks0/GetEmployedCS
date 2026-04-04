@@ -58,12 +58,13 @@ public static class UserEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
-         routes.MapGet("/api/users/{username}", (string username, HttpContext context, IUserService userService) =>
+         routes.MapGet("/api/users/{username}", (string username, HttpContext context, IUserService userService, IFollowService followService) =>
         {
             var profile = userService.GetProfileByUsername(username);
             if (profile is null) return Results.NotFound();
             bool isSelf = int.TryParse(context.User.FindFirst("UserId")?.Value, out var requestingUserId)
                 && profile.UserId == requestingUserId;
+            bool isFollowing = !isSelf && requestingUserId != 0 && followService.IsFollowing(requestingUserId, username);
 
             return Results.Ok(new {
                 profile.UserId,
@@ -76,7 +77,8 @@ public static class UserEndpoints
                 profile.IsEmployer,
                 profile.EmployerName,
                 profile.PostedJobs,
-                isSelf
+                isSelf,
+                isFollowing
             });
         })
             .WithName("GetProfile")
@@ -231,6 +233,47 @@ public static class UserEndpoints
             }
         })
             .WithName("DeleteExperience")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+
+        routes.MapPost("/api/users/follow/{username}", (string username, HttpContext context, IFollowService followService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            try
+            {
+                followService.FollowUser(userId, username);
+                return Results.Ok();
+            }
+            catch (InvalidOperationException)
+            {
+                return Results.Forbid();
+            }
+        })
+            .WithName("FollowUser")
+            .WithTags("Users")
+            .WithOpenApi()
+            .RequireAuthorization();
+        
+        routes.MapPost("/api/users/unfollow/{username}", (string username, HttpContext context, IFollowService followService) =>
+        {            
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+            try
+            {                
+                followService.UnfollowUser(userId, username);
+                return Results.Ok();
+            }
+            catch (InvalidOperationException)
+            {
+                return Results.Forbid();
+            }
+        })
+            .WithName("UnfollowUser")
             .WithTags("Users")
             .WithOpenApi()
             .RequireAuthorization();

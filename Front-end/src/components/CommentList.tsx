@@ -3,29 +3,28 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button, Avatar, Typography, Spin, Input } from "antd";
 import { CommentOutlined, SendOutlined } from "@ant-design/icons";
-import type { JobComment } from "@/types/JobComment";
-import { useComments } from "@/context/CommentsContext";
+import type { Comment } from "@/types/JobComment";
 
 const { Text } = Typography;
 const { TextArea } = Input;
 
-interface CommentListState {
-  jobId: number;
+interface CommentListProps {
+  getComments: () => Promise<Comment[]>;
+  createComment: (comment: string) => Promise<Comment>;
 }
 
-export default function CommentList({jobId}: CommentListState){
-    const { getComments, createComment } = useComments();
+export default function CommentList({ getComments, createComment }: CommentListProps) {
     const [showComments, setShowComments] = useState(false);
-    const [comments, setComments] = useState<JobComment[]>([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [commentsLoading, setCommentsLoading] = useState(false);
     const [newComment, setNewComment] = useState("");
-    const [submitting, setSubmitting] = useState(false);   
+    const [submitting, setSubmitting] = useState(false);
 
     async function handleToggleComments() {
     if (!showComments && comments.length === 0) {
       setCommentsLoading(true);
       try {
-        const fetched = await getComments(jobId);
+        const fetched = await getComments();
         setComments(fetched);
       } finally {
         setCommentsLoading(false);
@@ -38,7 +37,7 @@ export default function CommentList({jobId}: CommentListState){
     if (!newComment.trim()) return;
     setSubmitting(true);
     try {
-      const posted = await createComment(jobId, newComment.trim());
+      const posted = await createComment(newComment.trim());
       setComments((prev) => [...prev, posted]);
       setNewComment("");
     } finally {
@@ -103,4 +102,3 @@ export default function CommentList({jobId}: CommentListState){
     </div>
   )
 }
-

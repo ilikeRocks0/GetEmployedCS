@@ -6,7 +6,7 @@ namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 public class ExperienceEntityAdapter : Experience
 {
-    private void ValidateEntity(ExperienceEntity experienceEntity)
+    private static void ValidateEntity(ExperienceEntity experienceEntity)
     {
         if (experienceEntity.company_name.Trim().Equals(String.Empty))
         {

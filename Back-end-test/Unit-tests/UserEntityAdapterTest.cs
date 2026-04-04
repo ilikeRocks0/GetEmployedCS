@@ -24,6 +24,7 @@ public class UserEntityAdapterTest
             username = validUsername,
             password = validPassword,
             about_string = validAboutString,
+            verified = true,
             jobSeeker = new Back_end.Persistence.Model.JobSeekerEntity()
             {
                 first_name = "Dan",

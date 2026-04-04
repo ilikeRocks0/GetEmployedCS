@@ -7,7 +7,7 @@ namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 public class UserEntityAdapter : User
 {
-    private void ValidateEntity(UserEntity userEntity)
+    private static void ValidateEntity(UserEntity userEntity)
     {
         if (userEntity.user_id < 0)
         {

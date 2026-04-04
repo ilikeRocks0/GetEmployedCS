@@ -46,7 +46,7 @@ public class CommentsServiceTest
     public void CreateCommentNullUser()
     {
         userPersistence.GetUser(newComment.PosterUserId).ReturnsNull();
-        Assert.Throws<Exception>(delegate{ commentsService.CreateComment(newComment); });
+        Assert.Throws<NullReferenceException>(delegate{ commentsService.CreateComment(newComment); });
     }
 
     [Test]

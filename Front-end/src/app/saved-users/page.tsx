@@ -34,7 +34,7 @@ function FollowingContent() {
 
         <Spin spinning={loading}>
           {!loading && users.length === 0 ? (
-            <Empty description="You havent found any potential employees yet." />
+            <Empty description="You havent found anyone to follow yet!" />
           ) : (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
               {users.map((user) => <UserCard key={user.userId} user={user} />)}

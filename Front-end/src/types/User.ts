@@ -13,6 +13,7 @@ export interface User {
     employerName?: string;
     postedJobs?: ApiJob[];
     isSelf?: boolean;
+    isFollowing?: boolean;
 }
 
 export interface ProfileValues {
