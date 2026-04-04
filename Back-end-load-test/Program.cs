@@ -21,7 +21,8 @@ namespace MyLoadTest
                     SpamQuizGame(),
                     SpamGetJobs(), 
                     SpamGetSavedJobs(),
-                    SpamSaveUnsaveJob())
+                    SpamSaveUnsaveJob(),
+                    SpamAddDeleteExperience())
                 .Run();
             
         }  
@@ -314,6 +315,79 @@ namespace MyLoadTest
                 });
 
                 var step3 = await Step.Run("logout", context, async () =>
+                {
+                    var response = await LogOut(client);
+
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                return Response.Ok();        
+            });
+
+            return scenario;
+        }
+
+        static ScenarioProps SpamAddDeleteExperience()
+        {
+            var scenario = Scenario.Create("Spam add and remove experience", async context =>
+            {
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                HttpClient client = new HttpClient(clientHandler);
+
+                var step1 = await Step.Run("login", context, async () =>
+                {
+                    var response = await Login(client);
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                var step2 = await Step.Run("add experience",context, async () =>
+                {
+                    using StringContent jsonBody = new(
+                        JsonSerializer.Serialize(new
+                        {
+                            companyName = "Load Testers Ltd.",
+                            positionTitle = "Load Tester",
+                            jobDescription = "Tested many loads"
+                        }),
+                        Encoding.UTF8,
+                        "application/json");
+                    var addResponse = await client.PostAsync("https://localhost/api/users/experiences", jsonBody);
+
+                    return addResponse.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step3 = await Step.Run("delete experience", context, async () =>
+                {
+                    using StringContent jsonBody = new(
+                        JsonSerializer.Serialize(new
+                        {
+                            companyName = "Load Testers Ltd.",
+                            positionTitle = "Load Tester",
+                            jobDescription = "Tested many loads"
+                        }),
+                        Encoding.UTF8,
+                        "application/json");
+                    HttpRequestMessage deleteRequest = new HttpRequestMessage
+                    {
+                        Content = jsonBody,
+                        Method = HttpMethod.Delete,
+                        RequestUri = new Uri("https://localhost/api/users/experiences")
+                    };
+                    var deleteResponse = await client.SendAsync(deleteRequest);
+
+                    return deleteResponse.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step4 = await Step.Run("logout", context, async () =>
                 {
                     var response = await LogOut(client);
 
