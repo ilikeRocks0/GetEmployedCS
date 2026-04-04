@@ -135,6 +135,9 @@ public static class UserEndpoints
         routes.MapPost("/api/users/logout", async (HttpContext context) =>
         {
             await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            context.Response.Headers.Append("Clear-Site-Data", "\"cookies\", \"storage\", \"cache\"");
+
             return Results.Ok();
         })
             .WithName("Logout")

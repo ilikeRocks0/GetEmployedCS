@@ -3,7 +3,7 @@ services:
     image: lsteski/getemployed-backend:latest
     build: ./Back-end
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
       - ConnectionStrings__DefaultConnection=${ConnectionStrings__DefaultConnection}

@@ -4,6 +4,7 @@ import { Layout, Card, Form, Input, Button, Typography, Divider, Alert } from "a
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useLogin } from "@/context/LoginContext";
+import { useRouter } from "next/navigation";
 
 const { Content } = Layout;
 const { Title, Text, Link } = Typography;
@@ -16,12 +17,14 @@ interface LoginFormValues {
 function LoginPageContent() {
   const { login } = useLogin();
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const onFinish = async (values: LoginFormValues) => {
     setError(null);
     try {
       await login(values.email, values.password);
-      window.location.href = "/";
+      router.refresh();
+      router.push("/");
     } catch {
       setError("Invalid username or password.");
     }

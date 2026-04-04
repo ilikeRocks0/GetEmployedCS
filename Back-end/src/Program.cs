@@ -58,17 +58,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Caddy provides the SSL
-});
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        var origins = new HashSet<string> {"https://localhost", "https://localhost:3000"};
+        var origins = new HashSet<string> {"https://localhost", "https://localhost:3000", "https://getemployedcs.ca", "https://www.getemployedcs.ca"};
         var envOrigin = Environment.GetEnvironmentVariable("FRONTEND_URL");
 
         if (!string.IsNullOrEmpty(envOrigin))
@@ -88,6 +82,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.Cookie.Name = "auth";
+        options.Cookie.Domain = builder.Environment.IsDevelopment()
+            ? null : ".getemployedcs.ca";
         options.Cookie.HttpOnly = true;
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
