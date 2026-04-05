@@ -55,6 +55,18 @@ jobs:
 
       - name: Build Next.js
         run: npm run build
+        
+  # --- SECURITY SCANNER ---
+  
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@299e4b793aaa83bf2aba7c9c14bedbb485688ec4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # --- DOCKER PUSH ---
   docker-push:
