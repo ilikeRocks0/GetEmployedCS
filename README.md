@@ -1,4 +1,17 @@
-# Vision Statement
+# GetEmployedCS
+
+## Documentation
+
+Our important documentation can be found in our [Wiki](https://github.com/ilikeRocks0/GetEmployedCS/wiki), including:
+
+- Naming and formatting conventions for [branches](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Branch-Naming-Convention), [commit messages, pull requests](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Commit-Message-and-Pull-Request), and [issues](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Issue-Formating)
+- Our [meeting notes](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Meeting-Notes)
+- [Sequence diagrams](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Sequence-Diagrams) for all implemented features
+- Our [test plan](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Test-Plan), which can also be viewed as a [markdown file](https://github.com/ilikeRocks0/GetEmployedCS/blob/main/TestPlan.md)
+
+This README file contains our vision statement, project summary, project technologies, list of core features and their user stories.
+
+## Vision Statement
 
 We aim to elevate emerging junior developers and recent grads to help them find work that works for them.
 
@@ -8,7 +21,7 @@ Whether it's improving professional skills like cover letter writing, matching o
 By providing the tools to make job finding easier and applications more likely to be accepted, we make finding a job of user interest more likely, and help employers find better candidates.
 To us, success would look like wide use of our services with quantifiable improvements in application acceptances, community and employer engagement.
 
-# Project Summary
+## Project Summary
 
 Our product aims to provide computer science job seekers with an extensive platform that makes the job hunt easy, and even fun. The CS GetEmployed website lets users search for jobs, manage and organize their applications, get notified about new relevant job postings, showcase their prior work experience to potential employers, and leave comments on job postings or reviews for companies. CS GetEmployed also provides various tools for users to improve their writing skills in order to enhance their resumes and cover letters.
 
@@ -18,7 +31,7 @@ CS GetEmployed is not only geared towards job seekers, but to employers as well.
 
 Finally, CS GetEmployed has writing tools like an action sentence designer, generic word detection, and a sentence power quiz that helps users better their skill in writing resumes and cover letters.
 
-# Core Features
+## Core Features
 
 **Application management**
 Allows users to save posts, mark which ones they applied for, add notes, and sort them using their own personal folder structure.
@@ -41,7 +54,7 @@ Users can configure what types of jobs they want to be notified for, so that the
 **Job Search Community**
 Users and companies both have their own public facing profiles to share who they are and what they're looking for with the community. We also allow users to comment on job postings, each other's profiles and company profiles to provide opinions or recommendations on postings and interviews.
 
-# Technologies
+## Technologies
 
 Front-end: React, JS, npm, Ant Design
 
@@ -53,7 +66,7 @@ Other: Github actions, Docker, Cypress
 
 ![](Documentation-Assets/architecture.png)
 
-# User Stories
+## User Stories
 
 The team spent time creating user stories for the features that were defined last meeting. Some additional modifications were also done to the feature list. The cover letter and resume improvement features were merged under one category, and a new job search feature was created. The following is the feature list with the corresponding user stories:
 
