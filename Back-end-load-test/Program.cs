@@ -22,6 +22,8 @@ namespace MyLoadTest
                     SpamGetJobs(), 
                     SpamGetSavedJobs(),
                     SpamSaveUnsaveJob(),
+                    SpamGetComments(),
+                    SpamUpdateProfile(),
                     SpamAddDeleteExperience())
                 .Run();
             
@@ -383,6 +385,109 @@ namespace MyLoadTest
                     var deleteResponse = await client.SendAsync(deleteRequest);
 
                     return deleteResponse.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step4 = await Step.Run("logout", context, async () =>
+                {
+                    var response = await LogOut(client);
+
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                return Response.Ok();        
+            });
+
+            return scenario;
+        }
+
+        static ScenarioProps SpamGetComments()
+        {
+            var scenario = Scenario.Create("Spam getting comments", async context =>
+            {
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                HttpClient client = new HttpClient(clientHandler);
+
+                var step1 = await Step.Run("login", context, async () =>
+                {
+                    var response = await Login(client);
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                var step2 = await Step.Run("get comments",context, async () =>
+                {
+                    var response = await client.GetAsync("https://localhost/api/comments/1");
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step3 = await Step.Run("logout", context, async () =>
+                {
+                    var response = await LogOut(client);
+
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                return Response.Ok();        
+            });
+
+            return scenario;
+        }
+
+        static ScenarioProps SpamUpdateProfile()
+        {
+            var scenario = Scenario.Create("Spam update profile", async context =>
+            {
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                HttpClient client = new HttpClient(clientHandler);
+
+                var step1 = await Step.Run("login", context, async () =>
+                {
+                    var response = await Login(client);
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                var step2 = await Step.Run("update profile",context, async () =>
+                {
+                    using StringContent updateJson = new(
+                        JsonSerializer.Serialize(new
+                        {
+                            about="blah blah"
+                        }),
+                        Encoding.UTF8,
+                        "application/json");
+                    var response = await client.PutAsync("https://localhost/api/users/", updateJson);
+
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step3 = await Step.Run("revert profile", context, async () =>
+                {
+                    using StringContent revertJson = new (
+                        JsonSerializer.Serialize(new
+                        {
+                            about=""
+                        }),
+                        Encoding.UTF8,
+                        "application/json"
+                    );
+                    var response = await client.PutAsync("https://localhost/api/users/", revertJson);
+
+                    return response.IsSuccessStatusCode
                         ? Response.Ok()
                         : Response.Fail();
                 });
