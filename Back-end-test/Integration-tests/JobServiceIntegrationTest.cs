@@ -5,6 +5,7 @@ using Back_end.Services.Interfaces;
 using Back_end.Util;
 using Microsoft.AspNetCore.Identity;
 using Back_end.Services.Implementations;
+using NSubstitute;
 
 namespace test;
 
@@ -62,7 +63,7 @@ public class JobServiceIntegrationTest : IntegrationTest
     [Test]
     public void GetSavedJobsIntegrationTest()
     {
-        int userId = userPersistence.CreateUser(user);
+        int userId = userPersistence.CreateUser(user).userId;
         int jobId = jobPersistence.CreateJob(job1);
         jobPersistence.CreateJob(job2);
 
@@ -71,7 +72,7 @@ public class JobServiceIntegrationTest : IntegrationTest
            { AppConfig.FilterKeys.JOBID, jobId.ToString() }
         };
 
-        new UserService(userPersistence, jobPersistence).SaveJob(filters);
+        new UserService(userPersistence, jobPersistence, Substitute.For<IEmailService>()).SaveJob(filters);
 
         IReadOnlyDictionary<string, string> jobFilters = new Dictionary<string, string>(){
             { AppConfig.FilterKeys.USERID, userId.ToString() },

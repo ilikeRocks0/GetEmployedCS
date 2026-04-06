@@ -44,7 +44,7 @@ function SignUpPageContent() {
         lastName: values.lastName,
         employerName: values.employerName ?? "",
         isEmployer: isEmployer ?? false,
-        email: values.email,
+        email: values.email.toLowerCase(),
       });
       setDir("forward");
       setRegistered(true);
@@ -94,8 +94,8 @@ function SignUpPageContent() {
             {registered ? (
               <Result
                 status="success"
-                title="Registration Successful!"
-                subTitle="Your account has been created. You can now log in."
+                title="Almost there!"
+                subTitle="We've sent a verification email to your inbox. Please verify your email to activate your account."
                 extra={
                   <Button type="primary" href="/login" size="large">
                     Go to Login

@@ -29,7 +29,7 @@ public class CommentsServiceIntegrationTest : IntegrationTest
     public void CreateCommentIntegrationTest()
     {
         User user = new User(0, "email@gmail.com", "newuser", "pass", "about", "Test", "User", []);
-        user.UserId = userPersistence.CreateUser(user);
+        user.UserId = userPersistence.CreateUser(user).userId;
 
         Job job = new Job("Title", null, user.FirstName + " " + user.LastName, false, "https://google.com", null, null, "Full stack", "Co-op", [], [], "description");
         job.JobId = jobPersistence.CreateJob(job);

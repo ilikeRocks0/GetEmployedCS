@@ -37,6 +37,27 @@ public static class CommentEndpoints
             .WithOpenApi()
             .RequireAuthorization();
         
+        routes.MapPost("/api/usercomments/notify", async (NewUserComment comment, HttpContext context, IUserService userService, IEmailService emailService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var posterId))
+                return Results.Unauthorized();
+
+            var posterProfile = userService.GetProfile(posterId);
+            var profileOwner = userService.GetProfileByUsername(comment.CommentedUserUsername);
+
+            if (posterProfile is null || profileOwner is null)
+                return Results.NotFound();
+
+            await emailService.SendProfileCommentNotificationAsync(profileOwner.Email, posterProfile.Username, comment.CommentedUserUsername, comment.Comment);
+
+            return Results.Ok();
+        })
+            .WithName("NotifyProfileComment")
+            .WithTags("UserComments")
+            .WithOpenApi()
+            .RequireAuthorization();
+
         routes.MapGet("/api/usercomments/{username}", (string username, IUserCommentsService userCommentsService) =>
         {
             return userCommentsService.GetComments(username);

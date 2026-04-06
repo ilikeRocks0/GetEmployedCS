@@ -8,6 +8,7 @@ using Back_end.Services.Implementations;
 using Back_end.Services.Implementations.AI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Resend;
 // Load environment variables from .env file
 Env.Load();
 
@@ -39,6 +40,15 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
 builder.Services.AddScoped<IUserCommentsService, UserCommentsService>();
 builder.Services.AddScoped<IFollowService, FollowService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(o =>
+{
+    o.ApiToken = Environment.GetEnvironmentVariable("RESEND_API_KEY")
+        ?? throw new InvalidOperationException("RESEND_API_KEY environment variable is required");
+});
+builder.Services.AddTransient<IResend, ResendClient>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<User>, Microsoft.AspNetCore.Identity.PasswordHasher<User>>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -79,8 +89,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.Cookie.Name = "auth";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = builder.Environment.IsDevelopment() 
-            ? SameSiteMode.Strict : SameSiteMode.Lax;
+        options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
             ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
         options.SlidingExpiration = true;

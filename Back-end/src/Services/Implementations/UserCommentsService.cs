@@ -5,7 +5,7 @@ using Back_end.Endpoints.Models;
 
 namespace Back_end.Services.Implementations;
 
-public class UserCommentsService ( IUserPersistence userPersistence) : IUserCommentsService
+public class UserCommentsService(IUserPersistence userPersistence) : IUserCommentsService
 {
     public List<UserComment> GetComments(string username)
     {
@@ -25,7 +25,7 @@ public class UserCommentsService ( IUserPersistence userPersistence) : IUserComm
     public UserComment CreateComment(NewUserComment comment)
     {
         User? user = userPersistence.GetUserByUsername(comment.CommentedUserUsername);
-        
+
         if (user == null)
         {
             throw new NullReferenceException("User not found");

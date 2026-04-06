@@ -33,3 +33,11 @@ export async function createUserComment(username: string, comment: string): Prom
   if (!res.ok) throw new Error(`Failed to create user comment: ${res.status}`);
   return res.json();
 }
+
+export async function notifyProfileComment(profileUsername: string, commentText: string): Promise<void> {
+  await fetchWithAuth(`${API_BASE_URL}/api/usercomments/notify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ comment: commentText, commentedUserUsername: profileUsername }),
+  });
+}

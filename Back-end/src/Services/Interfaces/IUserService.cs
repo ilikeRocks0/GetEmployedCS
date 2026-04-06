@@ -5,7 +5,7 @@ namespace Back_end.Services.Interfaces;
 
 public interface IUserService
 {
-    int CreateUser(NewUser newUser);
+    Task<int> CreateUser(NewUser newUser);
     List<User> GetUsers(IReadOnlyDictionary<string, string>? filters = null);
     List<User> GetAllFollowing(int userId);
     Profile? GetProfile(int userId);
@@ -18,4 +18,6 @@ public interface IUserService
     int AddExperience(int userId, Experience experience);
     void EditExperience(int userId, Experience oldExperience, Experience newExperience);
     void DeleteExperience(int userId, Experience experience);
+    void VerifyUser(string token);
+    List<User> GetAllFollowers(int userId);
 }
