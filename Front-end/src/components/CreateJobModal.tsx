@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Modal, Form, Input, Select, DatePicker, Checkbox, Button, Row, Col, App } from "antd";
 import { createJob, notifyFollowers, type NewJobRequest } from "@/api/createJob";
 import { useLanguage } from "@/context/LanguageContext";
@@ -33,6 +33,13 @@ interface FormValues {
 export default function CreateJobModal({ open, onClose, onCreated }: CreateJobModalProps) {
   const [form] = Form.useForm<FormValues>();
   const [submitting, setSubmitting] = useState(false);
+  const values = Form.useWatch([], form);
+  const canSubmit = useMemo(() => {
+    const { position, employment_type, position_type, description, applicationLink, locations, deadline } = values ?? {};
+    const hasRequiredFields = !!(position && employment_type && position_type && description && applicationLink && deadline);
+    const hasLocationError = locations?.some((v: string) => v.split(",").filter((p: string) => p.trim()).length !== 3) ?? false;
+    return hasRequiredFields && !hasLocationError;
+  }, [values]);
   const [languages, setLanguages] = useState<string[]>([]);
   const fetchLanguages = useLanguage();
   const { message } = App.useApp();
@@ -143,7 +150,7 @@ export default function CreateJobModal({ open, onClose, onCreated }: CreateJobMo
           </Col>
         </Row>
 
-        <Form.Item name="deadline" label="Application Deadline">
+        <Form.Item name="deadline" label="Application Deadline" rules={[{ required: true, message: "Required" }]}>
           <DatePicker style={{ width: "100%" }} />
         </Form.Item>
 
@@ -164,7 +171,7 @@ export default function CreateJobModal({ open, onClose, onCreated }: CreateJobMo
 
         <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
           <Button onClick={handleCancel} style={{ marginRight: 8 }}>Cancel</Button>
-          <Button type="primary" htmlType="submit" loading={submitting}>Post Job</Button>
+          <Button type="primary" htmlType="submit" loading={submitting} disabled={!canSubmit}>Post Job</Button>
         </Form.Item>
       </Form>
     </Modal>

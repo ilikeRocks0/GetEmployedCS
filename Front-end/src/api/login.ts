@@ -1,11 +1,5 @@
 import { API_BASE_URL } from "@/config/config";
-
-export interface UserInfo {
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-}
+import { UserInfo } from "@/types/User";
 
 export async function login(email: string, password: string): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/api/users/login`, {

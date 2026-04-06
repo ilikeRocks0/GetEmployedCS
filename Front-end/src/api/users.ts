@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "@/config/config";
-import { User } from "@/types/User";
+import { User, UserInfo } from "@/types/User";
 import { fetchWithAuth } from "@/utils/fetchWithAuth";
 
 export interface RegisterUserRequest {
@@ -36,14 +36,16 @@ export async function fetchUser( username: string, signal?: AbortSignal ): Promi
     return res.json();
 }
 
-export async function updateUser(payload: UpdateUserRequest): Promise<User> {
+export async function updateUser(payload: UpdateUserRequest): Promise<UserInfo> {
     const res = await fetchWithAuth(`${API_BASE_URL}/api/users`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(`Failed to update user: ${res.status}`);
-    return res.json();
+    const userInfo: UserInfo = await res.json();
+    localStorage.setItem("user", JSON.stringify(userInfo));
+    return userInfo;
 }
 
 export async function saveJob(jobId: number): Promise<void> {
@@ -62,8 +64,8 @@ export async function fetchFollowing(signal?: AbortSignal): Promise<User[]> {
   return res.json();
 }
 
-export async function checkIfUserIsEmployer(): Promise<boolean> {
-  const res = await fetchWithAuth(`${API_BASE_URL}/api/users/check-employer`, { method: "GET" });
+export async function checkIfUserIsEmployer(signal?: AbortSignal): Promise<boolean> {
+  const res = await fetchWithAuth(`${API_BASE_URL}/api/users/check-employer`, { method: "GET", signal });
   if (!res.ok) throw new Error(`Failed to check employer status: ${res.status}`);
   return res.json();
 }

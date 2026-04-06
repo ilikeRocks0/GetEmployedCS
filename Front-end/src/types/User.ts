@@ -21,3 +21,10 @@ export interface ProfileValues {
     lastName?: string;
     bio?: string;
 }
+
+export interface UserInfo {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+}
