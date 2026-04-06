@@ -11,6 +11,10 @@ public class UserSwipeGameService(IUserIndexManager userIndexManager) : IUserSwi
     private bool hasActiveUser = false;
     private List<User> allUsers = [];
 
+    /// Retrieves the job at the current index from the list of all users, then increments the index and wraps it around to the start of the list when it reaches the end.
+    /// <param name="initialize">A flag for whether the game has been initialized or not. If not provided, defaults to false.
+    /// <param name="isAccepted">A flag for whether the last user has been accepted or not. If not provided, defaults to null.
+    /// Returns the next user to display. 
     private User? GetGameUser(bool initialize = false, bool? isAccepted = null)
     {
         if (!initialize && isAccepted.HasValue && hasActiveUser)
@@ -44,6 +48,8 @@ public class UserSwipeGameService(IUserIndexManager userIndexManager) : IUserSwi
         return user;
     }
 
+    /// Initialize a user list for the game.
+    /// Returns a random user to start the game.
     public User? InitializeUserGame()
     {
         userAccepted = 0;
@@ -55,6 +61,8 @@ public class UserSwipeGameService(IUserIndexManager userIndexManager) : IUserSwi
         return GetGameUser(initialize: true);
     }
 
+    /// Reject the current user. The game statistics are updated to reflect the rejection.
+    /// Returns the next user in the game.
     public User? RejectUser()
     {
         if (!isGameInitialized)
@@ -64,6 +72,9 @@ public class UserSwipeGameService(IUserIndexManager userIndexManager) : IUserSwi
 
         return GetGameUser(isAccepted: false);
     }
+
+    /// Accept the current user. The game statistics are updated to reflect the acceptance.
+    /// Returns the next user in the game.
 
     public User? AcceptUser()
     {
@@ -75,6 +86,8 @@ public class UserSwipeGameService(IUserIndexManager userIndexManager) : IUserSwi
         return GetGameUser(isAccepted: true);
     }
 
+    /// Get the current game statistics, including the number of accepted and rejected users.
+    /// Returns a tuple containing the number of accepted and rejected users.
     public (int accepted, int rejected) GetGameStats()
     {
         if (!isGameInitialized)

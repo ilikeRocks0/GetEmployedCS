@@ -4,16 +4,23 @@ namespace Back_end.Services.Interfaces;
 
 public interface IGameService
 {
-    /// <summary>Initializes the job list for the game based on the provided filters and returns a random job to start the game. The filters are the same as those used in GetJobs.</summary>
+    /// Initialize a job list for the game based on the provided filters. 
+    /// <param name="filters">A dictionary of filter keys and values to apply when setting up the game.
+    /// - The filters are the same as those used in GetJobs under JobService.
+    /// Returns a random job to start the game.
     Job? InitializeJobGame(IReadOnlyDictionary<string, string>? filters = null);
     
-    /// <summary>Rejects the current job and returns the next job in the game. The game statistics are updated to reflect the rejection.</summary>
+    /// Reject the current job.
+    /// The game statistics are updated to reflect the rejection.
+    /// Returns the next job in the game.
     public Job? RejectJob();
 
-    /// <summary>Accepts the current job and returns the next job in the game. The game statistics are updated to reflect the acceptance.</summary>
+    /// Accept the current job.
+    /// The game statistics are updated to reflect the acceptance.
+    /// Returns the next job in the game.
     public Job? AcceptJob();
 
-    /// <summary>Returns the current game statistics, including the number of accepted and rejected jobs.</summary>
-    /// <returns>A tuple containing the number of accepted and rejected jobs.</returns>
+    /// Get the current game statistics, including the number of accepted and rejected jobs.
+    /// Returns a tuple containing the number of accepted and rejected jobs.
     (int accepted, int rejected) GetGameStats();
 }

@@ -6,6 +6,9 @@ public static class CommentEndpoints
 {
     public static void MapCommentsEndpoints(this IEndpointRouteBuilder routes)
     {
+        // This endpoint allows the user to add a new comment to a job. 
+        // Comment details are extracted from the body into a NewJobComment object automatically based on the definition of a NewJobComment object.
+        // UserId is extracted from the user's cookie. This is required to connect the new comment to the user as its poster. 
         routes.MapPost("/api/comments/create", (NewJobComment comment, HttpContext context, ICommentsService commentsService) =>
         {
             var userId = context.User.FindFirst("UserId")?.Value;
@@ -17,6 +20,8 @@ public static class CommentEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+        // This endpoint retrieves the comments of a specified job.
+        // A jobId for the target job to get comments for is passed in as part of the URI. 
         routes.MapGet("/api/comments/{jobId}", (int jobId, ICommentsService commentsService) =>
         {            
             return commentsService.GetComments(jobId);
@@ -26,6 +31,9 @@ public static class CommentEndpoints
             .WithOpenApi()
             .RequireAuthorization();
         
+        // This endpoint allows the user to add a new comment to a user's profile. 
+        // Comment details are extracted from the body into a NewUserComment object automatically based on the definition of a NewUserComment object.
+        // UserId is extracted from the user's cookie. This is required to connect the new comment to the user as its poster. 
         routes.MapPost("/api/usercomments/create", (NewUserComment comment, HttpContext context, IUserCommentsService userCommentsService) =>
         {
             var userId = context.User.FindFirst("UserId")?.Value;
@@ -58,6 +66,8 @@ public static class CommentEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+        // This endpoint retrieves the comments of a specified user profile.
+        // A username for the target user to get comments for is passed in as part of the URI. 
         routes.MapGet("/api/usercomments/{username}", (string username, IUserCommentsService userCommentsService) =>
         {
             return userCommentsService.GetComments(username);

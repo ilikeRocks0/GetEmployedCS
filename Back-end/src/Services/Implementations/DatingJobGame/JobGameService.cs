@@ -12,6 +12,9 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
     UserFinder userFinder = new UserFinder(userPersistence);
     JobFinder jobFinder = new JobFinder(jobPersistence);
 
+    /// Initialize a job list for the game based on the provided filters. 
+    /// <param name="currentUser">The user accessing the game.
+    /// Returns a random job to start the game.
     public Job? InitializeJobGame(CurrentUser currentUser)
     {
         if (currentUser.UserId < 0)
@@ -26,6 +29,9 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
         return jobGameConnector.InitializeJobGame(user);
     }
     
+    /// Reject the current job. The game statistics are updated to reflect the rejection.
+    /// <param name="gameJob">The job being rejected.
+    /// Returns the next job in the game.
     public Job? RejectJob(GameJob gameJob)
     {
         if (gameJob.UserId < 0)
@@ -45,6 +51,9 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
         return jobGameConnector.RejectJob(user, job);
     }
 
+    /// Accept the current job. The game statistics are updated to reflect the acceptance.    /// <param name="user">The user accessing the game.
+    /// <param name="gameJob">The job being accepted.
+    /// Returns the next job in the game.
     public Job? AcceptJob(GameJob gameJob)
     {
         if (gameJob.UserId < 0)
@@ -64,6 +73,9 @@ public class JobGameService (IUserPersistence userPersistence, IJobPersistence j
         return jobGameConnector.AcceptJob(user, job);
     }
 
+    /// Get the current game statistics, including the number of accepted and rejected jobs.
+    /// <param name="currentUser">The user accessing the game.
+    /// Returns a tuple containing the number of accepted and rejected jobs.
     public (int accepted, int rejected) GetGameStats(CurrentUser currentUser)
     {
         if (currentUser.UserId < 0)

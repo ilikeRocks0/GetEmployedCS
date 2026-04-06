@@ -8,6 +8,9 @@ public class UserGameConnector(IUserPersistence userPersistence) : IUserGameConn
 {
     private readonly Dictionary<int, IUserSwipeGameService> gameServiceList = [];
 
+    /// Initialize a user list for the game.
+    /// <param name="currentUser">The user accessing the game.
+    /// Returns a random user to start the game.
     public User? InitializeUserGame(User currentUser)
     {
         var indexManager = new ShuffleUsersService(userPersistence);
@@ -16,6 +19,10 @@ public class UserGameConnector(IUserPersistence userPersistence) : IUserGameConn
         return gameServiceList[currentUser.UserId].InitializeUserGame();
     }
     
+    /// Reject the current user. The game statistics are updated to reflect the rejection.
+    /// <param name="currentUser">The user accessing the game.
+    /// <param name="user">The the user being accepted.
+    /// Returns the next user in the game.
     public User? RejectUser(User currentUser, User user)
     {
         if (!gameServiceList.ContainsKey(currentUser.UserId))
@@ -26,6 +33,10 @@ public class UserGameConnector(IUserPersistence userPersistence) : IUserGameConn
         return gameServiceList[currentUser.UserId].RejectUser();
     }
 
+    /// Accept the current user. The game statistics are updated to reflect the acceptance.
+    /// <param name="currentUser">The user accessing the game.
+    /// <param name="user">The the user being accepted.
+    /// Returns the next user in the game.
     public User? AcceptUser(User currentUser, User user)
     {
         if (!gameServiceList.ContainsKey(currentUser.UserId))
@@ -42,6 +53,9 @@ public class UserGameConnector(IUserPersistence userPersistence) : IUserGameConn
         return gameServiceList[currentUser.UserId].AcceptUser();
     }
 
+    /// Get the current game statistics, including the number of accepted and rejected users.
+    /// <param name="currentUser">The user accessing the game.
+    /// Returns a tuple containing the number of accepted and rejected users.
     public (int accepted, int rejected) GetGameStats(User currentUser)
     {
         if (!gameServiceList.ContainsKey(currentUser.UserId))
