@@ -21,7 +21,8 @@ namespace MyLoadTest
                     SpamQuizGame(),
                     SpamGetJobs(), 
                     SpamGetSavedJobs(),
-                    SpamSaveUnsaveJob(),
+                    SpamSaveUnsaveJob(), 
+                    SpamAddDeleteJob(),
                     SpamGetComments(),
                     SpamUpdateProfile(),
                     SpamAddDeleteExperience())
@@ -487,6 +488,74 @@ namespace MyLoadTest
                     );
                     var response = await client.PutAsync("https://localhost/api/users/", revertJson);
 
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step4 = await Step.Run("logout", context, async () =>
+                {
+                    var response = await LogOut(client);
+
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                return Response.Ok();        
+            });
+
+            return scenario;
+        }
+
+        static ScenarioProps SpamAddDeleteJob()
+        {
+            var scenario = Scenario.Create("Spam adding and deleting a job", async context =>
+            {
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                HttpClient client = new HttpClient(clientHandler);
+                var jobId = -1;
+
+                var step1 = await Step.Run("login", context, async () =>
+                {
+                    var response = await Login(client);
+                    return response.IsSuccessStatusCode
+                    ? Response.Ok()
+                    : Response.Fail();
+                });
+
+                var step2 = await Step.Run("add job",context, async () =>
+                {
+                    using StringContent jsonContent = new(
+                        JsonSerializer.Serialize(new
+                        {
+                            title = "Software Developer",
+                            deadline = "2026-12-31",
+                            applicationLink = "www.test.org",
+                            hasRemote = true,
+                            hasHybrid = true,
+                            positionType = "Full stack",
+                            employmentType = "Co-op",
+                            locations = new [] {"Winnipeg, MB, Canada"},
+                            programmingLanguages = new [] {"Java"},
+                            jobDescription = "As a Software Development Intern, you will work closely with the team to support the development and modernization of our backend systems.",
+                            employerPoster = false
+                        }),
+                        Encoding.UTF8,
+                        "application/json");
+                    var response = await client.PostAsync("https://localhost/api/job/add", jsonContent);
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    jobId = (int)JsonNode.Parse(responseBody);
+                    return response.IsSuccessStatusCode
+                        ? Response.Ok()
+                        : Response.Fail();
+                });
+
+                var step3 = await Step.Run("delete job",context, async () =>
+                {
+                    string jobIdForURI = jobId.ToString();
+                    var response = await client.DeleteAsync($"https://localhost/api/jobs/{jobIdForURI}");
                     return response.IsSuccessStatusCode
                         ? Response.Ok()
                         : Response.Fail();
