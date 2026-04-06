@@ -240,7 +240,7 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
                     )}
                     {user.postedJobs && user.postedJobs.length > 0 ? (
                         user.postedJobs.map((job, i) => (
-                            <JobCard key={job.jobId ?? i} job={mapJob(job)} isCurrentUsers={isSelf} onDelete={handleJobDelete}/>
+                            <JobCard key={job.jobId ?? i} job={mapJob(job)} isCurrentUsers={isSelf} onDelete={handleJobDelete} isProfileView />
                         ))
                     ) : (
                         <Empty description="No active job postings" />
