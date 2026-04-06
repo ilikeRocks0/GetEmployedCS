@@ -9,12 +9,21 @@ namespace Back_end.Services.Implementations;
 
 public class JobAddService(IJobPersistence jobPersistence, IUserPersistence userPersistence) : IJobAddService
 {
+    /// Add a new job posted by a user. 
+    /// <param name="UserId">An id corresponding to the user who is adding the new job.
+    /// <param name="newJob">An object containing the attributes of the job to add, as provided from the front end.
+    /// Extracts the contents of newJob using a helper function.
+    /// Returns the newly added job's id.
     public int AddNewJob(int userId, NewJob newJob)
     {
         Job extractedJob = ExtractJobFromInput(userId, newJob);
         return jobPersistence.CreateJob(extractedJob);
     }
 
+    /// Extract the information in a newJob into a Job. 
+    /// <param name="UserId">An id corresponding to the user who is adding the new job.
+    /// <param name="newJob">An object containing the attributes of the job to add, as provided from the front end.
+    /// Returns the extracted Job.
     private Job ExtractJobFromInput(int userId, NewJob NewJob)
     {
         Job extractedJob;

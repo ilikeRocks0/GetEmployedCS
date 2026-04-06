@@ -10,6 +10,8 @@ public class UserIndexManager(IUserPersistence userPersistence) : IUserIndexMana
     private int currentUserId;
     private int currentPage = 1;
 
+    /// Get a list of users. 
+    /// Returns a list of all users.
     public List<User> GetUsers()
     {
         List<User> users = userPersistence.GetUsersForGame(
@@ -23,6 +25,8 @@ public class UserIndexManager(IUserPersistence userPersistence) : IUserIndexMana
         return users;
     }
 
+    /// Updates what the current user is. 
+    /// <param name="currentUserId">The id of the user to set as the current user.
     public void UpdateCurrentUser(int currentUserId)
     {
         this.currentUserId = currentUserId;

@@ -7,6 +7,9 @@ namespace Back_end.Services.Implementations.AI;
 
 public class GroqGenericWordsService(IGroqService groqService) : IAiGenericWordsService
 {
+    /// <summary>Processes the paragraph input given by the user in the Generic Word Detector.</summary>
+    /// <returns>A JSON response containing positions of the words in the string, 
+    /// advice, and the detected word followed by a recommended replacement.</returns>
     public async Task<GenericWordsAnalysis> AnalyzeParagraph(string paragraph)
     {
         var userPrompt = GenericWordsPrompts.AnalyzeParagraph.Replace("<<PARAGRAPH>>", paragraph);

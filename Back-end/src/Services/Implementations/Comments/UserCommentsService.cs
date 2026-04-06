@@ -7,6 +7,9 @@ namespace Back_end.Services.Implementations;
 
 public class UserCommentsService(IUserPersistence userPersistence) : IUserCommentsService
 {
+    /// Get a list of comments for a user. 
+    /// <param name="username">An username for the user to get comments for.
+    /// Returns a list of comments, if there are any and if the username corresponds to a valid job.
     public List<UserComment> GetComments(string username)
     {
         if(username == null || username.Trim().Equals(string.Empty))
@@ -22,6 +25,9 @@ public class UserCommentsService(IUserPersistence userPersistence) : IUserCommen
         return userPersistence.GetProfileComments(user.UserId);
     }
 
+    /// Add a new comment under a user profile. 
+    /// <param name="comment">A temporary newUserComment holding attributes necessary to add the comment under a job.
+    /// Returns the newly created UserComment. 
     public UserComment CreateComment(NewUserComment comment)
     {
         User? user = userPersistence.GetUserByUsername(comment.CommentedUserUsername);

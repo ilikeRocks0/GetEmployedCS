@@ -2,9 +2,9 @@ using Back_end.Objects;
 
 namespace Back_end.Services.Interfaces;
 
-//Provides a simple interface to fetch quiz items
 public interface IQuizItemFetcher
 {
-    //returns 1 quiz at a time
+    /// Get a quiz item for the quiz game instance.
+    /// Returns 1 quiz item at a time
     public QuizItem GetQuizItem();
 }

@@ -13,6 +13,8 @@ public class JobIndexManager(IJobService jobService) : IJobIndexManager
 
     private Dictionary<string, string> filtersDictionary = [];
 
+    /// Get a list of jobs. 
+    /// Returns a list of all jobs using existing filtration.
     public List<Job> GetJobs()
     {
         allJobs.Clear();
@@ -22,6 +24,8 @@ public class JobIndexManager(IJobService jobService) : IJobIndexManager
         return allJobs;
     }
 
+    /// Update a list of filters used to retrieve jobs. 
+    /// <param name="filters">A dictionary of filter keys and values to apply when retrieving jobs.
     public void UpdateFilters(IReadOnlyDictionary<string, string>? filters)
     {
         filtersDictionary = filters?.ToDictionary(k => k.Key, v => v.Value) ?? [];
