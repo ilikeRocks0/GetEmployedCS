@@ -6,7 +6,9 @@ import ProfileEditModal from "./ProfileEditModal";
 import { Experience, ExperienceValues } from "@/types/Experience";
 import ExperienceEditModal from "./ExperienceEditModal";
 import { createExperience, deleteExperience, updateExperience } from "@/api/experience";
-import { updateUser, UpdateUserRequest } from "@/api/users";
+import { updateUser, UpdateUserRequest, followUser, unfollowUser } from "@/api/users";
+import { getUserComments, createUserComment, notifyProfileComment } from "@/api/comments";
+import CommentList from "./CommentList";
 import ExperienceCard from "./ExperienceCard";
 import JobCard from "./JobCard";
 import { deleteJob } from "@/api/fetchJobs";
@@ -31,8 +33,32 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
     const [modalOpen, setModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [expModalOpen, setExpModalOpen] = useState(false);
+    const [following, setFollowing] = useState(user.isFollowing ?? false);
+    const [followLoading, setFollowLoading] = useState(false);
     const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
     const [editingExp, setEditingExp] = useState<Experience | null>(null);
+
+    const handleCreateComment = async (comment: string) => {
+        const result = await createUserComment(user.username, comment);
+        notifyProfileComment(user.username, comment).catch(() => {});
+        return result;
+    };
+
+    const handleFollowToggle = async () => {
+        setFollowLoading(true);
+        try {
+            if (following) {
+                await unfollowUser(user.username);
+            } else {
+                await followUser(user.username);
+            }
+            setFollowing(!following);
+        } catch (error) {
+            console.error("Follow action failed", error);
+        } finally {
+            setFollowLoading(false);
+        }
+    };
 
     const handleSaveProfile = async (values: UpdateUserRequest) => {
         setLoading(true);
@@ -109,7 +135,8 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
                 >
                     {(user.username || "?").slice(0, 2).toUpperCase()}
                 </Avatar>
-                {isSelf && <Button onClick={() => setModalOpen(true)} style={{ marginTop: 20 }}> Edit profile </Button>}
+                {isSelf && <Button onClick={() => setModalOpen(true)} style={{ marginTop: 20 }}>Edit profile</Button>}
+                {!isSelf && <Button onClick={handleFollowToggle} loading={followLoading} style={{ marginTop: 20 }}>{following ? "Unfollow" : "Follow"}</Button>}
             </div>
             <div style={{ flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
@@ -213,11 +240,19 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
                     )}
                     {user.postedJobs && user.postedJobs.length > 0 ? (
                         user.postedJobs.map((job, i) => (
-                            <JobCard key={job.jobId ?? i} job={mapJob(job)} isCurrentUsers={isSelf} onDelete={handleJobDelete}/>
+                            <JobCard key={job.jobId ?? i} job={mapJob(job)} isCurrentUsers={isSelf} onDelete={handleJobDelete} isProfileView />
                         ))
                     ) : (
                         <Empty description="No active job postings" />
                     )}
+                </div>
+
+                <div style={{ marginTop: 32, maxWidth: 900 }}>
+                    <Title level={3}>Comments</Title>
+                    <CommentList
+                        getComments={() => getUserComments(user.username)}
+                        createComment={handleCreateComment}
+                    />
                 </div>
             </div>
             <ProfileEditModal open={modalOpen} user={user} loading={loading} onClose={() => setModalOpen(false)} onSave={handleSaveProfile}/>

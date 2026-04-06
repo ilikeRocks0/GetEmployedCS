@@ -1,15 +1,21 @@
 services:
   backend:
+    image: lsteski/getemployed-backend:dev
     build: ./Back-end
     environment:
-      - LOGGING__LOGLEVEL__MICROSOFT=Information
-      - LOGGING__LOGLEVEL__MICROSOFT.ASPNETCORE.AUTHENTICATION=Debug
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
       - ConnectionStrings__DefaultConnection=${ConnectionStrings__DefaultConnection}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GROQ_API_URL=${GROQ_API_URL}
+      - GROQ_MODEL=${GROQ_MODEL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - APP_URL=${APP_URL}
 
   frontend:
+    image: lsteski/getemployed-frontend:dev
     build:
       context: ./Front-end
       args:

@@ -1,6 +1,8 @@
 namespace test;
 
+using Back_end.Persistence.Exceptions;
 using Back_end.Persistence.Implementations.Adapters.EntityAdapters;
+using Back_end.Persistence.Model;
 using NUnit.Framework;
 
 public class UserEntityAdapterTest
@@ -22,6 +24,7 @@ public class UserEntityAdapterTest
             username = validUsername,
             password = validPassword,
             about_string = validAboutString,
+            verified = true,
             jobSeeker = new Back_end.Persistence.Model.JobSeekerEntity()
             {
                 first_name = "Dan",

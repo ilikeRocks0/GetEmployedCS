@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using Back_end.Persistence.Model;
 using Microsoft.EntityFrameworkCore;
 
+namespace Back_end.Persistence.Model;
+
 [PrimaryKey(nameof(job_id), nameof(location_id))]
 public class JobLocationEntity
 {

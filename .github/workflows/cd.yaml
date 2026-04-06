@@ -1,0 +1,53 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [main, dev]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # --- DOCKER PUSH ---
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Back-end
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Front-end
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-frontend:latest
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.PROD_NEXT_PUBLIC_API_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # --- RENDER TRIGGER ---
+      - name: Trigger Render Backend Deploy
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
+        run: curl -X POST "$DEPLOY_HOOK"
+
+      - name: Trigger Render Frontend Deploy
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
+        run: curl -X POST "$DEPLOY_HOOK"

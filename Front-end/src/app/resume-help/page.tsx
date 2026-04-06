@@ -12,7 +12,7 @@ function ResumeHelp(){
     
     return(
         <Layout style={{ minHeight: "100vh", background: "#f5f5f5" }}>
-            <SiteHeader selectedKey="Resume Help" />
+            <SiteHeader selectedKey="/resume-help" />
             <Content style={{ padding: "40px 80px" }}>
                 <Title level={1}>Resume Helper Tools</Title>
                 <Text>Having issues with writing your resume? look no further here are some tools to help you get started!</Text>

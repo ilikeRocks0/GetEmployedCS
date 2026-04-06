@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PUBLIC_ROUTES = ["/login", "/signup"];
+const PUBLIC_ROUTES = ["/login", "/signup", "/verify"];
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -8,7 +8,7 @@ export function proxy(req: NextRequest) {
   const auth = req.cookies.get("auth");
 
   if (!isPublic && !auth) {
-    return NextResponse.redirect(new URL("/login", req.url));
+      return NextResponse.redirect(new URL("/login", req.url));
   }
 
   if (isPublic && auth) {

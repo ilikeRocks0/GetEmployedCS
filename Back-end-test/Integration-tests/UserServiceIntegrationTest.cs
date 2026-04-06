@@ -1,10 +1,12 @@
 using Back_end.Endpoints.Models;
 using Back_end.Persistence.Implementations;
 using Back_end.Persistence.Interfaces;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
 using Microsoft.AspNetCore.Identity;
+using Back_end.Services.Implementations;
+using NSubstitute;
 
 namespace test;
 
@@ -12,6 +14,7 @@ public class UserServiceIntegrationTest : IntegrationTest
 {
     private IUserPersistence userPersistence;
     private IUserService userService;
+    private IEmailService emailServiceMock;
     private NewUser newUser;
     private User user;
     private Job job;
@@ -25,20 +28,21 @@ public class UserServiceIntegrationTest : IntegrationTest
         newUser = new NewUser("user", "pass", "email@email.com", false, "test", "user", "");
         job = new Job("job", null, user.FirstName + " " + user.LastName, false, "https://job.com", null, null, "Full stack", "Full-time", [], [], "description");
         userPersistence = new UserPersistence(this.config, new PasswordHasher<User>());
-        userService = new UserService(userPersistence, new JobPersistence(this.config));
+        emailServiceMock = Substitute.For<IEmailService>();
+        userService = new UserService(userPersistence, new JobPersistence(this.config), emailServiceMock);
     }
 
     [Test]
-    public void CreateUserIntegrationTest()
+    public async Task CreateUserIntegrationTest()
     {
-        int userId = userService.CreateUser(newUser);
+        int userId = await userService.CreateUser(newUser);
 
         User? user = userPersistence.GetUser(userId);
         Assert.Multiple(() =>
         {
            Assert.That(user is not null);
-           Assert.That(user!.FirstName, Is.EqualTo(newUser.FirstName)); 
-           Assert.That(user!.LastName, Is.EqualTo(newUser.LastName)); 
+           Assert.That(user!.FirstName, Is.EqualTo(newUser.FirstName));
+           Assert.That(user!.LastName, Is.EqualTo(newUser.LastName));
            Assert.That(user!.Email, Is.EqualTo(newUser.Email));
         });
     }
@@ -46,13 +50,13 @@ public class UserServiceIntegrationTest : IntegrationTest
     [Test]
     public void SaveJobIntegrationTest()
     {
-        int userId = userPersistence.CreateUser(user);
+        int userId = userPersistence.CreateUser(user).userId;
         IJobPersistence jobPersistence = new JobPersistence(this.config);
         int jobId = jobPersistence.CreateJob(job);
         job.JobId = jobId;
 
         IReadOnlyDictionary<string, string> filters = new Dictionary<string, string>(){
-           { AppConfig.FilterKeys.USERID, userId.ToString() }, 
+           { AppConfig.FilterKeys.USERID, userId.ToString() },
            { AppConfig.FilterKeys.JOBID, jobId.ToString() }
         };
 
@@ -75,7 +79,8 @@ public class UserServiceIntegrationTest : IntegrationTest
     [Test]
     public void LoginIntegrationTest()
     {
-        int userId = userPersistence.CreateUser(user);
+        var (userId, token) = userPersistence.CreateUser(user);
+        userPersistence.VerifyUser(token);
 
         int loginId = userService.Login(new LoginRequest(user.Email, user.Password));
 
@@ -85,7 +90,7 @@ public class UserServiceIntegrationTest : IntegrationTest
     [Test]
     public void UpdateUserIntegrationTest()
     {
-        int userId = userPersistence.CreateUser(user);
+        int userId = userPersistence.CreateUser(user).userId;
 
         UpdateUserRequest updateUser = new UpdateUserRequest()
         {

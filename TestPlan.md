@@ -11,9 +11,17 @@
 | v1.4    | 2026-03-06  | Luke Steski   | Slight adjustment to test history, spelling corrections                        |
 | v1.5    | 2026-03-08  | Marco Gerra   | Added More descriptive test names                                              |
 | v2.0    | 2026-03-21  | Marco Gerra   | Added Tests for Quiz Game                                                      |
-| v2.1    | 2026-03-26  | Karin Plavin  | Updated layout, added testing levels table, added section for mutation testing |
-| v2.2    | 2026-03-26  | Daniel Gorban | Added generic word unit tests and user game unit tests                         |
-| v2.3    | 2026-03-27  | Marco Gerra   | Added Acceptence Tests                                                         |
+| v2.1    | 2026-03-24  | Ty Paragas    | Added tests for object/entity adapters, CommentsService, JobGameService        |
+| v2.2    | 2026-03-26  | Karin Plavin  | Updated layout, added testing levels table, added section for mutation testing |
+| v2.3    | 2026-03-26  | Daniel Gorban | added generic word unit tests and user game unit tests                         |
+| v2.4    | 2026-03-27  | Marco Gerra   | Added Acceptence Tests                                                         |
+| v2.5    | 2026-03-27  | Ty Paragas    | Added integration tests                                                        |
+| v2.6    | 2026-03-27  | Luke Steski   | Added unit tests for user services                                             |
+| v2.7    | 2026-03-27  | Karin Plavin  | Updated layout of scope section, added add job testing information             |
+| v3.0    | 2026-04-02  | Karin Plavin  | Added initial info for load testing                                            |
+| v3.1    | 2026-04-03  | Karin Plavin  | Updated load testing information                                               |
+| v3.2    | 2026-04-05  | Karin Plavin  | Updated load testing information                                               |
+| v3.3    | 2026-04-05  | Karin Plavin  | Updated load testing information                                               |
 
 ### Roles and Responsibilities
 
@@ -30,59 +38,77 @@
 
 Features that will be tested, as of the end of sprint 3:
 
-**Application management**: Allows users to save posts, mark which ones they applied for, add notes, and sort them using their own personal folder structure.
+**Application management**: Allows users to save and unsave jobs from various areas of the application and view their list of saved jobs.
 Scope tested:
 
-**Resume and Cover Letter Improvement**: Lets users improve their writing skills by showing them how to structure sentences, suggest different words, or showing which words to avoid. This is done through three areas: a generic word detector, ana ction sentence designer, and a quiz game to teach them how to identify well-written resume statements.
+- A list of jobs that have been saved should be able to be retrieved from the database separately from the list of all jobs, and subsets of the saved jobs can be retrieved when certain filters are applied (e.g. just jobs that list Java as a language used in the position).
+- Saving jobs via the search jobs page and the job seeker's game view, and unsaving jobs from the search jobs page and the list of the user's saved jobs.
+- Retrieved saved jobs are complete; they contain all necesssary job information (employer, title, locations, languages, job description, etc.).
+- Filters and specific search terms can be applied to get a subset of jobs.
+- Ensuring saved jobs cannot be saved again and can only change to unsaved, and that unsaved jobs can only change saved.
+
+**Resume and Cover Letter Improvement**: Lets users improve their writing skills by showing them how to structure sentences, suggest different words, or showing which words to avoid. This is done through a generic word detector and a quiz game to teach them how to identify well-written resume statements.
 Scope tested:
+
+- Recognition of when the word detector has no provided text yet, and a lack of detection behaviour when there's nothing to detect.
+- Recognition of when the word detector has been provided with text containing repeated words and punctuation around or in words, and appropriate detection based on the content.
+- Ensuring the word detector works as expected with varying capitalizations and spacing of text provided to it.
+- Access to the sentence strength game and its stats is only provided when the user is logged in and the game has been properly initialized.
+- The sentence strength quiz game assesses whether answers are correct or incorrect accurately and doesn't skip to the next pair of sentences prematurely.
+- Sentence strength quiz game should update the amount answered correctly and incorrectly accurately (stats).
+- Ensuring sentences are retrieved properly from the database and are displayed properly.
+- Ensuring spamming or rapid user behaviour is addressed properly with caught exceptions.
 
 **Search jobs**: A more traditional job board that is tailored to technology positions. Filters allow users to narrow down available jobs to their desired needs and skills. Users can also save jobs from this page.
 Scope tested:
 
+- A list of jobs that have been uploaded and exist in the application should be able to be retrieved from the database separately from the list of all jobs, and subsets of the jobs can be retrieved when certain filters are applied (e.g. just jobs that list Java as a language used in the position).
+- Filters and specific search terms can be applied to get a subset of jobs.
+- Retrieved saved jobs are complete; they contain all necesssary job information (employer, title, locations, languages, job description, etc.).
+
 **Dating job game**: A Tinder inspired matching system where a jub seeking user is given a job and swipes right to save it or left to skip it. Employer users can also participate in the game, but it shows them candidates on the platform instead. In both cases, the number of jobs saved and skipped in the session is displayed.
 Scope tested:
+
+- Access to the game and its stats is only provided when the user is logged in and the game has been properly initialized.
+- The game assesses whether a job (job seeker view) or user (employer view) has been saved or passed on, and doesn't skip to presenting the next job prematurely.
+- The game should update the amount saved and passed on accurately (stats).
+- Ensuring jobs and users are retrieved properly from the database and are displayed properly.
+- Ensuring spamming or rapid user behaviour is addressed properly with caught exceptions.
+- Ensuring jobs and users do not appear multiple times in the same game instance.
 
 **Add Job**: Users and companies can both add job postings to the website, as well as delete and update them later as needed.
 Scope tested:
 
+- Only allowing an existing user to add a job to the application.
+- Recognizing when a user who is adding a job is an employer or a job seeker, and updating the job's poster (uploader) name accordingly.
+- Ensuring only a logged in user can add jobs, and only the creator of a job can delete or edit it.
+- Ensuring the format of the job information is valid (e.g. email is formatted correctly), or preventing actions from being completed on the job accordingly (e.g. thrown and caught exception).
+
 **Job Search Community**: Users and employers both have their own public facing profiles to share who they are and what they're looking for with the community. We also allow users to comment on job postings, and view each other's profiles and company profiles to learn more about them.
 Scope tested:
+
+- User accounts can be created, either as a job seeker or employer, only with correct credentials.
+- A user account that exists can be logged into when providing the correct credentials for it.
+- Incorrect credentials like empty email or password upon user creation or log in attempts trigger the appropriate response (e.g. caught exception).
+- Credentials for user emails match specific formatting when creating an account or logging in.
+- Profiles can only be viewed if they contain well-formatted credentials (e.g. an email address in a valid format).
+- Comments can be added to and be retrieved for a job if the job is valid.
+- Comments can only be added or exist if the user account for them is valid and the comment contains real content (e.g. not empty).
+
+**Additional, general areas that have been tested**: these span across multiple features.
 
 - Accessing Jobs from the database
   - Experiences must have a non-empty string for company name, position title, job description
   - Jobs must have a non-empty string for Job Title, Application Link, Position Type, Employement Type, Job description
   - Jobs must have a valid Application Link that follows this format (\*.\*) or (\*.\*/\*) and does not contain any invalid characters for urls
-- Handling state logic of the dating job game (none of the same jobs appearing twice in the game)
-  - Cannot Reject or Accept a job before initialization
-  - Test Regular Accepting or Rejecting jobs
-  - Spamming Accept or Reject only changes game stats for valid interaction
-  - Cannot Call GameStats for uninitialized games
-- Testing Users from the database
+
+- Accessing Users from the database
   - User ID must be greater than 0
   - Email, Username, Password, About must all be non empty strings
   - Email must follow the format (\*@\*.\*)
 
-- Testing Quiz Game Validation
-  - Make sure weak sentence is not empty
-  - Make sure strong sentence is not empty
-
-- Testing Quiz Game Logic
-  - Cannot call Answer before we call GetNextItem
-  - Stats should be empty at the start of the game
-  - When you run out of Quiz Items the Quiz Game returns null
-  - When calling GetNextItem before answering it is registered as a skip
-  - Answering with the strong string results in a increase in correct
-  - Answering with the weak string results in a increase in incorrect
-  - Answering with any other string results in a InvalidException
-  - Answering after strong string twice/weak string twice results in an InvalidException
-
-- Testing QuizGameConnector
-  - Make sure user has an active session
-  - When reinitializing session it should reset stats
-
-- Testing QuizGameService
-  - Make sure current user is not negative
-  - Make sure answer is not empty
+* Using Adapters
+  - Ensure all adapters for objects/entities correctly validate object/entity attributes
 
 ## Test Methodology
 
@@ -94,12 +120,12 @@ Scope tested:
 
 ### Test Levels
 
-| Test Level          | Scope & Requirement                                                                                       | Methodology                                                                                                                    |
-| ------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Unit Testing        | At least 10 tests per core feature, for a total of at least 60 tests.                                     | NUnit used to mock the dependencies and create tests for every public function to verify logic works as possible in isolation. |
-| Integration Testing | 10 tests total covering interactions between core features.                                               | NUnit used to test API flow for common calls as they flow through features.                                                    |
-| Acceptance Testing  | End-user testing for every user story, for 10 tests in total.                                             | Team members will manually walk through the application to test each user story's criteria.                                    |
-| Regression Testing  | Running unit and integration tests on every pull request and every push to the `dev` and `main` branches. | Using our GitHub Actions CI pipeline, all unit and integration tests are run automatically.                                    |
+| Test Level          | Scope & Requirement                                                                                                                                                                                                                                                  | Methodology                                                                                                                    |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Unit Testing        | At least 10 tests per core feature, for a total of at least 60 tests.                                                                                                                                                                                                | NUnit used to mock the dependencies and create tests for every public function to verify logic works as possible in isolation. |
+| Integration Testing | 10 tests total covering interactions between core features. Testing includes creation, conversion and retrieval of business objects using a connection to a test database, as well as verifying common interactions between the service layer and persistence layer. | NUnit used to test API flow for common calls as they flow through features.                                                    |
+| Acceptance Testing  | End-user testing for every user story (13 stories)                                                                                                                                                                                                                   | Team members will manually walk through the application to test each user story's criteria.                                    |
+| Regression Testing  | Running unit and integration tests on every pull request and every push to the `dev` and `main` branches.                                                                                                                                                            | Using our GitHub Actions CI pipeline, all unit and integration tests are run automatically.                                    |
 
 ### CI/CD Workflow
 
@@ -110,7 +136,23 @@ Then for CD, when the code is merged, it builds/tests for front and back end. Th
 
 Stryker.NET was used to conduct mutation testing on our application. 71.32% Mutation Score For Business Logic. 77.38% Mutation Score For Back-end Queries.
 
-### Acceptence Tests
+### Load Testing
+
+We used NBomber to create and run load testing on our application.
+
+Some of our features only utilize one kind of request (POST or GET) as that is all they require to fulfill the necessary functionality. In order to ensure sufficient coverage of the code base, some features run multiple of one kind or request or multiple request types.
+
+| Feature                             | GET Request                           | POST Request                                                                              | DELETE Request         | PUT Request      |
+| ----------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------- | ---------------- |
+| Application Management              | Viewing all saved jobs                | Saving a job, unsaving a job                                                              |                        |                  |
+| Search Jobs                         | Viewing all jobs                      |                                                                                           |                        |                  |
+| Add Jobs                            |                                       | Adding a new job                                                                          | Deleting a job         |                  |
+| Resume and Cover Letter Improvement |                                       | Identifying generic words in a sentence, initializing and playing the sentence power quiz |                        |                  |
+| Dating Job Game                     |                                       | Initializing the job and user games, accepting and rejecting jobs or users                |                        |                  |
+| Job Search Community                | Viewing a job's comments              | Logging in a user, logging out a user, adding new experience                              | Removing an experience | Updating profile |
+| Not feature specific                | Accessing the application's main page |                                                                                           |                        |                  |
+
+### Acceptance Tests
 
 #### Create Account
 

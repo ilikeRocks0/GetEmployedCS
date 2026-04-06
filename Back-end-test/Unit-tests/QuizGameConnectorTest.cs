@@ -1,8 +1,9 @@
 using Back_end.Persistence.Interfaces;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Services.Interfaces;
 using NSubstitute;
 using NUnit.Framework;
+using Back_end.Services.Implementations;
 
 public class QuizGameConnectorTest
 {

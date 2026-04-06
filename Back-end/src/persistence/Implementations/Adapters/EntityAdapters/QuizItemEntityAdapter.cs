@@ -1,8 +1,12 @@
 using Back_end.Persistence.Model;
+using Back_end.Objects;
+using Back_end.Persistence.Exceptions;
+
+namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 public class QuizItemEntityAdapter : QuizItem
 {
-    private void ValidateEntity(QuizItemEntity quizItemEntity)
+    private static void ValidateEntity(QuizItemEntity quizItemEntity)
     {
         if (quizItemEntity.strong_sentence.Trim().Equals(String.Empty))
         {

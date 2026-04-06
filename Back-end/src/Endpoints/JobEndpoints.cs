@@ -26,12 +26,9 @@ public static class JobEndpoints
             .RequireAuthorization();
 
         // This endpoint retrieves a sublist of a user's saved jobs within the list of jobs based on the provided filters. 
-        // The filters are passed as query parameters and can include:
-        // - "SearchTerm": A keyword string to filter jobs by title.
-        // - "Languages": A comma-separated list of required programming languages or technologies.
-        // - "PositionTypes": A comma-separated list of roles to filter by (e.g., "front-end", "back-end").
-        // - "EmploymentTypes": A comma-separated list of types of contract to filter by (e.g., "full-time", "part-time").
+        // The filters are the same as those used in GetJobs.
         // If no filters are provided, all of the user's saved jobs within the jobs list will be returned.
+        // UserId is extracted from the user's cookie. This is required to identify the user whose saved jobs are being requested.
         routes.MapGet("/api/jobs/saved/sublist", (HttpContext context, IJobService jobService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
@@ -45,8 +42,9 @@ public static class JobEndpoints
             .RequireAuthorization();
 
         // This endpoint retrieves the saved jobs for a user based on the provided filters. 
-        // The filters are the same as those used in GetJobs, but "SeekerId" is required to identify the user whose saved jobs are being requested.
-        // If "SeekerId" is missing or invalid, no saved jobs will be returned.
+        // The filters are the same as those used in GetJobs.
+        // If no filters are provided, all of the user's saved jobs will be returned.
+        // UserId is extracted from the user's cookie. This is required to identify the user whose saved jobs are being requested.
         routes.MapGet("/api/jobs/saved", (HttpContext context, IJobService jobService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
@@ -59,7 +57,9 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
         
-        
+        // This endpoint retrieves the total count of jobs based on the provided filters.
+        // The filters are the same as those used in GetJobs. 
+        // If no filters are provided, a count all jobs will be returned.
         routes.MapGet("/api/jobs/number", (HttpContext context, IJobService jobService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
@@ -70,6 +70,10 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+        // This endpoint retrieves the total count of the user's saved jobs based on the provided filters.
+        // The filters are the same as those used in GetJobs.
+        // If no filters are provided, a count all of the user's saved jobs will be returned.
+        // UserId is extracted from the user's cookie. This is required to identify the user whose saved jobs are being requested.
         routes.MapGet("/api/jobs/saved/number", (HttpContext context, IJobService jobService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
@@ -82,6 +86,7 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+        // This endpoint retrieves all of the programming languages that jobs may have listed.
         routes.MapGet("/api/jobs/languages", (IJobService jobService) =>
         {
             return jobService.GetProgrammingLanguages();
@@ -96,6 +101,7 @@ public static class JobEndpoints
     {
         // This endpoint initializes the job list for the game based on the provided filters and returns a random job to start the game. 
         // The filters are the same as those used in GetJobs.
+        // UserId is extracted from the user's cookie. This is required to identify the user to connect the game's instance to.
         routes.MapPost("/api/job/game", (HttpContext context, IJobGameService jobGameService) =>
         {
             var filters = context.Request.Query.ToDictionary(query => query.Key, query => query.Value.ToString());
@@ -110,7 +116,8 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
-        // this endpoint allows the user to reject the current job in the game and receive the next job.
+        // This endpoint allows the user to reject the current job in the game and receive the next job.
+        // UserId is extracted from the user's cookie. This is required to identify the user to connect the game's instance to.
         routes.MapPost("/api/job/game/reject", (JobRequest jobRequest, HttpContext context, IJobGameService jobGameService) =>
         {
             var userIdStr = context.User.FindFirst("UserId")?.Value;
@@ -123,7 +130,8 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
-        // this endpoint allows the user to accept the current job in the game and receive the next job.
+        // This endpoint allows the user to accept the current job in the game and receive the next job.
+        // UserId is extracted from the user's cookie. This is required to identify the user to connect the game's instance to.
         routes.MapPost("/api/job/game/accept", (JobRequest jobRequest, HttpContext context, IJobGameService jobGameService) =>
         {
             var userIdStr = context.User.FindFirst("UserId")?.Value;
@@ -136,7 +144,8 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
-        // this endpoint allows the user to retrieve the current game statistics, including the number of accepted and rejected jobs.
+        // This endpoint allows the user to retrieve the current game statistics, including the number of accepted and rejected jobs.
+        // UserId is extracted from the user's cookie. This is required to identify the user to connect the game's instance to.
         routes.MapPost("/api/job/game/stats", (HttpContext context, IJobGameService jobGameService) =>
         {
             var userIdStr = context.User.FindFirst("UserId")?.Value;
@@ -152,6 +161,9 @@ public static class JobEndpoints
 
     public static void MapJobCreationEndpoints(this IEndpointRouteBuilder routes)
     {
+        // This endpoint allows the user to add a new job to the system.
+        // Job information is extracted from the body into a NewJob object automatically based on the definition of a NewJob object.
+        // UserId is extracted from the user's cookie. This is required to connect the new job to the user as its poster. 
         routes.MapPost("/api/job/add", (NewJob newJob, HttpContext context, IJobAddService jobAddService) =>
         {
             var userId = context.User.FindFirst("UserId")?.Value;
@@ -163,6 +175,33 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+        routes.MapPost("/api/jobs/notify", async (string jobTitle, HttpContext context, IUserService userService, IEmailService emailService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+
+            var profile = userService.GetProfile(userId);
+            if (profile is null)
+                return Results.Unauthorized();
+
+            var posterName = profile.IsEmployer ? profile.EmployerName! : $"{profile.FirstName} {profile.LastName}";
+            var followers = userService.GetAllFollowers(userId);
+            var followerEmails = followers.Select(f => f.Email).ToList();
+
+            await emailService.SendJobNotificationEmailsAsync(posterName, profile.Username, jobTitle, followerEmails);
+
+            return Results.Ok();
+        })
+            .WithName("NotifyFollowers")
+            .WithTags("Job Creation")
+            .WithOpenApi()
+            .RequireAuthorization();
+
+        // This endpoint allows the user to add a new job to the system.
+        // A jobId for the target job to delete is passed in as part of the URI. 
+        // UserId is extracted from the user's cookie. This is required to check if the user can delete the specified job or not. 
+        // A job may fail to be deleted if the jobId does not exist, or does not correspond to any jobs the user has added. 
         routes.MapDelete("/api/jobs/{jobId}", (int jobId, HttpContext context, IJobService jobService) =>
         {
             var userIdStr = context.User.FindFirst("UserId")?.Value;

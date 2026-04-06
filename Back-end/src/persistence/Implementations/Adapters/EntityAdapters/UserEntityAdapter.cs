@@ -1,11 +1,13 @@
 using Back_end.Persistence.Implementations.Validation;
-using Back_end.Persistence.Objects;
+using Back_end.Persistence.Model;
+using Back_end.Objects;
+using Back_end.Persistence.Exceptions;
 
 namespace Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 public class UserEntityAdapter : User
 {
-    private void ValidateEntity(UserEntity userEntity)
+    private static void ValidateEntity(UserEntity userEntity)
     {
         if (userEntity.user_id < 0)
         {
@@ -37,6 +39,7 @@ public class UserEntityAdapter : User
     public UserEntityAdapter(UserEntity userEntity) : base(userEntity.user_id, userEntity.email, userEntity.username, userEntity.password, userEntity.about_string)
     {
         ValidateEntity(userEntity);
+        this.Verified = userEntity.verified;
 
         if (userEntity.jobSeeker != null)
         {

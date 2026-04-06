@@ -5,6 +5,7 @@ using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 using Back_end.Services.Interfaces;
+using Back_end.Services.Implementations;
 
 public class QuizGameServiceTest
 {

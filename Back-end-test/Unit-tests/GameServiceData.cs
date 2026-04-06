@@ -1,4 +1,4 @@
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 
 public class GameServiceData
 {

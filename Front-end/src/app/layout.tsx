@@ -4,6 +4,7 @@ import "./globals.css";
 import { LoginProvider } from "@/context/LoginContext";
 import { CommentsProvider } from "@/context/CommentsContext";
 import SessionExpiredToast from "@/components/SessionExpiredToast";
+import AuthGuard from "@/context/AuthGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,11 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionExpiredToast />
         <LoginProvider>
-          <CommentsProvider>
-            {children}
-          </CommentsProvider>
+          <AuthGuard>
+            <CommentsProvider>
+              {children}
+            </CommentsProvider>
+          </AuthGuard>
         </LoginProvider>
       </body>
     </html>

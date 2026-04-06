@@ -1,7 +1,7 @@
 using Back_end.Endpoints.Models;
 using Back_end.Persistence.Implementations;
 using Back_end.Persistence.Interfaces;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Services.Implementations;
 using Back_end.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +22,7 @@ public class JobAddServiceIntegrationTest : IntegrationTest
 
         jobPersistence = new JobPersistence(this.config);
         userPersistence = new UserPersistence(this.config, new PasswordHasher<User>());
-        user.UserId = userPersistence.CreateUser(user);
+        user.UserId = userPersistence.CreateUser(user).userId;
 
         jobAddService = new JobAddService(jobPersistence, userPersistence);
     }

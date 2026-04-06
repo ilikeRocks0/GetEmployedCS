@@ -1,3 +1,5 @@
+namespace Back_end.Endpoints.Models;
+
 public class NewJobComment
 {
     public string Comment { get; set; }

@@ -1,3 +1,5 @@
+using Back_end.Objects;
+
 public class QuizGameData
 {
     public static List<QuizItem> OneQuiz = new List<QuizItem>

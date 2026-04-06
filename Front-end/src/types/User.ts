@@ -13,10 +13,18 @@ export interface User {
     employerName?: string;
     postedJobs?: ApiJob[];
     isSelf?: boolean;
+    isFollowing?: boolean;
 }
 
 export interface ProfileValues {
     firstName?: string;
     lastName?: string;
     bio?: string;
+}
+
+export interface UserInfo {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
 }

@@ -1,6 +1,13 @@
-export interface JobComment {
+export interface Comment {
   comment: string;
   posterUserId: number;
-  jobId: number;
   posterUsername?: string;
+}
+
+export interface JobComment extends Comment {
+  jobId: number;
+}
+
+export interface UserComment extends Comment {
+  profileUserId: number;
 }

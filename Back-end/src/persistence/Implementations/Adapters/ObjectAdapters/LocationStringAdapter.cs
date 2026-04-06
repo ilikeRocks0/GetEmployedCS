@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Back_end.Persistence.Exceptions;
 using Back_end.Persistence.Model;
 
 namespace Back_end.Persistence.Implementations.Adapters.ObjectAdapters;

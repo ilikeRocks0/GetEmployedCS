@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 
 using Back_end.Persistence.Interfaces;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Persistence.Model;
 using Back_end.Persistence.Implementations.Queries;
 using Back_end.Persistence.Implementations.Adapters.ObjectAdapters;
 using Back_end.Persistence.Implementations.Types;
+using Back_end.Persistence.Implementations.Adapters.EntityAdapters;
 
 namespace Back_end.Persistence.Implementations;
 

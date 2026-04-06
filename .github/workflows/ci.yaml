@@ -56,31 +56,10 @@ jobs:
       - name: Build Next.js
         run: npm run build
 
-  # --- DOCKER PUSH ---
-  docker-push:
-    if: github.event_name == 'push'
-    needs: [backend-ci, frontend-ci]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-        
-      - name: Build and push backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Back-end
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-backend:latest
-
-      - name: Build and push frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./Front-end
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/getemployed-frontend:latest
+  # --- SECURITY SCANNER ---
+  sonarqube:
+    needs: [backend-ci]
+    uses: ./.github/workflows/sonar-analysis.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      DB_CONNECTION_STRING: ${{ secrets.DB_TEST_CONNECTION_STRING }}

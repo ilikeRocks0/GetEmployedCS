@@ -5,7 +5,7 @@ import { Card, Tag, Avatar, Typography, Button, message, Popconfirm } from "antd
 import { HeartOutlined, HeartFilled, DeleteOutlined } from "@ant-design/icons";
 import JobDetailModal from "./JobDetailModal";
 import type { Job } from "@/types/Job";
-import { saveJob, unsaveJob } from "@/api/users";
+import { saveJob, unsaveJob, checkIfUserIsEmployer } from "@/api/users";
 import { useIsSavedList } from "@/context/IsSavedListContext";
 
 export type { Job };
@@ -18,6 +18,7 @@ interface JobCardState {
   isSaved?: boolean;
   isCurrentUsers?: boolean;
   onDelete?: (id: number) => void;
+  isProfileView?: boolean;
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -35,12 +36,19 @@ function avatarColor(name: string) {
 
 const REMOVE_DURATION = 350;
 
-export default function JobCard({ job, onRemove, isSaved: isSavedProp, isCurrentUsers, onDelete }: JobCardState) {
+export default function JobCard({ job, onRemove, isSaved: isSavedProp, isCurrentUsers, onDelete, isProfileView }: JobCardState) {
   const isSavedList = useIsSavedList();
   const [modalOpen, setModalOpen] = useState(false);
   const [saved, setSaved] = useState(isSavedProp ?? isSavedList);
   const [saving, setSaving] = useState(false);
   const [removing, setRemoving] = useState(false);
+  const [isEmployer, setIsEmployer] = useState(false);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    checkIfUserIsEmployer(controller.signal).then(setIsEmployer).catch(() => {});
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     if (isSavedProp !== undefined) setSaved(isSavedProp);
@@ -129,7 +137,7 @@ export default function JobCard({ job, onRemove, isSaved: isSavedProp, isCurrent
           <Tag color={TYPE_COLORS[job.employment_type] ?? "default"}>{job.employment_type}</Tag>
           {job.isRemote && <Tag color="cyan">Remote</Tag>}
           {job.isHybrid && <Tag color="geekblue">Hybrid</Tag>}
-          {!isCurrentUsers && (
+          {!isCurrentUsers && !isEmployer && !isProfileView && (
             <Button
               type="text"
               shape="circle"

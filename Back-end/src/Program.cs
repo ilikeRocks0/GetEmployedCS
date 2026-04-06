@@ -1,16 +1,19 @@
 using DotNetEnv;
 using Back_end.Endpoints;
 using Back_end.Persistence.Implementations;
-using Back_end.Persistence.Objects;
+using Back_end.Objects;
 using Back_end.Persistence.Interfaces;
 using Back_end.Services.Interfaces;
 using Back_end.Services.Implementations;
+using Back_end.Services.Implementations.AI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Resend;
 // Load environment variables from .env file
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -24,7 +27,9 @@ builder.Services.AddScoped<IJobPersistence, JobPersistence>();
 builder.Services.AddScoped<IQuizItemsPersistence, QuizItemsPersisitence>();
 builder.Services.AddScoped<IJobIndexManager, ShuffleJobsService>();
 builder.Services.AddScoped<IResumePersistence, ResumePersistence>();
+builder.Services.AddSingleton<IGroqService, GroqService>();
 builder.Services.AddScoped<IGenericWordsService, GenericWordsService>();
+builder.Services.AddScoped<IAiGenericWordsService, GroqGenericWordsService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IJobAddService, JobAddService>();
 builder.Services.AddSingleton<IJobGameService, GameServiceSingleton>();
@@ -33,6 +38,17 @@ builder.Services.AddSingleton<IQuizGameService, QuizGameSingleton>();
 builder.Services.AddScoped<IUserPersistence, UserPersistence>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentsService, CommentsService>();
+builder.Services.AddScoped<IUserCommentsService, UserCommentsService>();
+builder.Services.AddScoped<IFollowService, FollowService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
+builder.Services.Configure<ResendClientOptions>(o =>
+{
+    o.ApiToken = Environment.GetEnvironmentVariable("RESEND_API_KEY")
+        ?? throw new InvalidOperationException("RESEND_API_KEY environment variable is required");
+});
+builder.Services.AddTransient<IResend, ResendClient>();
 builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<User>, Microsoft.AspNetCore.Identity.PasswordHasher<User>>();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -42,17 +58,19 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Caddy provides the SSL
-});
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("https://localhost", "https://localhost:3000")
+        var origins = new HashSet<string> {"https://localhost", "https://localhost:3000", "https://getemployedcs.ca", "https://www.getemployedcs.ca"};
+        var envOrigin = Environment.GetEnvironmentVariable("FRONTEND_URL");
+
+        if (!string.IsNullOrEmpty(envOrigin))
+        {
+            origins.Add(envOrigin);
+        }
+
+        policy.WithOrigins([.. origins])
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -64,9 +82,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.Cookie.Name = "auth";
+        options.Cookie.Domain = builder.Environment.IsDevelopment()
+            ? null : ".getemployedcs.ca";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = builder.Environment.IsDevelopment() 
-            ? SameSiteMode.Strict : SameSiteMode.Lax;
+        options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
             ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
         options.SlidingExpiration = true;
@@ -95,16 +114,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseHttpsRedirection();
 }
-else
+
+if (!app.Environment.IsDevelopment())
 {
-    // In Docker, Caddy handles HTTPS.
     app.UseForwardedHeaders();
 }
 
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
-// app.UseHttpsRedirection();
 
 var summaries = new[]
 {
@@ -134,7 +152,15 @@ app.MapUserGameEndpoints();
 app.MapCommentsEndpoints();
 app.MapQuizGameEndpoints();
 app.MapGenericWordEndpoints();
-app.Run();
+
+if (app.Environment.IsDevelopment())
+{
+    app.Run();
+}
+else
+{
+    app.Run($"http://0.0.0.0:{port}");
+}
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
