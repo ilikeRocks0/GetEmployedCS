@@ -147,7 +147,7 @@ public class UserPersistence : IUserPersistence
         return user;
     }
 
-    public int CreateUser(User newUser)
+    public (int userId, string verifyToken) CreateUser(User newUser)
     {
         using (AppDbContext context = new(this.config))
         {
@@ -202,8 +202,8 @@ public class UserPersistence : IUserPersistence
                 context.SaveChanges();
             }
 
-            // Return the user ID of the newly added entity
-            return newUserEntity.user_id;
+            // Return the user ID and verify token of the newly added entity
+            return (newUserEntity.user_id, newUserEntity.verify_token!);
         }
     }
 

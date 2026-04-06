@@ -77,3 +77,8 @@ export async function unfollowUser(username: string): Promise<void> {
   const res = await fetchWithAuth(`${API_BASE_URL}/api/users/unfollow/${username}`, { method: "POST" });
   if (!res.ok) throw new Error(`Failed to unfollow user: ${res.status}`);
 }
+
+export async function verifyEmail(token: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/api/users/verify?token=${encodeURIComponent(token)}`);
+  if (!res.ok) throw new Error("Invalid or already-used verification token.");
+}

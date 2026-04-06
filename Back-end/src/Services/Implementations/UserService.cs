@@ -5,11 +5,10 @@ using Back_end.Services.Implementations.Finders;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
 
-namespace Back_end.Services.Implementations;
-
-public class UserService(IUserPersistence userPersistence, IJobPersistence jobPersistence) : IUserService
+public class UserService(IUserPersistence userPersistence, IJobPersistence jobPersistence, IEmailService emailService) : IUserService
 {
     public List<User> GetAllFollowing(int userId) => userPersistence.GetAllFollowing(userId);
+    public List<User> GetAllFollowers(int userId) => userPersistence.GetAllFollowers(userId);
 
     public List<User> GetUsers(IReadOnlyDictionary<string, string>? filters = null)
     {
@@ -28,10 +27,19 @@ public class UserService(IUserPersistence userPersistence, IJobPersistence jobPe
         return [..employers, ..seekers];
     }
 
-    public int CreateUser(NewUser newUser)
+    public async Task<int> CreateUser(NewUser newUser)
     {
         User savedUser = ExtractUserFromInput(newUser);
-        return userPersistence.CreateUser(savedUser);
+        var (userId, verifyToken) = userPersistence.CreateUser(savedUser);
+        try
+        {
+            await emailService.SendVerificationEmailAsync(newUser.Email, verifyToken);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"[CreateUser] Failed to send verification email to {newUser.Email}: {ex.Message}");
+        }
+        return userId;
     }
 
     public int SaveJob(IReadOnlyDictionary<string, string>? filters = null)
@@ -80,23 +88,21 @@ public class UserService(IUserPersistence userPersistence, IJobPersistence jobPe
 
     public int Login(LoginRequest loginRequest)
     {
-        var user = userPersistence.GetUserByCredentials(loginRequest.Email, loginRequest.Password);
-        if (user is null)
-        {
+        var user = userPersistence.GetUserByCredentials(loginRequest.Email.ToLower(), loginRequest.Password);
+        if (user is null || !user.Verified)
             throw new InvalidOperationException("Invalid username or password.");
-        }
-
         return user.UserId;
     }
 
     private static User ExtractUserFromInput(NewUser newUser)
     {
+        var email = newUser.Email.ToLower();
         User savedUser;
         if (newUser.IsEmployer)
         {
             savedUser = new User(
-                -1, 
-                newUser.Email, 
+                -1,
+                email,
                 newUser.Username,
                 newUser.Password, 
                 "", 
@@ -106,9 +112,9 @@ public class UserService(IUserPersistence userPersistence, IJobPersistence jobPe
         {
             savedUser = new User(
                 -1,
-                newUser.Email,
-                newUser.Username, 
-                newUser.Password, 
+                email,
+                newUser.Username,
+                newUser.Password,
                 "",
                 newUser.FirstName,
                 newUser.LastName, 
@@ -192,5 +198,10 @@ public class UserService(IUserPersistence userPersistence, IJobPersistence jobPe
             throw new InvalidOperationException("Only job seekers can delete experiences.");
 
         userPersistence.DeleteExperience(userId, experience);
+    }
+
+    public void VerifyUser(string token)
+    {
+        userPersistence.VerifyUser(token);
     }
 }

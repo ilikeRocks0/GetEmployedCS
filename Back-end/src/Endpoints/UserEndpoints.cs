@@ -25,9 +25,9 @@ public static class UserEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
-        routes.MapPost("/api/users", (NewUser newUser, IUserService userService) =>
+        routes.MapPost("/api/users", async (NewUser newUser, IUserService userService) =>
         {
-            return userService.CreateUser(newUser);
+            return await userService.CreateUser(newUser);
         })
             .WithName("CreateUser")
             .WithTags("Users")
@@ -237,6 +237,22 @@ public static class UserEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+
+        routes.MapGet("/api/users/verify", (string token, IUserService userService) =>
+        {
+            try
+            {
+                userService.VerifyUser(token);
+                return Results.Ok();
+            }
+            catch (InvalidOperationException)
+            {
+                return Results.BadRequest("Invalid or already-used verification token.");
+            }
+        })
+            .WithName("VerifyUser")
+            .WithTags("Users")
+            .WithOpenApi();
 
         routes.MapPost("/api/users/follow/{username}", (string username, HttpContext context, IFollowService followService) =>
         {

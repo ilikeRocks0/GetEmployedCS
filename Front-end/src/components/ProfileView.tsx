@@ -7,7 +7,7 @@ import { Experience, ExperienceValues } from "@/types/Experience";
 import ExperienceEditModal from "./ExperienceEditModal";
 import { createExperience, deleteExperience, updateExperience } from "@/api/experience";
 import { updateUser, UpdateUserRequest, followUser, unfollowUser } from "@/api/users";
-import { getUserComments, createUserComment } from "@/api/comments";
+import { getUserComments, createUserComment, notifyProfileComment } from "@/api/comments";
 import CommentList from "./CommentList";
 import ExperienceCard from "./ExperienceCard";
 import JobCard from "./JobCard";
@@ -37,6 +37,12 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
     const [followLoading, setFollowLoading] = useState(false);
     const [createJobModalOpen, setCreateJobModalOpen] = useState(false);
     const [editingExp, setEditingExp] = useState<Experience | null>(null);
+
+    const handleCreateComment = async (comment: string) => {
+        const result = await createUserComment(user.username, comment);
+        notifyProfileComment(user.username, comment).catch(() => {});
+        return result;
+    };
 
     const handleFollowToggle = async () => {
         setFollowLoading(true);
@@ -245,7 +251,7 @@ export default function ProfileView({ user, isSelf, onRefresh }: ProfileViewProp
                     <Title level={3}>Comments</Title>
                     <CommentList
                         getComments={() => getUserComments(user.username)}
-                        createComment={(comment) => createUserComment(user.username, comment)}
+                        createComment={handleCreateComment}
                     />
                 </div>
             </div>

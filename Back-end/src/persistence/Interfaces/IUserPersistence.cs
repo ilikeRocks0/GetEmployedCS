@@ -8,7 +8,7 @@ public interface IUserPersistence
     public List<User> GetUsers(string searchTerm, bool employer, int startIndex, int pageSize);
     public List<User> GetUsersForGame(int currentUserId, int startIndex, int amount);
     public User? GetUserByUsername(string username);
-    public int CreateUser(User newUser);
+    public (int userId, string verifyToken) CreateUser(User newUser);
     public int SaveJob(int userId, int jobId);
     public bool UnsaveJob(int userId, int jobId);
     public bool IsJobInLikes(int userId, int jobId);

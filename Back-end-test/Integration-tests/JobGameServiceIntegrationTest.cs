@@ -25,7 +25,7 @@ public class JobGameServiceIntegrationTest : IntegrationTest
 
         user = new User(0, "email@email.com", "user", "pass", "about", "test", "user", []);
         userPersistence = new UserPersistence(this.config, new PasswordHasher<User>());
-        user.UserId = userPersistence.CreateUser(user);
+        user.UserId = userPersistence.CreateUser(user).userId;
 
         job = new Job("job", null, user.FirstName + " " + user.LastName, false, "https://job.com", null, null, "Full stack", "Full-time", [], [], "description");
         jobPersistence = new JobPersistence(this.config);

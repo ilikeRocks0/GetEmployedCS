@@ -12,6 +12,7 @@ public class User
     public bool IsEmployer { get; set; }
     public string About { get; set; }
     public string Email { get; set; }
+    public bool Verified { get; set; }
 
     protected User(int userId, string email, string username, string password, string about)
     {

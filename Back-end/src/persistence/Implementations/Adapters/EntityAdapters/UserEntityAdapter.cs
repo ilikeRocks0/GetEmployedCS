@@ -39,6 +39,7 @@ public class UserEntityAdapter : User
     public UserEntityAdapter(UserEntity userEntity) : base(userEntity.user_id, userEntity.email, userEntity.username, userEntity.password, userEntity.about_string)
     {
         ValidateEntity(userEntity);
+        this.Verified = userEntity.verified;
 
         if (userEntity.jobSeeker != null)
         {

@@ -163,6 +163,29 @@ public static class JobEndpoints
             .WithOpenApi()
             .RequireAuthorization();
 
+        routes.MapPost("/api/jobs/notify", async (string jobTitle, HttpContext context, IUserService userService, IEmailService emailService) =>
+        {
+            var userIdStr = context.User.FindFirst("UserId")?.Value;
+            if (!int.TryParse(userIdStr, out var userId))
+                return Results.Unauthorized();
+
+            var profile = userService.GetProfile(userId);
+            if (profile is null)
+                return Results.Unauthorized();
+
+            var posterName = profile.IsEmployer ? profile.EmployerName! : $"{profile.FirstName} {profile.LastName}";
+            var followers = userService.GetAllFollowers(userId);
+            var followerEmails = followers.Select(f => f.Email).ToList();
+
+            await emailService.SendJobNotificationEmailsAsync(posterName, profile.Username, jobTitle, followerEmails);
+
+            return Results.Ok();
+        })
+            .WithName("NotifyFollowers")
+            .WithTags("Job Creation")
+            .WithOpenApi()
+            .RequireAuthorization();
+
         routes.MapDelete("/api/jobs/{jobId}", (int jobId, HttpContext context, IJobService jobService) =>
         {
             var userIdStr = context.User.FindFirst("UserId")?.Value;

@@ -22,7 +22,7 @@ public class JobAddServiceIntegrationTest : IntegrationTest
 
         jobPersistence = new JobPersistence(this.config);
         userPersistence = new UserPersistence(this.config, new PasswordHasher<User>());
-        user.UserId = userPersistence.CreateUser(user);
+        user.UserId = userPersistence.CreateUser(user).userId;
 
         jobAddService = new JobAddService(jobPersistence, userPersistence);
     }

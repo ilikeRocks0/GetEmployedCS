@@ -24,3 +24,9 @@ export async function createJob(payload: NewJobRequest): Promise<void> {
   });
   if (!res.ok) throw new Error(`Failed to create job: ${res.status}`);
 }
+
+export async function notifyFollowers(jobTitle: string): Promise<void> {
+  await fetchWithAuth(`${API_BASE_URL}/api/jobs/notify?jobTitle=${encodeURIComponent(jobTitle)}`, {
+    method: "POST",
+  });
+}

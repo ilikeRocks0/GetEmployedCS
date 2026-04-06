@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Modal, Form, Input, Select, DatePicker, Checkbox, Button, Row, Col, App } from "antd";
-import { createJob, type NewJobRequest } from "@/api/createJob";
+import { createJob, notifyFollowers, type NewJobRequest } from "@/api/createJob";
 import { useLanguage } from "@/context/LanguageContext";
 import type { Dayjs } from "dayjs";
 
@@ -57,6 +57,7 @@ export default function CreateJobModal({ open, onClose, onCreated }: CreateJobMo
         hasHybrid: values.isHybrid ?? false,
       };
       await createJob(payload);
+      notifyFollowers(payload.title).catch(() => {});
       message.success("Job posted successfully.");
       form.resetFields();
       onCreated?.();

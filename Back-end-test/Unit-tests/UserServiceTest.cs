@@ -2,6 +2,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Back_end.Services.Implementations;
 using Back_end.Persistence.Interfaces;
+using Back_end.Services.Interfaces;
 using Org.BouncyCastle.Bcpg;
 using Back_end.Objects;
 using Back_end.Endpoints.Models;
@@ -14,13 +15,15 @@ public class UserServiceTest
     private UserService userService;
     private IUserPersistence userPersistenceMock;
     private IJobPersistence jobPersistenceMock;
+    private IEmailService emailServiceMock;
 
     [SetUp]
     public void Setup()
     {
         userPersistenceMock = Substitute.For<IUserPersistence>();
         jobPersistenceMock = Substitute.For<IJobPersistence>();
-        userService = new UserService(userPersistenceMock, jobPersistenceMock);
+        emailServiceMock = Substitute.For<IEmailService>();
+        userService = new UserService(userPersistenceMock, jobPersistenceMock, emailServiceMock);
     }
 
     [Test]
@@ -157,9 +160,9 @@ public class UserServiceTest
         string password = "1233";
         int userId = 1;
         LoginRequest loginRequest = new LoginRequest(email, password);
-        var expectedUser = new User(userId, email, "testuser", password, "", "test", "user", new List<Experience>());
+        var expectedUser = new User(userId, email, "testuser", password, "", "test", "user", new List<Experience>()) { Verified = true };
 
-        userPersistenceMock.GetUserByCredentials(email, password).Returns(expectedUser);
+        userPersistenceMock.GetUserByCredentials(email.ToLower(), password).Returns(expectedUser);
         var result = userService.Login(loginRequest);
 
         Assert.That(result, Is.EqualTo(userId));
