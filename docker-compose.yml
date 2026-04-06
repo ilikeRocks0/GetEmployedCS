@@ -1,6 +1,6 @@
 services:
   backend:
-    image: lsteski/getemployed-backend:latest
+    image: lsteski/getemployed-backend:dev
     build: ./Back-end
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -15,7 +15,7 @@ services:
       - APP_URL=${APP_URL}
 
   frontend:
-    image: lsteski/getemployed-frontend:latest
+    image: lsteski/getemployed-frontend:dev
     build:
       context: ./Front-end
       args:
