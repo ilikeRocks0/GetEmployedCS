@@ -13,35 +13,70 @@ namespace MyLoadTest
     {
         static void Main(string[] args)
         {
-            NBomberRunner
-                .RegisterScenarios(
-                    AccessWebsiteTest(), 
-                    LogInLogOutTest(),
-                    SpamGenericWord(),
-                    SpamQuizGame(),
-                    SpamGetJobs(), 
-                    SpamGetSavedJobs(),
-                    SpamSaveUnsaveJob(), 
-                    SpamAddDeleteJob(),
-                    SpamGetComments(),
-                    SpamUpdateProfile(),
-                    SpamAddDeleteExperience())
-                .Run();
+            var scenarios = new[]
+            {
+                AccessWebsiteTest(),
+                LogInLogOutTest(),
+                SpamGenericWord(),
+                SpamQuizGame(),
+                SpamGetJobs(),
+                SpamGetSavedJobs(),
+                SpamSaveUnsaveJob(),
+                SpamAddDeleteJob(),
+                SpamGetComments(),
+                SpamUpdateProfile(),
+                SpamAddDeleteExperience()
+            };
+
+            foreach (var scenario in scenarios)
+            {
+                NBomberRunner
+                    .RegisterScenarios(scenario)
+                    .Run();
+            }
             
         }  
 
-        static async Task<HttpResponseMessage> Login(HttpClient client)
+        static async Task<HttpResponseMessage> Login(HttpClient client, string email = "testuser1@loadtest.com", string password = "password")
         {
             using StringContent jsonContent = new(
             JsonSerializer.Serialize(new
             {
-                Email = "testuser1@loadtest.com",
-                Password = "password" 
+                Email = email,
+                Password = password
             }),
             Encoding.UTF8,
             "application/json");
 
             return await client.PostAsync("https://localhost/api/users/login",jsonContent);
+        }
+
+        static HttpClient CreateClient()
+        {
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            return new HttpClient(clientHandler);
+        }
+        static async Task<bool> LoginMulti(List<HttpClient> httpClients)
+        {
+            for (int i = 1; i <= 20; i++)
+            {
+                var client = CreateClient();
+                var response = await Login(client,$"testuser{i}@loadtest.com","password");
+                httpClients.Add(client);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return response.IsSuccessStatusCode;
+                }
+            }
+            return true;
+        }
+        static async Task LogOutMulti(List<HttpClient> httpClients)
+        {
+            foreach (var client in httpClients)
+            {
+                var response = await LogOut(client);
+            }
         }
         static async Task<HttpResponseMessage> LogOut(HttpClient client)
         {
@@ -51,13 +86,12 @@ namespace MyLoadTest
 
         static ScenarioProps AccessWebsiteTest()
         {
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-            HttpClient client = new HttpClient(clientHandler);
+            List<HttpClient> httpClients = [];
 
             var scenario = Scenario.Create("Accessing website", async context =>
             {
-                var response = await client.GetAsync("https://localhost");
+                int index = context.Random.Next(httpClients.Count);
+                var response = await httpClients[index].GetAsync("https://localhost");
 
                 return response.IsSuccessStatusCode
                     ? Response.Ok()
@@ -68,18 +102,28 @@ namespace MyLoadTest
                 Simulation.Inject(rate: 10,
                                   interval: TimeSpan.FromSeconds(1),
                                   during: TimeSpan.FromSeconds(30))
-            );
-
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
+            });
             return scenario;
         }
 
         static ScenarioProps LogInLogOutTest()
         {
+
+            List<HttpClient> httpClients = [];
             var scenario = Scenario.Create("quick Login Logout", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
+                int index = context.Random.Next(httpClients.Count);
+                var client = httpClients[index];
 
                 var step1 = await Step.Run("login", context, async () =>
                 {
@@ -99,6 +143,22 @@ namespace MyLoadTest
                 });
 
                 return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.Inject(rate: 5,
+                                  interval: TimeSpan.FromSeconds(1),
+                                  during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -106,46 +166,39 @@ namespace MyLoadTest
 
         static ScenarioProps SpamGenericWord()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam Generic Word", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
+                int index = context.Random.Next(httpClients.Count);
+                using StringContent jsonContent = new(
+                    JsonSerializer.Serialize(new
+                    {
+                        genericWord = "I am a hardworking and Motivated Individual who has proven to be excellent at getting results"
+                    }),
+                    Encoding.UTF8,
+                    "application/json");
 
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
+                var response = await httpClients[index].PostAsync("https://localhost/api/genericWord", jsonContent);
+                return response.IsSuccessStatusCode
                     ? Response.Ok()
                     : Response.Fail();
-                });
-
-                var step2 = await Step.Run("read sentence",context, async () =>
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.Inject(rate: 10,
+                                  interval: TimeSpan.FromSeconds(1),
+                                  during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
                 {
-                    using StringContent jsonContent = new(
-                        JsonSerializer.Serialize(new
-                        {
-                            genericWord = "I am a hardworking and Motivated Individual who has proven to be excellent at getting results"
-                        }),
-                        Encoding.UTF8,
-                        "application/json");
-
-                        var response = await client.PostAsync("https://localhost/api/genericWord", jsonContent);
-                        return response.IsSuccessStatusCode
-                            ? Response.Ok()
-                            : Response.Fail();
-                });
-
-                var step3 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                return Response.Ok();        
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -153,21 +206,14 @@ namespace MyLoadTest
 
         static ScenarioProps SpamQuizGame()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam Quiz Game", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
 
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                var step2 = await Step.Run("initialize quiz game",context, async () =>
+                var step1 = await Step.Run("initialize quiz game",context, async () =>
                 {
                     using StringContent jsonContent = new StringContent("");
                     var response = await client.PostAsync("https://localhost/api/quiz/game", jsonContent);
@@ -176,7 +222,7 @@ namespace MyLoadTest
                         : Response.Fail();
                 });
 
-                var step3 = await Step.Run("spam quiz game",context, async () =>
+                var step2 = await Step.Run("spam quiz game",context, async () =>
                 {
 
                     using StringContent jsonContentEmpty = new StringContent("");
@@ -198,16 +244,21 @@ namespace MyLoadTest
                         : Response.Fail();
                 });
 
-                var step4 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
                 return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -215,38 +266,33 @@ namespace MyLoadTest
 
         static ScenarioProps SpamGetJobs()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam getting all jobs", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
+                int index = context.Random.Next(httpClients.Count);
+                var client = httpClients[index];
 
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
+                var response = await client.GetAsync("https://localhost/api/jobs");
+                return response.IsSuccessStatusCode
                     ? Response.Ok()
                     : Response.Fail();
-                });
-
-                var step2 = await Step.Run("get jobs",context, async () =>
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.Inject(rate: 10,
+                                  interval: TimeSpan.FromSeconds(1),
+                                  during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
                 {
-                    var response = await client.GetAsync("https://localhost/api/jobs");
-                    return response.IsSuccessStatusCode
-                        ? Response.Ok()
-                        : Response.Fail();
-                });
-
-                var step3 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                return Response.Ok();        
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -254,79 +300,68 @@ namespace MyLoadTest
 
         static ScenarioProps SpamGetSavedJobs()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam getting saved jobs", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
+                int index = context.Random.Next(httpClients.Count);
+                var client = httpClients[index];
 
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
+                var response = await client.GetAsync("https://localhost/api/jobs/saved");
+                return response.IsSuccessStatusCode
                     ? Response.Ok()
                     : Response.Fail();
-                });
-
-                var step2 = await Step.Run("get saved jobs",context, async () =>
+  
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.Inject(rate: 10,
+                                  interval: TimeSpan.FromSeconds(1),
+                                  during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
                 {
-                    var response = await client.GetAsync("https://localhost/api/jobs/saved");
-                    return response.IsSuccessStatusCode
-                        ? Response.Ok()
-                        : Response.Fail();
-                });
-
-                var step3 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                return Response.Ok();        
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
-
             return scenario;
         }
 
         static ScenarioProps SpamSaveUnsaveJob()
         {
+
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam saving and unsaving a job", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
-
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
+                using StringContent jsonContentEmpty = new StringContent("");
+                var response = await client.PostAsync("https://localhost/api/users/save?JobId=1", jsonContentEmpty);
+                var unsaveResponse = await client.PostAsync("https://localhost/api/users/unsave?JobId=1", jsonContentEmpty);
+                return unsaveResponse.IsSuccessStatusCode
                     ? Response.Ok()
                     : Response.Fail();
-                });
 
-                var step2 = await Step.Run("save and unsave job",context, async () =>
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
                 {
-                    using StringContent jsonContentEmpty = new StringContent("");
-                    var response = await client.PostAsync("https://localhost/api/users/save?JobId=1", jsonContentEmpty);
-                    var unsaveResponse = await client.PostAsync("https://localhost/api/users/unsave?JobId=1", jsonContentEmpty);
-                    return unsaveResponse.IsSuccessStatusCode
-                        ? Response.Ok()
-                        : Response.Fail();
-                });
-
-                var step3 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                return Response.Ok();        
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -334,21 +369,14 @@ namespace MyLoadTest
 
         static ScenarioProps SpamAddDeleteExperience()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam add and remove experience", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
-
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                var step2 = await Step.Run("add experience",context, async () =>
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
+                
+                var step1 = await Step.Run("add experience",context, async () =>
                 {
                     using StringContent jsonBody = new(
                         JsonSerializer.Serialize(new
@@ -366,7 +394,7 @@ namespace MyLoadTest
                         : Response.Fail();
                 });
 
-                var step3 = await Step.Run("delete experience", context, async () =>
+                var step2 = await Step.Run("delete experience", context, async () =>
                 {
                     using StringContent jsonBody = new(
                         JsonSerializer.Serialize(new
@@ -390,16 +418,21 @@ namespace MyLoadTest
                         : Response.Fail();
                 });
 
-                var step4 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
                 return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -407,38 +440,32 @@ namespace MyLoadTest
 
         static ScenarioProps SpamGetComments()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam getting comments", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
 
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
+                var response = await client.GetAsync("https://localhost/api/comments/1");
+                return response.IsSuccessStatusCode
                     ? Response.Ok()
                     : Response.Fail();
-                });
 
-                var step2 = await Step.Run("get comments",context, async () =>
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
                 {
-                    var response = await client.GetAsync("https://localhost/api/comments/1");
-                    return response.IsSuccessStatusCode
-                        ? Response.Ok()
-                        : Response.Fail();
-                });
-
-                var step3 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                return Response.Ok();        
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -446,19 +473,12 @@ namespace MyLoadTest
 
         static ScenarioProps SpamUpdateProfile()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam update profile", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
-
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
+                int index = context.Random.Next(httpClients.Count);
+                var client = httpClients[index];
 
                 var step2 = await Step.Run("update profile",context, async () =>
                 {
@@ -493,16 +513,23 @@ namespace MyLoadTest
                         : Response.Fail();
                 });
 
-                var step4 = await Step.Run("logout", context, async () =>
+                return Response.Ok(); 
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.Inject(rate: 10,
+                                interval: TimeSpan.FromSeconds(1),
+                                during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
                 {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
-                return Response.Ok();        
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
@@ -510,20 +537,13 @@ namespace MyLoadTest
 
         static ScenarioProps SpamAddDeleteJob()
         {
+            List<HttpClient> httpClients = [];
+
             var scenario = Scenario.Create("Spam adding and deleting a job", async context =>
             {
-                HttpClientHandler clientHandler = new HttpClientHandler();
-                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-                HttpClient client = new HttpClient(clientHandler);
+                int index = context.ScenarioInfo.InstanceNumber % httpClients.Count;
+                var client = httpClients[index];
                 var jobId = -1;
-
-                var step1 = await Step.Run("login", context, async () =>
-                {
-                    var response = await Login(client);
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
 
                 var step2 = await Step.Run("add job",context, async () =>
                 {
@@ -561,16 +581,21 @@ namespace MyLoadTest
                         : Response.Fail();
                 });
 
-                var step4 = await Step.Run("logout", context, async () =>
-                {
-                    var response = await LogOut(client);
-
-                    return response.IsSuccessStatusCode
-                    ? Response.Ok()
-                    : Response.Fail();
-                });
-
                 return Response.Ok();        
+            })
+            .WithoutWarmUp()
+            .WithLoadSimulations(
+                Simulation.KeepConstant(copies: 20, during: TimeSpan.FromSeconds(30))
+            ).WithInit(async context =>
+            {
+                if(!await LoginMulti(httpClients))
+                {
+                    throw new Exception("Could not Initialize accounts");
+                }
+            })
+            .WithClean(async context =>
+            {
+                await LogOutMulti(httpClients);
             });
 
             return scenario;
