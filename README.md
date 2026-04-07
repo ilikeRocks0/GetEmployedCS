@@ -4,10 +4,12 @@
 
 Our important documentation can be found in our [Wiki](https://github.com/ilikeRocks0/GetEmployedCS/wiki), including:
 
+- Everybody's [roles and contributions](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Team-Roles-and-Contributions) for the project
 - Naming and formatting conventions for [branches](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Branch-Naming-Convention), [commit messages, pull requests](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Commit-Message-and-Pull-Request), and [issues](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Issue-Formating)
 - Our [meeting notes](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Meeting-Notes)
 - [Sequence diagrams](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Sequence-Diagrams) for all implemented features
 - Our [test plan](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Test-Plan), which can also be viewed as a [markdown file](https://github.com/ilikeRocks0/GetEmployedCS/blob/main/TestPlan.md)
+- [Prompts for cases where we used AI](https://github.com/ilikeRocks0/GetEmployedCS/wiki/Prompts-and-AI-usage) to generate data or assist with repository management
 
 This README file contains our vision statement, project summary, project technologies, list of core features and their user stories.
 
