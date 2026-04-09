@@ -1,6 +1,6 @@
 "use client";
 
-import { Modal, Button, Avatar, Tag, Typography, Divider } from "antd";
+import { Modal, Button, Tag, Typography, Divider } from "antd";
 import type { Job } from "@/types/Job";
 import CommentList from "./CommentList";
 import { getComments, createComment } from "@/api/comments";
@@ -13,11 +13,6 @@ const TYPE_COLORS: Record<string, string> = {
   Contract: "orange",
 };
 
-const AVATAR_COLORS = ["#1677ff", "#52c41a", "#fa8c16", "#eb2f96", "#722ed1"];
-function avatarColor(name: string) {
-  const code = name.charCodeAt(0) + (name.charCodeAt(1) ?? 0);
-  return AVATAR_COLORS[code % AVATAR_COLORS.length];
-}
 
 interface JobDetailModalState {
   job: Job | null;
@@ -38,13 +33,6 @@ export default function JobDetailModal({ job, open, onClose, isCurrentUsers }: J
       width={600}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 16, borderLeft: "4px solid #1677ff", paddingLeft: 16, marginBottom: 4 }}>
-        <Avatar
-          size={56}
-          src={job.logo}
-          style={{ backgroundColor: job.logo ? undefined : avatarColor(job.company || "?"), flexShrink: 0, fontWeight: 700 }}
-        >
-          {!job.logo && (job.company || "?").slice(0, 2).toUpperCase()}
-        </Avatar>
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Title level={4} style={{ margin: 0, lineHeight: 1.3 }}>{job.position}</Title>
