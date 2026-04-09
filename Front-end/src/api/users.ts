@@ -27,7 +27,10 @@ export async function registerUser(payload: RegisterUserRequest): Promise<void> 
     credentials: "include",
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(`Registration failed: ${res.status}`);
+  if (!res.ok) {
+    const message = await res.text();
+    throw new Error(message || `Registration failed: ${res.status}`);
+  }
 }
 
 export async function fetchUser( username: string, signal?: AbortSignal ): Promise<User> {

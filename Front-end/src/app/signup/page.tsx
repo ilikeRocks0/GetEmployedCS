@@ -21,9 +21,11 @@ interface SignUpFormValues {
 function SignUpPageContent() {
   const { notification } = App.useApp();
   const { registerUser } = useUser();
+  const [form] = Form.useForm<SignUpFormValues>();
   const [isEmployer, setIsEmployer] = useState<boolean | null>(null);
   const [dir, setDir] = useState<"forward" | "back">("forward");
   const [registered, setRegistered] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   function selectRole(employer: boolean) {
     setDir("forward");
@@ -36,6 +38,7 @@ function SignUpPageContent() {
   }
 
   const onFinish = async (values: SignUpFormValues) => {
+    setSubmitting(true);
     try {
       await registerUser({
         username: values.username,
@@ -49,10 +52,16 @@ function SignUpPageContent() {
       setDir("forward");
       setRegistered(true);
     } catch (err) {
-      notification.error({
-        message: "Registration Failed",
-        description: err instanceof Error ? err.message : "Something went wrong. Please try again.",
-      });
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      if (message === "Username is already taken.") {
+        form.setFields([{ name: "username", errors: [message] }]);
+      } else if (message === "Email is already taken.") {
+        form.setFields([{ name: "email", errors: [message] }]);
+      } else {
+        notification.error({ message: "Registration Failed", description: message });
+      }
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -159,6 +168,7 @@ function SignUpPageContent() {
                 </div>
 
                 <Form<SignUpFormValues>
+                  form={form}
                   name="signup"
                   onFinish={onFinish}
                   layout="vertical"
@@ -231,7 +241,7 @@ function SignUpPageContent() {
                   <Divider />
 
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" block size="large">
+                    <Button type="primary" htmlType="submit" block size="large" loading={submitting} disabled={submitting}>
                       Register
                     </Button>
                   </Form.Item>
