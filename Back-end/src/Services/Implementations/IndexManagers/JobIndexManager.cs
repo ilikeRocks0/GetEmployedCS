@@ -28,6 +28,7 @@ public class JobIndexManager(IJobService jobService) : IJobIndexManager
     /// <param name="filters">A dictionary of filter keys and values to apply when retrieving jobs.
     public void UpdateFilters(IReadOnlyDictionary<string, string>? filters)
     {
+        currentPage = 1;
         filtersDictionary = filters?.ToDictionary(k => k.Key, v => v.Value) ?? [];
     }
 }
