@@ -29,7 +29,14 @@ public static class UserEndpoints
         // User information is extracted from the body into a NewUser object automatically based on the definition of a NewUser object.
         routes.MapPost("/api/users", async (NewUser newUser, IUserService userService) =>
         {
-            return await userService.CreateUser(newUser);
+            try
+            {
+                return Results.Ok(await userService.CreateUser(newUser));
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
         })
             .WithName("CreateUser")
             .WithTags("Users")

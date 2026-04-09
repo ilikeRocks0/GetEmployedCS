@@ -17,16 +17,20 @@ interface LoginFormValues {
 function LoginPageContent() {
   const { login } = useLogin();
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
   const onFinish = async (values: LoginFormValues) => {
     setError(null);
+    setSubmitting(true);
     try {
       await login(values.email, values.password);
       router.refresh();
       router.push("/");
     } catch {
       setError("Invalid username or password.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -98,7 +102,7 @@ function LoginPageContent() {
             )}
 
             <Form.Item>
-              <Button type="primary" htmlType="submit" block size="large">
+              <Button type="primary" htmlType="submit" block size="large" loading={submitting} disabled={submitting}>
                 Log in
               </Button>
             </Form.Item>
