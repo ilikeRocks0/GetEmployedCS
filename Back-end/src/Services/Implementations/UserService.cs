@@ -4,6 +4,7 @@ using Back_end.Objects;
 using Back_end.Services.Implementations.Finders;
 using Back_end.Services.Interfaces;
 using Back_end.Util;
+using Microsoft.EntityFrameworkCore;
 
 public class UserService(IUserPersistence userPersistence, IJobPersistence jobPersistence, IEmailService emailService) : IUserService
 {
@@ -41,8 +42,23 @@ public class UserService(IUserPersistence userPersistence, IJobPersistence jobPe
     /// Returns the new user's userId. 
     public async Task<int> CreateUser(NewUser newUser)
     {
+        if (userPersistence.GetUserByUsername(newUser.Username) != null)
+            throw new InvalidOperationException("Username is already taken.");
+
         User savedUser = ExtractUserFromInput(newUser);
-        var (userId, verifyToken) = userPersistence.CreateUser(savedUser);
+        int userId;
+        string verifyToken;
+        try
+        {
+            (userId, verifyToken) = userPersistence.CreateUser(savedUser);
+        }
+        catch (DbUpdateException ex)
+        {
+            var inner = ex.InnerException?.Message ?? ex.Message;
+            if (inner.Contains("Duplicate entry") && inner.Contains("email"))
+                throw new InvalidOperationException("Email is already taken.");
+            throw;
+        }
         try
         {
             await emailService.SendVerificationEmailAsync(newUser.Email, verifyToken);
