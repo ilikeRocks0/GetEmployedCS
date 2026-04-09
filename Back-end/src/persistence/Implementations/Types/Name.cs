@@ -18,11 +18,7 @@ public class Name
         string[] splitName = fullName.Split(' ', StringSplitOptions.TrimEntries);
         
         // Concatenates all names before the last element as the first name if there are more than 2 elements in splitName
-        this.FirstName = "";
-        for(int i=0; i<splitName.Length - 1; i++)
-        {
-            this.FirstName += splitName[i];
-        }
+        this.FirstName = string.Join(" ", splitName[..^1]);
 
         
         if(splitName.Length > 1)

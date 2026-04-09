@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, Tag, Avatar, Typography, Button, message, Popconfirm } from "antd";
+import { Card, Tag, Typography, Button, message, Popconfirm } from "antd";
 import { HeartOutlined, HeartFilled, DeleteOutlined } from "@ant-design/icons";
 import JobDetailModal from "./JobDetailModal";
 import type { Job } from "@/types/Job";
@@ -28,11 +28,6 @@ const TYPE_COLORS: Record<string, string> = {
   Contract: "orange",
 };
 
-const AVATAR_COLORS = ["#1677ff", "#52c41a", "#fa8c16", "#eb2f96", "#722ed1"];
-function avatarColor(name: string) {
-  const code = (name?.charCodeAt(0) ?? 0) + (name?.charCodeAt(1) ?? 0);
-  return AVATAR_COLORS[code % AVATAR_COLORS.length];
-}
 
 const REMOVE_DURATION = 350;
 
@@ -102,14 +97,6 @@ export default function JobCard({ job, onRemove, isSaved: isSavedProp, isCurrent
           },
         }}
       >
-        <Avatar
-          size={48}
-          src={job.logo}
-          style={{ backgroundColor: job.logo ? undefined : avatarColor(job.company || "?"), flexShrink: 0, fontWeight: 700 }}
-        >
-          {!job.logo && (job.company || "?").slice(0, 2).toUpperCase()}
-        </Avatar>
-
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Title level={5} style={{ margin: 0, lineHeight: 1.3 }}>

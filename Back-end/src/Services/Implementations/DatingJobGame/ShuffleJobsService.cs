@@ -1,6 +1,7 @@
 using Back_end.Persistence.Interfaces;
 using Back_end.Objects;
 using Back_end.Services.Interfaces;
+using Back_end.Util;
 
 namespace Back_end.Services.Implementations;
 
@@ -17,7 +18,15 @@ public class ShuffleJobsService: IJobIndexManager
     /// Returns a list of all jobs using existing filtration.
     public List<Job> GetJobs()
     {
-        return ShuffleJobs(jobIndexManager.GetJobs());
+        List<Job> allJobs = [];
+        List<Job> page;
+        do
+        {
+            page = jobIndexManager.GetJobs();
+            allJobs.AddRange(page);
+        } while (page.Count == AppConfig.ITEMS_PER_PAGE);
+
+        return ShuffleJobs(allJobs);
     }
 
     /// Update a list of filters used to retrieve jobs. 
@@ -32,11 +41,10 @@ public class ShuffleJobsService: IJobIndexManager
     /// Returns a shuffled version of the jobs parameter.
     private List<Job> ShuffleJobs(List<Job> jobs)
     {
-        Random rand = new();
         int n = jobs.Count;
         for (int i = 0; i < n; i++)
         {
-            int j = rand.Next(i, n);
+            int j = Random.Shared.Next(i, n);
             (jobs[j], jobs[i]) = (jobs[i], jobs[j]);
         }
         return jobs;
