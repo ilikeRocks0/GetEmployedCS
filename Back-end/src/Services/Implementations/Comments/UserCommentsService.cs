@@ -41,7 +41,13 @@ public class UserCommentsService(IUserPersistence userPersistence) : IUserCommen
             throw new ArgumentException("Comment string cannot be empty");
         }
 
-        UserComment NewComment = new UserComment(comment.Comment, comment.PosterUserId, user.UserId, user.Username);
+        User? sessionUser = userPersistence.GetUser(comment.PosterUserId);
+        if (sessionUser == null)
+        {
+            throw new NullReferenceException("Poster user not found");
+        }
+
+        UserComment NewComment = new UserComment(comment.Comment, comment.PosterUserId, user.UserId, sessionUser.Username);
 
         return userPersistence.CreateUserComment(NewComment);
     }
