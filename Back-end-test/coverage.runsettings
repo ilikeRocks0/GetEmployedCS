@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat Code Coverage">
+        <Configuration>
+          <Include>[*]Back_end.Persistence.*,[*]Back_end.Services.*</Include>
+          <Exclude>[*]Back_end.Persistence.Model.*,[*]Back_end.Services.Implementations.AI.*,[*]Back_end.Services.Implementations.QuizGameSingleton,[*]Back_end.Services.Implementations.GameServiceSingleton,[*]Back_end.Services.Implementations.UserGameSingleton, [*]Back_end.Persistence.Implementations.Types.*, [*]Back_end.Services.Implementations.EmailService</Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
